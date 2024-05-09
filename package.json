@@ -10,9 +10,11 @@
     "prepare": "husky install",
     "test": "jest"
   },
+
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint --fix", "prettier --write", "npm test"]
+    "*.{ts,tsx}": ["eslint . --fix", "prettier --write ."]
   },
+
   "author": "",
   "license": "ISC",
   "dependencies": {
