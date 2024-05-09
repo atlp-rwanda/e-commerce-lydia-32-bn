@@ -2,14 +2,15 @@
   "name": "e-commerce-lydia-32-bn",
   "version": "1.0.0",
   "description": "A platform that provides a marketplace for buyers and sellers to meet",
-  "main": "server.js",
+  "main": "server.ts",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "prepare": "husky install",
     "test": "jest",
-    "validate": "npm run lint && npm run test"
+    "validate": "npm run lint && npm run test",
+    "start": "node server.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
