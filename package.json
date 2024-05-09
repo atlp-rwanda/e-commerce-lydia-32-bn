@@ -11,7 +11,7 @@
     "test": "jest"
   },
   "lint-staged": {
-    "*.js": ["npm run lint:fix", "npm run format", "npm test"]
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write", "npm test"]
   },
   "author": "",
   "license": "ISC",

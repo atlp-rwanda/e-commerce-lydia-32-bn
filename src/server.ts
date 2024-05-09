@@ -11,4 +11,6 @@ function myFunction(arg1: string, arg2: number) {
 
 
 
+
+
 myFunction('hello', 42);
