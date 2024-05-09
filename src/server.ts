@@ -6,4 +6,6 @@ function myFunction(arg1: string, arg2: number) {
   return arg2; // This should trigger a 'no-unused-vars' ESLint error
 }
 
+
+
 myFunction('hello', 42);
