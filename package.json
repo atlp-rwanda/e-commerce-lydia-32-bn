@@ -9,6 +9,7 @@
     "format": "prettier --write .",
     "test": "mocha"
   },
+  
   "husky": {
     "hooks": {
       "pre-commit": "lint-stage"
