@@ -2,38 +2,39 @@
   "name": "e-commerce-lydia-32-bn",
   "version": "1.0.0",
   "description": "A platform that provides a marketplace for buyers and sellers to meet",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "prepare": "husky install",
-    "test": "jest"
+    "test": "mocha"
   },
-  "lint-staged": {
-    "*.{ts,tsx}": ["eslint . --fix", "prettier --write .", "npm test"]
-  },
-  
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-stage"
     }
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.17.21",
+    "@types/mocha": "^10.0.6",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mocha": "^10.4.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.2.0",
+    "@types/node": "^20.12.11",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "^2.29.1",
+    "globals": "^15.2.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "typescript-eslint": "^7.8.0"
   }
 }
