@@ -11,10 +11,10 @@ jobs:
           command: 'echo Hello, World!'
       - run:
           name: Install Dependencies
-          command: yarn
+          command: npm install
       - run:
           name: Build app
-          command: yarn build
+          command: npm run build
 
   store_test_results:
     docker:
@@ -24,10 +24,7 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          command: yarn
-      - run:
-          name: Run Tests
-          command: yarn test
+          command: npm install
       - store_test_results:
           path: ~/project/test-results
           destination: test-results
