@@ -1,0 +1,40 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+
+    steps:
+      - checkout
+      - run:
+          name: 'Say hello'
+          command: 'echo Hello, World!'
+      - run:
+          name: Install Dependencies
+          command: yarn
+      - run:
+          name: Build app
+          command: yarn build
+
+  store_test_results:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn
+      - run:
+          name: Run Tests
+          command: yarn test
+      - store_test_results:
+          path: ~/project/test-results
+          destination: test-results
+workflows:
+  build_and_test:
+    jobs:
+      - build
+      - store_test_results:
+          requires:
+            - build
