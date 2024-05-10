@@ -1,0 +1,13 @@
+fail_on_violations: true
+
+scss:
+  enabled: true
+
+typescript:
+  enabled: true
+  version: 5.4.5
+  config_file: tsconfig.json
+
+pglint:
+  enabled: true
+  # command: sqlint /path/to/sql/scripts/*.sql
