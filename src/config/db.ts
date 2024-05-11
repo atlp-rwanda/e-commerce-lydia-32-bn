@@ -7,3 +7,5 @@ const db = new Sequelize('smsksjiz','smsksjiz', 'f1fOPcWCQhe3EjannsJ9qxi7AEN2qwA
 
 
 export default db 
+
+
