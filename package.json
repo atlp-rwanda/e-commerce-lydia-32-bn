@@ -1,6 +1,7 @@
 {
   "name": "e-commerce-lydia-32-bn",
   "version": "1.0.0",
+  "type": "module",
   "description": "A platform that provides a marketplace for buyers and sellers to meet",
   "main": "dist/server.js",
   "scripts": {
