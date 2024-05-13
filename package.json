@@ -1,6 +1,7 @@
 {
   "name": "e-commerce-lydia-32-bn",
   "version": "1.0.0",
+  "type": "module",
   "description": "A platform that provides a marketplace for buyers and sellers to meet",
   "main": "dist/server.js",
   "scripts": {
@@ -11,6 +12,7 @@
     "build": "tsc",
     "start": "node dist/src/server.js",
     "server": "nodemon dist/src/server.js",
+    "prepare": "husky install",
     "test": "mocha"
   },
   "husky": {
@@ -27,8 +29,7 @@
     "express": "^4.19.2",
     "mocha": "^10.4.0",
     "nodemon": "^3.1.0",
-    "ts-node": "^10.9.2"
-
+    "typescript": "^5.4.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.2.0",
