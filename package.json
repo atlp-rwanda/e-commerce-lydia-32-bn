@@ -15,10 +15,13 @@
     "prepare": "husky install",
     "test": "mocha"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-stage"
-    }
+  "pre-commit": ["lint-staged"],
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "npm run lint",
+      "git add"
+    ],
+    "!dist/**/*.js": []
   },
   "author": "",
   "license": "ISC",
