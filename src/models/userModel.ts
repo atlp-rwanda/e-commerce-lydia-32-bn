@@ -1,20 +1,44 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/db'; // Import your Sequelize instance
+import { DataTypes, Model, Optional, BuildOptions } from 'sequelize';
+import sequelize from '../config/db'; 
+import { Sequelize } from "sequelize";
 
 interface UserAttributes {
   id: number;
-  name: string;
+  firstname: string;
+  othername: string;
   email: string;
+  phone: string;
+  password: string;
+  usertype: string;
+  street: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  isAdmin: boolean;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'firstname'> {
+  firstname: string;
+}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
-  public name!: string;
+  public firstname!: string;
+  public othername!: string;
   public email!: string;
+  public phone!: string;
+  public password!: string;
+  public usertype!: string;
+  public street!: string;
+  public city!: string;
+  public state!: string;
+  public postal_code!: string;
+  public country!: string;
+  public isAdmin!: boolean;
 
-  // timestamps!
+
+  // Timestamps
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -22,18 +46,64 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 User.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
+    firstname: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+    },
+    othername: {
       type: new DataTypes.STRING(128),
       allowNull: false,
     },
     email: {
       type: new DataTypes.STRING(128),
       allowNull: false,
+    },
+    phone: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+    },
+    password: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+    },
+    usertype: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
       unique: true,
+    },
+    street: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+      unique: true,
+    },
+    city: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+      unique: true,
+    },
+    state: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+      unique: true,
+    }, 
+    postal_code: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+      unique: true,
+    },
+    country: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+      unique: true,
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
   },
   {

@@ -1,16 +1,12 @@
-import express from "express";
-import db from "./config/db";
+import express from 'express';
 
-db.authenticate()
-.then((res) => console.log(`connected to database successfully`))
-.catch((error) => console.log(error))
-const app =express()
-const port = 5000
+const app = express();
+const port = 5000;
 
-app.get('/',(req,res)=>{
-    res.send('welcome to our project')
-})
+app.get('/', (req, res) => {
+  res.send('welcome to our project');
+});
 
-app.listen(port,()=>{
-    console.log(`app is running on ${port}`)
-})
+app.listen(port, () => {
+  console.log(`app is running on ${port}`);
+});

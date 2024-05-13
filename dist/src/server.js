@@ -4,10 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const db_1 = __importDefault(require("./config/db"));
-db_1.default.authenticate()
-    .then((res) => console.log(`connected to database successfully`))
-    .catch((error) => console.log(error));
 const app = (0, express_1.default)();
 const port = 5000;
 app.get('/', (req, res) => {
