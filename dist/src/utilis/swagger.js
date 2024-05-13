@@ -1,12 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 //import fs from 'fs';
-const logger_js_1 = __importDefault(require("./logger.js"));
+import log from './logger.js';
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -125,10 +120,10 @@ const options = {
     },
     apis: ['./src/server.ts', './src/routes/*.ts'],
 };
-const swaggerSpec = (0, swagger_jsdoc_1.default)(options);
+const swaggerSpec = swaggerJsdoc(options);
 function swaggerDocs(app, port) {
     // Serve Swagger UI
-    app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.get('/docs.json', (req, res) => {
         res.setHeader('Content-Type', 'application/json');
         res.send(swaggerSpec);
@@ -136,8 +131,8 @@ function swaggerDocs(app, port) {
     app.use((req, res, next) => {
         const host = req.get('host');
         const protocol = req.protocol;
-        logger_js_1.default.info(`Swagger docs available at ${protocol}://${host}/docs`);
+        log.info(`Swagger docs available at ${protocol}://${host}/docs`);
         next();
     });
 }
-exports.default = swaggerDocs;
+export default swaggerDocs;
