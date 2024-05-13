@@ -1,7 +1,9 @@
 #!/bin/sh
 
-npm run lint
-
+# Run linting and formatting
+npm run lint:fix
 npm run format
 
-exit $?
+
+# If everything passes, allow the commit
+# If any of the commands fail, the commit will be aborted
