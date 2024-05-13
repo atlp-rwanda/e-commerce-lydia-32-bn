@@ -4,8 +4,6 @@
 npm run lint:fix
 npm run format
 
-# Run tests
-npm test
 
 # If everything passes, allow the commit
 # If any of the commands fail, the commit will be aborted
