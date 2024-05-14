@@ -2,6 +2,7 @@ import express from "express";
 import db from "./config/db.js";
 import User from "./models/userModel.js";
 import { Request, Response } from "express";
+import swaggerDocs from "utilis/swagger.js";
 
 
 db.authenticate()
@@ -10,11 +11,11 @@ db.authenticate()
 const app =express()
 const port = 5000
 
-app.get('/',(req,res)=>{
+app.get('/',(req, res)=>{
     res.send('welcome to our project')
 })
 
-
+swaggerDocs(app, port);
 app.listen(port,()=>{
     console.log(`app is running on ${port}`)
 })
