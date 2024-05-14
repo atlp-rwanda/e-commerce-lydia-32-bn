@@ -2,8 +2,7 @@ import express from "express";
 import db from "./config/db.js";
 import User from "./models/userModel.js";
 import { Request, Response } from "express";
-import swaggerDocs from "utilis/swagger.js";
-
+import swaggerDocs from "./utilis/swagger.js";
 
 db.authenticate()
 .then((res) => console.log(`connected to database successfully`))
