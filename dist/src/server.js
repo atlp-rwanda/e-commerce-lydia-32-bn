@@ -1,3 +1,8 @@
+import express from "express";
+import db from "./config/db.js";
+db.authenticate()
+    .then((res) => console.log(`connected to database successfully`))
+    .catch((error) => console.log(error));
 import express from 'express';
 //import swaggerjsdoc from 'swagger-jsdoc';
 //import swaggerui from 'swagger-ui-express';
