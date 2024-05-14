@@ -1,4 +1,8 @@
-import express from 'express';
+import express from "express";
+import db from "./config/db.js";
+db.authenticate()
+    .then((res) => console.log(`connected to database successfully`))
+    .catch((error) => console.log(error));
 const app = express();
 const port = 5000;
 app.get('/', (req, res) => {

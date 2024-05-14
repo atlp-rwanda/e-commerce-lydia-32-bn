@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/db';
+import sequelize from '../config/db.js';
 class User extends Model {
     id;
     firstname;
@@ -47,36 +47,24 @@ User.init({
     usertype: {
         type: new DataTypes.STRING(128),
         allowNull: false,
-        unique: true,
     },
     street: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
-        unique: true,
     },
     city: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
-        unique: true,
     },
     state: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
-        unique: true,
     },
     postal_code: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
-        unique: true,
     },
     country: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
-        unique: true,
     },
     isAdmin: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
         defaultValue: false
     },
 }, {
