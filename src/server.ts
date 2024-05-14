@@ -8,10 +8,10 @@ db.authenticate()
 .then((res) => console.log(`connected to database successfully`))
 .catch((error) => console.log(error))
 const app =express()
-const port = 5000
+const port = 3000
 
 app.get('/',(req,res)=>{
-    res.send('welcome to our project')
+    res.send('welcome to cohort 32')
 })
 
 
