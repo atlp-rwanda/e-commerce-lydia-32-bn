@@ -7,12 +7,11 @@ services:
       dockerfile: Dockerfile.nodejs
     ports:
       - "5000:5000"
-    depends_on:
-      - database
+
 
   database:
     build:
       context: .
       dockerfile: Dockerfile.database
     ports:
-      - "3000:3000"
+      - "3000:4000"
