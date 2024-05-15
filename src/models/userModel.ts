@@ -1,6 +1,5 @@
-import { DataTypes, Model, Optional, BuildOptions } from 'sequelize';
-import sequelize from '../config/db.js'; 
-import { Sequelize } from "sequelize";
+import { DataTypes, Model, Optional, BuildOptions, Sequelize } from 'sequelize';
+import sequelize from '../config/db.js';
 
 interface UserAttributes {
   id: number;
@@ -24,22 +23,34 @@ interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'firstn
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
-  public firstname!: string;
-  public othername!: string;
-  public email!: string;
-  public phone!: string;
-  public password!: string;
-  public usertype!: string;
-  public street!: string;
-  public city!: string;
-  public state!: string;
-  public postal_code!: string;
-  public country!: string;
-  public isAdmin!: boolean;
 
+  public firstname!: string;
+
+  public othername!: string;
+
+  public email!: string;
+
+  public phone!: string;
+
+  public password!: string;
+
+  public usertype!: string;
+
+  public street!: string;
+
+  public city!: string;
+
+  public state!: string;
+
+  public postal_code!: string;
+
+  public country!: string;
+
+  public isAdmin!: boolean;
 
   // Timestamps
   public readonly createdAt!: Date;
+
   public readonly updatedAt!: Date;
 }
 
@@ -79,27 +90,25 @@ User.init(
     },
     city: {
       type: new DataTypes.STRING(128),
-
     },
     state: {
       type: new DataTypes.STRING(128),
-    }, 
+    },
     postal_code: {
       type: new DataTypes.STRING(128),
     },
     country: {
       type: new DataTypes.STRING(128),
-
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
     },
   },
   {
     tableName: 'users',
     sequelize, // passing the `sequelize` instance
-  }
+  },
 );
 
 export default User;

@@ -1,8 +1,8 @@
-
 import { Express, Request, Response } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import log from './logger.js';
+
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
@@ -118,8 +118,8 @@ const options: swaggerJsdoc.Options = {
         },
       ],
     },
-},
-    apis:['./src/server.ts','./src/routes/*.ts'],
+  },
+  apis: ['./src/server.ts', './src/routes/*.ts'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
@@ -133,7 +133,7 @@ function swaggerDocs(app: Express, port: number) {
   });
   app.use((req, res, next) => {
     const host = req.get('host');
-    const protocol = req.protocol;
+    const { protocol } = req;
     log.info(`Swagger docs available at ${protocol}://${host}/docs`);
     next();
   });
