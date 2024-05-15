@@ -1,2 +1,9 @@
-#!/usr/bin/env sh
-. "${0%/*}/h"
+#!/bin/sh
+
+# Run linting and formatting
+npm run lint:fix
+npm run format
+
+
+# If everything passes, allow the commit
+# If any of the commands fail, the commit will be aborted
