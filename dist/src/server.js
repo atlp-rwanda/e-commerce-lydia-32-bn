@@ -13,3 +13,4 @@ swaggerDocs(app, port);
 app.listen(port, () => {
     console.log(`app is running on ${port}`);
 });
+export default app;
