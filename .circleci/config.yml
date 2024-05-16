@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: cimg/node:21.7.2-browsers
-
     steps:
       - checkout
       - run:
@@ -11,27 +10,45 @@ jobs:
           command: 'echo Hello, World!'
       - run:
           name: Install Dependencies
-          command: npm install
+          command: yarn install --frozen-lockfile # Use Yarn to install dependencies
       - run:
           name: Build app
-          command: npm run build
+          command: yarn run build # Use Yarn to run build script
 
-  store_test_results:
+  test:
     docker:
       - image: cimg/node:21.7.2-browsers
-
     steps:
       - checkout
       - run:
           name: Install Dependencies
-          command: npm install
+          command: yarn install --frozen-lockfile # Use Yarn to install dependencies
+      - run:
+          name: Run Tests
+          command: yarn run test # Use Yarn to run tests (replace with your test command)
       - store_test_results:
           path: ~/project/test-results
           destination: test-results
+
+  store_test_results:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile # Use Yarn to install dependencies
+      - store_test_results:
+          path: ~/project/test-results
+          destination: test-results
+
 workflows:
   build_and_test:
     jobs:
       - build
-      - store_test_results:
+      - test:
           requires:
             - build
+      - store_test_results:
+          requires:
+            - test

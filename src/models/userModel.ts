@@ -1,6 +1,7 @@
-import { DataTypes, Model, Optional, BuildOptions } from 'sequelize';
-import sequelize from '../config/db.js'; 
-import { Sequelize } from "sequelize";
+import {
+  DataTypes, Model, Optional, BuildOptions
+} from 'sequelize';
+import sequelize from '../config/db.js';
 
 interface UserAttributes {
   id: number;
@@ -9,12 +10,13 @@ interface UserAttributes {
   email: string;
   phone: string;
   password: string;
-  usertype: string;
+  usertype: 'buyer' | 'seller';
   street: string;
   city: string;
   state: string;
   postal_code: string;
   country: string;
+  isverified: boolean;
   isAdmin: boolean;
 }
 
@@ -24,22 +26,36 @@ interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'firstn
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
-  public firstname!: string;
-  public othername!: string;
-  public email!: string;
-  public phone!: string;
-  public password!: string;
-  public usertype!: string;
-  public street!: string;
-  public city!: string;
-  public state!: string;
-  public postal_code!: string;
-  public country!: string;
-  public isAdmin!: boolean;
 
+  public firstname!: string;
+
+  public othername!: string;
+
+  public email!: string;
+
+  public phone!: string;
+
+  public password!: string;
+
+  public usertype!: 'buyer' | 'seller';
+
+  public street!: string;
+
+  public city!: string;
+
+  public state!: string;
+
+  public postal_code!: string;
+
+  public country!: string;
+
+  public isverified!: boolean;
+
+  public isAdmin!: boolean;
 
   // Timestamps
   public readonly createdAt!: Date;
+
   public readonly updatedAt!: Date;
 }
 
@@ -71,8 +87,8 @@ User.init(
       allowNull: false,
     },
     usertype: {
-      type: new DataTypes.STRING(128),
-      allowNull: false,
+      type: DataTypes.ENUM('buyer', 'seller'),
+      defaultValue: 'buyer'
     },
     street: {
       type: new DataTypes.STRING(128),
@@ -83,13 +99,17 @@ User.init(
     },
     state: {
       type: new DataTypes.STRING(128),
-    }, 
+    },
     postal_code: {
       type: new DataTypes.STRING(128),
     },
     country: {
       type: new DataTypes.STRING(128),
 
+    },
+    isverified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
