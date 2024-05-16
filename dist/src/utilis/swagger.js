@@ -20,12 +20,12 @@ const options = {
                 User: {
                     type: 'object',
                     properties: {
-                        FirstName: { type: 'string' },
-                        otherNames: { type: 'string' },
+                        firstname: { type: 'string' },
+                        othername: { type: 'string' },
                         email: { type: 'string' },
                         phone: { type: 'string' },
                         password: { type: 'string' },
-                        userType: { type: 'boolean' },
+                        usertype: { type: 'boolean' },
                         street: { type: 'string' },
                         city: { type: 'string' },
                         state: { type: 'string' },

@@ -4,7 +4,20 @@
 
 [<span style="color: black; font-weight: bold; font-size: x-large;">Swagger Documentation</span>](https://e-commerce-lydia-32-bn.onrender.com/docs)
 
-
 # Online marketplace interface
 
 This repository hosts an E-commerce API constructed with Node.js, Express.js, PostgreSQL, and Sequelize. It empowers users to execute a range of actions, including product, category, order, and user management, encompassing creation, modification, and deletion.
+
+### User Signup
+
+#### Endpoint: POST /api/register
+
+#### Description: This endpoint allows a new user to register. The user needs to provide their personal details and an email address. If the registration is successful, a verification email is sent to the user's email address.
+
+### Email Verification
+
+#### Endpoint: POST /api/verify
+
+#### Description: This endpoint allows a user to verify their email address. The user needs to provide a valid JWT token received in the verification email.
+
+#### Security: Bearer token

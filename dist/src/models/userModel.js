@@ -13,6 +13,7 @@ class User extends Model {
     state;
     postal_code;
     country;
+    isverified;
     isAdmin;
     // Timestamps
     createdAt;
@@ -45,8 +46,8 @@ User.init({
         allowNull: false,
     },
     usertype: {
-        type: new DataTypes.STRING(128),
-        allowNull: false,
+        type: DataTypes.ENUM('buyer', 'seller'),
+        defaultValue: 'buyer'
     },
     street: {
         type: new DataTypes.STRING(128),
@@ -62,6 +63,10 @@ User.init({
     },
     country: {
         type: new DataTypes.STRING(128),
+    },
+    isverified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     isAdmin: {
         type: DataTypes.BOOLEAN,
