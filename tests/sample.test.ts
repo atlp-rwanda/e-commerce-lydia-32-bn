@@ -3,6 +3,10 @@ import { expect } from 'chai';
 import app from '../src/server.js';
 
 describe('Sample unit test for Express Server', () => {
+  after(function() {
+  process.exit();
+});
+  
   it('should return welcome message on Get/', async () => {
     const res = await request(app).get('/');
     expect(res.status).to.equal(200);
