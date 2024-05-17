@@ -2,10 +2,12 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../src/server.js';
 
-describe('Sample unit test for Express Server', () => {
   after(function() {
   process.exit();
 });
+  
+
+describe('Sample unit test for Express Server', () => {
   
   it('should return welcome message on Get/', async () => {
     const res = await request(app).get('/');
