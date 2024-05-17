@@ -7,6 +7,8 @@
   "scripts": {
     "migrate": "sequelize-cli db:migrate --config=config/config.mjs",
     "undo:migrations": "sequelize-cli db:migrate:undo:all --config=config/config.mjs",
+    "seeds":"sequelize-cli db:seed:all --config=config/config.mjs",
+    "undo:seeds":"sequelize-cli db:seed:undo --config=config/config.mjs ",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
