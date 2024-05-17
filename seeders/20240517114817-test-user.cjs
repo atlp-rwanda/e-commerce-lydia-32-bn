@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Sample user data
+   
     const usersData = [
       {
         firstname: 'test',
