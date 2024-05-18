@@ -1,0 +1,9 @@
+{
+    "reporter": [
+      "html",
+      "text-summary"
+    ],
+    "exclude": [
+      "dist/tests/"
+    ]
+  }
