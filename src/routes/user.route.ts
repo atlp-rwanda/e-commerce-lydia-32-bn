@@ -1,6 +1,7 @@
 import express from 'express';
 import verifyToken from '../middleware/verfication.middleware.js';
 import { UserController } from '../controllers/registeruser.controller.js';
+import { loginByGoogle } from '../controllers/LoginUserByEmail.controller.js';
 
 export const usersRouter = express.Router();
 
@@ -75,3 +76,4 @@ usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
+usersRouter.post('/login',loginByGoogle)
