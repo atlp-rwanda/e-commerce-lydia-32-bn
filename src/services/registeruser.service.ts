@@ -41,8 +41,14 @@ export class userService {
 
   async updateUser(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
+    const validateUpdates = validateUserCreation(updates)
+
       const user = await User.findByPk(userId);
       if (user) {
+        if(validateUpdates.length > 0){
+          throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
+         
+        }
         await user.update(updates);
         return user.toJSON() as UserAttributes;
       }
