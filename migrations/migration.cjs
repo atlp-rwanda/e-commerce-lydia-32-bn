@@ -2,7 +2,12 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('users', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
       firstname: {
         type: new Sequelize.STRING(128),
         allowNull: false,
@@ -14,17 +19,18 @@ module.exports = {
       email: {
         type: new Sequelize.STRING(128),
         allowNull: false,
+        unique: true,
       },
       phone: {
         type: new Sequelize.STRING(128),
-        allowNull: false,
       },
       password: {
         type: new Sequelize.STRING(128),
         allowNull: false,
       },
       usertype: {
-        type: new Sequelize.STRING(128),
+        type: Sequelize.ENUM('buyer', 'seller'),
+        defaultValue: 'buyer',
         allowNull: false,
       },
       street: {
@@ -32,26 +38,38 @@ module.exports = {
       },
       city: {
         type: new Sequelize.STRING(128),
-  
       },
       state: {
         type: new Sequelize.STRING(128),
-      }, 
+      },
       postal_code: {
         type: new Sequelize.STRING(128),
       },
       country: {
         type: new Sequelize.STRING(128),
-  
+      },
+      isverified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       isAdmin: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('users');
   },
 };

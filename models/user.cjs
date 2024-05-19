@@ -20,19 +20,17 @@ export default (sequelize, DataTypes) => {
       },
       email: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
       },
       phone: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
       },
       password: {
         type: new DataTypes.STRING(128),
         allowNull: false,
       },
       usertype: {
-        type: new DataTypes.STRING(128),
-        allowNull: false,
+        type: DataTypes.ENUM('buyer', 'seller'),
+        defaultValue: 'buyer'
       },
       street: {
         type: new DataTypes.STRING(128),
