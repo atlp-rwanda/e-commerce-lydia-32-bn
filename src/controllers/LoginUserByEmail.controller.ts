@@ -6,7 +6,7 @@ import generateVerificationToken from '../utilis/generateToken.js';
 
 export const loginByGoogle= async (req:Request, res:Response) => {
 
-  const { accessToken, phone } = req.body;
+  const { accessToken} = req.body;
 
   try {
 
@@ -32,7 +32,7 @@ export const loginByGoogle= async (req:Request, res:Response) => {
         firstname: userName || 'DefaultFirstName',
         othername: userName || 'DefaultFirstName',
         email:getPayLoad?.email || 'default@example.com',
-        phone: phone,
+        phone: "",
         password: await bcrypt.hash(defaultPassword, 10),
         usertype: 'buyer' ,
         street: "",
@@ -43,8 +43,8 @@ export const loginByGoogle= async (req:Request, res:Response) => {
         isverified: false,
         isAdmin: false,
     });
-
-      const verificationToken = generateVerificationToken(res, NewUser.id, getPayLoad?.email, userName);
+    
+      const verificationToken = generateVerificationToken(res, NewUser.dataValues.id, NewUser.dataValues.email, NewUser.dataValues.firstname);
       const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`;
       const subject = 'Email Verification';
       const content = `
@@ -55,7 +55,7 @@ export const loginByGoogle= async (req:Request, res:Response) => {
         <p><strong>Important:</strong> For your security, please do not share this link with anyone.</p>
         <p>Best regards,</p>
       `;
-      sendVerificationToken(getPayLoad.email, subject, content);
+      sendVerificationToken(NewUser.dataValues.email, subject, content);
 
       return res.status(201).json({
         message: 'User created successfully. Please check your email to verify your account.',
@@ -63,11 +63,12 @@ export const loginByGoogle= async (req:Request, res:Response) => {
     }
 
   
-    if (!user.isverified) {
-      return res.status(401).json({ message: 'Please verify your email address to log in.' });
+    if (!user.dataValues.isverified) {
+       return res.status(401).json({ message: 'Please verify your email address to log in.'});
     }
 
-    generateVerificationToken(res, user.id, user.email, user.firstname)
+    
+    generateVerificationToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname)
 
     return res.status(200).json({message: "login successfully"});
   } catch (error) {
