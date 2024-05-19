@@ -77,5 +77,5 @@ usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
-usersRouter.post('/login', login);
+usersRouter.post('/login/user', login);
 
