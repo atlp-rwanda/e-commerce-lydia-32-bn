@@ -22,13 +22,11 @@ app.get('/', (req, res) => {
 app.use('/api', usersRouter);
 
 swaggerDocs(app, port);
-// app.listen(port,()=>{
-//     console.log(`app is running on ${port}`)
-// })
 
-export default app
-=======
+
+
 app.listen(port, () => {
   console.log(`app is running on http://localhost:${port}`);
 });
->>>>>>> aa01010 (ft: implement user signup and verify their email)
+
+export default app
