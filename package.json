@@ -23,7 +23,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-stage"
+      "pre-commit": ["eslint  --fix", "prettier --write", "npm test"]
     }
   },
   "author": "",
