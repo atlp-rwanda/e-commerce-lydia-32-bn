@@ -1,9 +1,9 @@
 version: 2.1
+
 jobs:
   build:
     docker:
       - image: cimg/node:21.7.2-browsers
-
     steps:
       - checkout
       - run:
@@ -11,27 +11,88 @@ jobs:
           command: 'echo Hello, World!'
       - run:
           name: Install Dependencies
-          command: npm install
+          command: yarn install --frozen-lockfile
       - run:
-          name: Build app
-          command: npm run build
+          name: Compile TypeScript
+          command: yarn run build
+      - store_artifacts:
+          path: dist   
 
-  store_test_results:
+  test:
     docker:
       - image: cimg/node:21.7.2-browsers
-
     steps:
       - checkout
       - run:
           name: Install Dependencies
-          command: npm install
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Compile TypeScript
+          command: yarn run build
+      - run:
+          name: Run Tests
+          command: ./node_modules/.bin/mocha dist/tests/**/*.test.js
       - store_test_results:
           path: ~/project/test-results
           destination: test-results
+      - store_artifacts:
+          path: dist/tests
+
+  coverage:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Compile TypeScript
+          command: yarn run build
+      - run:
+          name: Run Coverage
+          command: ./node_modules/.bin/nyc ./node_modules/.bin/mocha dist/tests/**/*.test.js
+      - run:
+          name: Verify Coverage Directory
+          command: ls -la .nyc_output
+      - store_artifacts:
+          path: coverage
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .nyc_output
+            - coverage
+
+  upload_coverage:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /home/circleci/project
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Compile TypeScript
+          command: yarn run build
+      - run:
+          name: Install Coveralls
+          command: yarn global add coveralls
+      - run:
+          name: Upload Coverage
+          command: ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
+
 workflows:
   build_and_test:
     jobs:
       - build
-      - store_test_results:
+      - test:
           requires:
             - build
+      - coverage:
+          requires:
+            - test
+      - upload_coverage:
+          requires:
+            - coverage

@@ -75,7 +75,7 @@ usersRouter.post('/register', UserController.createUser);
 usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', UserController.getAllUsers);
-usersRouter.put('/users/update//:id', UserController.updateUser);
+usersRouter.put('/users/update/:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login/user', login);
 
