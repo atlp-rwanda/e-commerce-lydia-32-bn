@@ -1,5 +1,6 @@
 import { validateUserCreation } from '../validations/registeruser.validation.js';
 import User from '../models/userModel.js';
+import { validateUserupdates } from '../validations/updatesValidation.js';
 export class userService {
     async createUser(userDetails) {
         const validationErrors = validateUserCreation(userDetails);
@@ -38,8 +39,12 @@ export class userService {
     }
     async updateUser(userId, updates) {
         try {
+            const validateUpdates = validateUserupdates(updates);
             const user = await User.findByPk(userId);
             if (user) {
+                if (validateUpdates.length > 0) {
+                    throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
+                }
                 await user.update(updates);
                 return user.toJSON();
             }
