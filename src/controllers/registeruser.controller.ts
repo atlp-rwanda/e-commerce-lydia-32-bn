@@ -125,7 +125,7 @@ class userController {
       
       const token = jwt.sign(
         { userId: user.id, email: user.email },
-        process.env.JWT_SECRET || '',
+        process.env.VERIFICATION_JWT_SECRET || '',
         { expiresIn: process.env.EXPIRATION_TIME },
       );
 
@@ -164,7 +164,7 @@ class userController {
       let decoded: any;
 
       try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET!);
+        decoded = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET!);
       } catch (error) {
         
         res.status(401).json({ error: 'Invalid or expired token. Please request a new verification email.' });
