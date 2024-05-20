@@ -2,30 +2,19 @@ import Joi from 'joi';
 // Joi schema for user creation
 const userCreationSchema = Joi.object({
     firstname: Joi.string().regex(/^[a-zA-Z]+$/).messages({
-        'string.pattern.base': 'First name must contain only letters.',
-        'any.required': 'First name is required.'
+        'string.pattern.base': 'First name must contain only letters.'
     }),
     othername: Joi.string().regex(/^[a-zA-Z]+$/).messages({
         'string.empty': 'Othername is required.',
-        'string.pattern.base': 'Othername must contain only letters.',
-        'any.required': 'Othername is required.'
+        'string.pattern.base': 'Othername must contain only letters.'
     }),
     email: Joi.string().email().messages({
         'string.email': 'Invalid email format.',
         'string.empty': 'Email is required.',
-        'any.required': 'Email is required.'
     }),
     phone: Joi.string().pattern(new RegExp('^[0-9]{10}$')).messages({
         'string.empty': 'Phone number is required.',
         'string.pattern.base': 'Phone number must be a valid 10-digit number.',
-        'any.required': 'Phone number is required.',
-    }),
-    password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])')).min(8)
-        .messages({
-        'string.empty': 'Password is required.',
-        'string.min': 'Password must be at least {#limit} characters long.',
-        'string.pattern.base': 'Password must contain at least one lowercase letter, one uppercase letter, one digit and be at least 8 characters long.',
-        'any.required': 'Password is required.'
     }),
     usertype: Joi.string().regex(/^[a-zA-Z]+$/).messages({
         'string.empty': 'Role is required.',
@@ -44,9 +33,6 @@ const userCreationSchema = Joi.object({
         'string.pattern.base': 'Role must contain only letters.',
     }),
     isAdmin: Joi.boolean().optional()
-});
-export const UserschemaValidate = Joi.object({
-    isAdmin: Joi.boolean()
 });
 export const validateUserupdates = (userData) => {
     const { error } = userCreationSchema.validate(userData, { abortEarly: false });

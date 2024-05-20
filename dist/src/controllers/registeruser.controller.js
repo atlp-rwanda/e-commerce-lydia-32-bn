@@ -105,4 +105,3 @@ class userController {
     };
 }
 export const UserController = new userController();
-

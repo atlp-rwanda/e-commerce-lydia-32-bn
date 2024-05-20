@@ -67,6 +67,28 @@ usersRouter.post('/register', UserController.createUser);
 usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', UserController.getAllUsers);
+/**
+ * @swagger
+ * /api/users/update/:id:
+ *   post:
+ *     summary: update user information
+ *     description: update personal information
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: User info updatede succesfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       '404':
+ *         description: User not found
+ *       '500':
+ *         description: Internal server error
+ */
 usersRouter.patch('/users/update/:id', verifyToken, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
-
