@@ -132,22 +132,6 @@ class userController {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     }
-    //       client.del(token, (err: Error | null, response: number) => {
-    //         if (err) {
-    //            res.status(500).json({ error: 'Internal Server Error' });
-    //            return;
-    //         }
-    //         if (response === 1) {
-    //           res.status(200).json({ message: 'Logout successful and token deleted' });
-    //         } else {
-    //           res.status(404).json({ error: 'Token not found' });
-    //         }
-    //       });
-    //     }
-    //     else{
-    //       res.status(404).json({error: 'No logged In user found !'});
-    //       return;
-    //     }
     else {
       res.status(404).json({ error: 'No logged In user found !' });
     }
