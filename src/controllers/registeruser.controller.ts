@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { UserService } from '../services/registeruser.service.js';
 import sendVerificationToken from '../helpers/sendEmail.js';
 import client from '../config/redisConfig.js';
+import { string } from 'joi';
 
 class userController {
   createUser = async (req: Request, res: Response): Promise<void> => {
@@ -115,21 +116,24 @@ class userController {
   logout = (req: Request, res: Response): void => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    if (!token){
-       return res.status(404).json({error: 'No logged In user found !'});
+    if (token){
+      client.del(token, (err: Error | null, response: number) => {
+        if (err) {
+           res.status(500).json({ error: 'Internal Server Error' });
+           return;
+        }
+        if (response === 1) {
+          res.status(200).json({ message: 'Logout successful and token deleted' });
+        } else {
+          res.status(404).json({ error: 'Token not found' });
+        }
+      });
     }
-    client.del(token, (err: Error | null, response: number) => {
-      if (err) {
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-      if (response === 1) {
-        res.status(200).json({ message: 'Logout successful and token deleted' });
-      } else {
-        res.status(404).json({ error: 'Token not found' });
-      }
-    });
-    res.status(200).json({ message: 'Logout successful' });
-  };
+    else{
+      res.status(404).json({error: 'No logged In user found !'});
+      return;
+    }
+}
 }
 
 export const UserController = new userController();
