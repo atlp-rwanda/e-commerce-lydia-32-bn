@@ -67,5 +67,14 @@ export class userService {
             throw new Error(`Error deleting user: ${error.message}`);
         }
     }
+    async getUserByEmail(email) {
+        try {
+            const user = await User.findOne({ where: { email } });
+            return user ? user.toJSON() : null;
+        }
+        catch (error) {
+            throw new Error(`Error fetching user: ${error.message}`);
+        }
+    }
 }
 export const UserService = new userService();

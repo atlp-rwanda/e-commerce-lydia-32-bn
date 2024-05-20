@@ -9,10 +9,6 @@ const userCreationSchema = Joi.object({
     'string.empty': 'Othername is required.',
     'string.pattern.base': 'Othername must contain only letters.'
   }),
-  email: Joi.string().email().messages({
-    'string.email': 'Invalid email format.',
-    'string.empty': 'Email is required.',
-  }),
   phone: Joi.string().pattern(new RegExp('^[0-9]{10}$')).messages({
     'string.empty': 'Phone number is required.',
     'string.pattern.base': 'Phone number must be a valid 10-digit number.',

@@ -86,7 +86,7 @@ class userController {
     try {
       const userId = parseInt(req.params.id, 10);
       const updates = req.body;
-      const { userId: _, ...validUpdates } = updates;
+      const { userId: _,email, ...validUpdates } = updates;
       const user = await UserService.updateUser(userId, validUpdates);
       if (user) {
         res.status(200).json({ message: 'User updated successfully:', user });
