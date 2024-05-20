@@ -3,6 +3,8 @@ import verifyToken from '../middleware/verfication.middleware.js';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
+import { blockUser } from '../controllers/userController/blockUser.controller.js';
+import {isBlocked }from '../middleware/isBlockedMiddleware.js';
 
 export const usersRouter = express.Router();
 
@@ -78,5 +80,6 @@ usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
-usersRouter.post('/login/user', login);
+usersRouter.post('/login/user',isBlocked, login);
 usersRouter.post('/login',loginByGoogle)
+usersRouter.put('/block/:id', blockUser)
