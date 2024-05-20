@@ -1,8 +1,11 @@
 import express from 'express';
 import verifyToken from '../middleware/verfication.middleware.js';
-import { UserController } from '../controllers/registeruser.controller.js';
+import { UserController } from '../controllers/userController/registeruser.controller.js';
+import { login } from '../controllers/userController/loginUser.js';
+import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 
 export const usersRouter = express.Router();
+
 
 /**
  * @swagger
@@ -98,3 +101,5 @@ usersRouter.get('/users', UserController.getAllUsers);
  */
 usersRouter.patch('/users/update/:id',verifyToken, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
+usersRouter.post('/login/user', login);
+usersRouter.post('/login',loginByGoogle)
