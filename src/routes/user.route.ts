@@ -80,3 +80,5 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login/user', login);
 usersRouter.post('/login',loginByGoogle)
+usersRouter.post('/forgot', UserController.forgotPassword);
+usersRouter.get('/reset', UserController.resetPassword);
