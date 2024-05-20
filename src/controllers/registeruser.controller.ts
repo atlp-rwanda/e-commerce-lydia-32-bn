@@ -110,6 +110,105 @@ class userController {
       res.status(500).json({ error: error.message });
     }
   };
+
+  forgotPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+      
+      const { email, phone } = req.body;
+
+      const user = await UserService.getUserByFields({ email, phone });
+
+      if (!user) {
+        res.status(401).json({ error: "the details you submitted do not match any user, please correct them or if you do not have an account, create a new one"});
+        return;
+      }
+      
+      const token = jwt.sign(
+        { userId: user.id, email: user.email },
+        process.env.JWT_SECRET || '',
+        { expiresIn: process.env.EXPIRATION_TIME },
+      );
+
+      const resetPasswordUrl = `${process.env.RESET_PASSWORD_URL}?token=${token}`;
+      
+      const subject = 'Request for password reset';
+
+      const content = `
+            <p>Hi ${user.firstname},</p>
+            <p>To reset your password please click the link below</p>
+            <p><a href="${resetPasswordUrl}">Reset password</a></p>
+            <p>If you did not try to reset your password, please ignore this email.</p>
+            <p><strong>Important:</strong> For your security, please do not share this link with anyone.</p>
+            <p>Best regards,</p>
+            `;
+
+
+      sendVerificationToken(user.email, subject, content);
+
+      res.status(200).json({ message: "the password reset process has been started, check your email to confirm and reset your password", resetPasswordUrl})
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+      
+      const token = req.query.token as string;
+        
+        if (!token) {
+          res.status(400).json({ error: 'Token is required to verify email.' });
+          return;
+        }
+      
+      let decoded: any;
+
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET!);
+      } catch (error) {
+        
+        res.status(401).json({ error: 'Invalid or expired token. Please request a new verification email.' });
+      }
+
+      const { userId, email } = decoded;
+
+      const user = await UserService.getUserByFields({ id: userId, email });
+
+      if (!user) {
+        res.status(400).json({ error: "That user doesn't exist, there was a problem with your password setting, please contact the admin"})
+
+        return;
+      }
+
+      const { password } = req.body
+
+      if (!password) {
+        res.status(400).json({ error: "Please input your password"})
+
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await UserService.updateUser(user.id, { password: hashedPassword });
+
+      const subject = 'Password Updated Successfully';
+
+      const content = `
+            <p>Hi ${user.firstname},</p>
+            <p>Your password has been updated upon your request</p>
+            <p><strong>Important:</strong> If you did not reset your password its a security risk, kindly contact the site adminstrator for assistance.</p>
+            <p>Best regards,</p>
+            `;
+
+
+      sendVerificationToken(user.email, subject, content);
+
+      res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 }
 
 export const UserController = new userController();
