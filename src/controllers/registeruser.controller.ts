@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
+
 import { UserService } from '../services/registeruser.service.js';
 import sendVerificationToken from '../helpers/sendEmail.js';
 import client from '../config/redisConfig.js';
@@ -113,27 +115,44 @@ class userController {
     }
   };
 
-  logout = (req: Request, res: Response): void => {
+  logout = async(req: Request, res: Response): Promise<void> => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (token){
-      client.del(token, (err: Error | null, response: number) => {
-        if (err) {
-           res.status(500).json({ error: 'Internal Server Error' });
-           return;
-        }
-        if (response === 1) {
-          res.status(200).json({ message: 'Logout successful and token deleted' });
-        } else {
-          res.status(404).json({ error: 'Token not found' });
-        }
-      });
+      const delAsync = promisify(client.del).bind(client);
+
+  try {
+    const response = await delAsync(token);
+    if (response === 1) {
+      res.status(200).json({ message: 'Logout successful and token deleted' });
+    } else {
+      res.status(404).json({ error: 'Token not found' });
     }
+  } catch (err) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+//       client.del(token, (err: Error | null, response: number) => {
+//         if (err) {
+//            res.status(500).json({ error: 'Internal Server Error' });
+//            return;
+//         }
+//         if (response === 1) {
+//           res.status(200).json({ message: 'Logout successful and token deleted' });
+//         } else {
+//           res.status(404).json({ error: 'Token not found' });
+//         }
+//       });
+//     }
+//     else{
+//       res.status(404).json({error: 'No logged In user found !'});
+//       return;
+//     }
     else{
-      res.status(404).json({error: 'No logged In user found !'});
-      return;
-    }
-}
-}
+        res.status(404).json({error: 'No logged In user found !'});
+        return;
+       }
+      }
+  }
 
 export const UserController = new userController();
