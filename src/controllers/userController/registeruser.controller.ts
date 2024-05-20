@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserService } from '../services/registeruser.service.js';
-import sendVerificationToken from '../helpers/sendEmail.js';
+import { UserService } from '../../services/registeruser.service.js';
+import sendVerificationToken from '../../helpers/sendEmail.js';
 
 class userController {
   createUser = async (req: Request, res: Response): Promise<void> => {

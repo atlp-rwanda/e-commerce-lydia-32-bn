@@ -1,8 +1,8 @@
 import { Response, Request } from 'express';
-import User from '../models/userModel.js';
+import User from '../../models/userModel.js';
 import bcrypt from 'bcrypt'
-import sendVerificationToken from '../helpers/sendEmail.js';
-import generateVerificationToken from '../utilis/generateToken.js';
+import sendVerificationToken from '../../helpers/sendEmail.js';
+import generateVerificationToken from '../../utilis/generateToken.js';
 import jwt from 'jsonwebtoken'
 
 export const loginByGoogle= async (req:Request, res:Response) => {
