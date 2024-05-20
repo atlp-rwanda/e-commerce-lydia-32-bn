@@ -10,10 +10,10 @@ jobs:
           command: 'echo Hello, World!'
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile # Use Yarn to install dependencies
+          command: yarn install --frozen-lockfile
       - run:
           name: Build app
-          command: yarn run build # Use Yarn to run build script
+          command: yarn run build 
 
   test:
     docker:
@@ -22,25 +22,44 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile # Use Yarn to install dependencies
+          command: yarn install --frozen-lockfile 
       - run:
           name: Run Tests
-          command: yarn run test # Use Yarn to run tests (replace with your test command)
+          command: yarn test
       - store_test_results:
           path: ~/project/test-results
           destination: test-results
+      - store_artifacts:
+          path: coverage 
 
-  store_test_results:
+  coverage:
     docker:
       - image: cimg/node:21.7.2-browsers
     steps:
       - checkout
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile # Use Yarn to install dependencies
-      - store_test_results:
-          path: ~/project/test-results
-          destination: test-results
+          command: yarn install --frozen-lockfile 
+      - run:
+          name: Run Coverage
+          command: yarn coverage 
+      - store_artifacts:
+          path: coverage 
+
+  upload_coverage:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+    steps:
+      - checkout
+      - run:
+          name: Set Coveralls Token
+          command: echo "COVERALLS_REPO_TOKEN=yFiUuLrLceZ1GW1pZr3RpGSHb2nSPtQsI" >> $HOME/.bashrc
+      - run:
+          name: Install Coveralls
+          command: yarn global add coveralls
+      - run:
+          name: Upload Coverage
+          command: yarn coveralls 
 
 workflows:
   build_and_test:
@@ -49,6 +68,9 @@ workflows:
       - test:
           requires:
             - build
-      - store_test_results:
+      - coverage:
           requires:
             - test
+      - upload_coverage:
+          requires:
+            - coverage

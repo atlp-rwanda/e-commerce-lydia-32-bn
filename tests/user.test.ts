@@ -1,6 +1,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import request from 'supertest';
+import nodemailer from 'nodemailer';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import app from '../src/server.js'; // Adjust the path to your app
@@ -17,6 +18,10 @@ describe('User Controller', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    const mockTransporter = {
+      sendMail: sinon.stub().resolves({ response: 'Mock email sent' }),
+    };  
+    sandbox.stub(nodemailer, 'createTransport').returns(mockTransporter);
   });
 
   afterEach(() => {
@@ -27,16 +32,20 @@ describe('User Controller', () => {
 
   describe('Create user', () => {
     it('should create a new user and send verification email', async () => {
-      const user = { id: 1, email: 'test@example.com', firstname: 'John', password: 'hashedpassword' };
+      const user = { firstname: 'John', othername: 'Doe', email: 'JohnDoe@example.com', password: 'hashedpassword' };
       sandbox.stub(UserService, 'createUser').resolves(user);
-      sandbox.stub(UserService, 'sendVerificationToken').resolves();
-
+      const sendVerificationTokenStub = sandbox.stub(UserService, 'sendVerificationToken').resolves();
+  
       const res = await request(app)
         .post('/api/register')
-        .send({ email: 'test@example.com', password: 'password123', firstname: 'John' });
-
+        .send({ email: user.email, password: user.password, firstname: user.firstname });
+  
+        expect(sendVerificationTokenStub).to.have.been.calledOnce;
+        expect(sendVerificationTokenStub).to.have.been.calledWithExactly('JohnDoe@example.com', 'Email Verification', sinon.match.string);
+  
+      
       expect(res.status).to.equal(201);
-      expect(res.body).to.have.property('message', 'Signup was successfull, Verification Email sent');
+      expect(res.body).to.have.property('message', 'Signup was successful, Verification Email sent');
       expect(res.body).to.have.property('token');
     });
   });
@@ -46,6 +55,7 @@ describe('User Controller', () => {
       const user = { id: 1, email: 'test@example.com', firstname: 'John', isverified: false };
       sandbox.stub(UserService, 'getUserById').resolves(user);
       sandbox.stub(UserService, 'updateUser').resolves({ ...user, isverified: true });
+      
 
       const res = await request(app)
         .post('/api/verify')
