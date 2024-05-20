@@ -2,6 +2,7 @@ import { validateUserCreation } from '../validations/registeruser.validation.js'
 import User from '../models/userModel.js';
 import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
+import { Op } from 'sequelize'; // Import Op from sequelize
 import { validateUserupdates } from '../validations/updatesValidation.js'
 
 
@@ -74,6 +75,23 @@ export class userService {
     }
   }
 
+
+  // New method to get a user by specific fields
+  async getUserByFields(fields: Partial<UserAttributes>): Promise<UserAttributes | null> {
+    try {
+      const user = await User.findOne({
+        where: {
+          [Op.and]: fields
+        },
+        attributes: { exclude: ['password'] }
+      });
+      return user ? (user.toJSON() as UserAttributes) : null;
+    } catch (error: any) {
+      throw new Error(`Error fetching user: ${error.message}`);
+    }
+  }
+ 
+   // useless method to get user by email but modified the above to accept any field
   async getUserByEmail(email: string): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({ where: { email } });
