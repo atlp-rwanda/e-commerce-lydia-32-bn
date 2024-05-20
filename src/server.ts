@@ -4,6 +4,7 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import User from './models/userModel.js';
 import { usersRouter } from './routes/user.route.js';
+import { productRouter} from './routes/productRoutes.js';
 
 dotenv.config();
 
@@ -19,7 +20,8 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
-app.use('/api', usersRouter);
+app.use('/api', usersRouter,productRouter);
+
 
 swaggerDocs(app, port);
 app.listen(port, () => {
