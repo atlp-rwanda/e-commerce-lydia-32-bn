@@ -122,6 +122,11 @@ class userController {
         res.status(401).json({ error: "the details you submitted do not match any user, please correct them or if you do not have an account, create a new one"});
         return;
       }
+
+      if (!user.isverified) {
+        res.status(401).json({ error: 'User is not verified' });
+        return;
+      }
       
       const token = jwt.sign(
         { userId: user.id, email: user.email },
