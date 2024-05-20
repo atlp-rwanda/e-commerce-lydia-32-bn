@@ -3,10 +3,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 
+import { string } from 'joi';
 import { UserService } from '../services/registeruser.service.js';
 import sendVerificationToken from '../helpers/sendEmail.js';
 import client from '../config/redisConfig.js';
-import { string } from 'joi';
 
 class userController {
   createUser = async (req: Request, res: Response): Promise<void> => {
@@ -115,44 +115,43 @@ class userController {
     }
   };
 
-  logout = async(req: Request, res: Response): Promise<void> => {
-    const authHeader = req.headers['authorization'];
+  logout = async (req: Request, res: Response): Promise<void> => {
+    const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
-    if (token){
+    if (token) {
       const delAsync = promisify(client.del).bind(client);
 
-  try {
-    const response = await delAsync(token);
-    if (response === 1) {
-      res.status(200).json({ message: 'Logout successful and token deleted' });
-    } else {
-      res.status(404).json({ error: 'Token not found' });
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-}
-//       client.del(token, (err: Error | null, response: number) => {
-//         if (err) {
-//            res.status(500).json({ error: 'Internal Server Error' });
-//            return;
-//         }
-//         if (response === 1) {
-//           res.status(200).json({ message: 'Logout successful and token deleted' });
-//         } else {
-//           res.status(404).json({ error: 'Token not found' });
-//         }
-//       });
-//     }
-//     else{
-//       res.status(404).json({error: 'No logged In user found !'});
-//       return;
-//     }
-    else{
-        res.status(404).json({error: 'No logged In user found !'});
-        return;
-       }
+      try {
+        const response = await delAsync(token);
+        if (response === 1) {
+          res.status(200).json({ message: 'Logout successful and token deleted' });
+        } else {
+          res.status(404).json({ error: 'Token not found' });
+        }
+      } catch (err) {
+        res.status(500).json({ error: 'Internal Server Error' });
       }
-  }
+    }
+    //       client.del(token, (err: Error | null, response: number) => {
+    //         if (err) {
+    //            res.status(500).json({ error: 'Internal Server Error' });
+    //            return;
+    //         }
+    //         if (response === 1) {
+    //           res.status(200).json({ message: 'Logout successful and token deleted' });
+    //         } else {
+    //           res.status(404).json({ error: 'Token not found' });
+    //         }
+    //       });
+    //     }
+    //     else{
+    //       res.status(404).json({error: 'No logged In user found !'});
+    //       return;
+    //     }
+    else {
+      res.status(404).json({ error: 'No logged In user found !' });
+    }
+  };
+}
 
 export const UserController = new userController();

@@ -29,11 +29,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const token = jwt.sign(
       { userId: user.id, email: user.email, firstname: user.firstname },
-      process.env.JWT_SECRET || 'default_secret', 
-      { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' }, 
+      process.env.JWT_SECRET || 'default_secret',
+      { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' },
     );
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: 'Login successful', token });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

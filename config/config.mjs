@@ -11,7 +11,6 @@ const config = {
     host: process.env.DB_HOST || '127.0.0.1',
     dialect: 'postgres',
   },
- 
 };
 
 export default config[env];

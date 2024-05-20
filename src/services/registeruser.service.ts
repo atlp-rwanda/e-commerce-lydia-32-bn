@@ -68,12 +68,11 @@ export class userService {
   async getUserByEmail(email: string): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({ where: { email } });
-      return user ? user.toJSON() as UserAttributes : null;
+      return user ? (user.toJSON() as UserAttributes) : null;
     } catch (error: any) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
 }
-
 
 export const UserService = new userService();

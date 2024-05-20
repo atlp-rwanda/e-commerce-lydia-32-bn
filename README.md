@@ -8,36 +8,46 @@
 
 This repository hosts an E-commerce API constructed with Node.js, Express.js, PostgreSQL, and Sequelize. It empowers users to execute a range of actions, including product, category, order, and user management, encompassing creation, modification, and deletion.
 
-Database Migration
-------------------
+## Database Migration
 
 1.Create migration file:
+
 ```
 npx sequelize-cli migration:create --name <file-name>
 ```
+
 2.Run Sequelize migration:
+
 ```
 yarn run migrate
 ```
+
 3.Undo migration:
+
 ```
 yarn run undo:migrations
 ```
 
 5.you can edit schema by editing migration file or by using seeders
 
-* Create Seed file:
+- Create Seed file:
+
 ```
 npx sequelize-cli seed:generate --name <name>
 ```
-* Running seeds
+
+- Running seeds
+
 ```
 yarn run seeds
 ```
-* Undoing seeds
+
+- Undoing seeds
+
 ```
 yarn run undo:seeds
 ```
+
 ### User Signup
 
 #### Endpoint: POST /api/register

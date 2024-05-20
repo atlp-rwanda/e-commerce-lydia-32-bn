@@ -1,7 +1,7 @@
-import db from './config/db.js';
-import swaggerDocs from './utilis/swagger.js';
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
+import db from './config/db.js';
+import swaggerDocs from './utilis/swagger.js';
 import User from './models/userModel.js';
 import { usersRouter } from './routes/user.route.js';
 
