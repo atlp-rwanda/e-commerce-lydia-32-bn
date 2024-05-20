@@ -75,3 +75,22 @@ usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
+
+/**
+ * @swagger
+ * /users/logout:
+ *   post:
+ *     summary: Logout
+ *     description: Logging out already logged in user
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Logout Success
+ *       '404':
+ *         description: No logged In User Found !
+ *       '500':
+ *         description: Internal server error
+ */
+usersRouter.post('/users/logout', UserController.logout);

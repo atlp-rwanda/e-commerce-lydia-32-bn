@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../services/registeruser.service.js';
 import sendVerificationToken from '../helpers/sendEmail.js';
+import client from '../config/redisConfig.js';
 
 class userController {
   createUser = async (req: Request, res: Response): Promise<void> => {
@@ -109,6 +110,25 @@ class userController {
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
+  };
+
+  logout = (req: Request, res: Response): void => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token){
+       return res.status(404).json({error: 'No logged In user found !'});
+    }
+    client.del(token, (err: Error | null, response: number) => {
+      if (err) {
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+      if (response === 1) {
+        res.status(200).json({ message: 'Logout successful and token deleted' });
+      } else {
+        res.status(404).json({ error: 'Token not found' });
+      }
+    });
+    res.status(200).json({ message: 'Logout successful' });
   };
 }
 
