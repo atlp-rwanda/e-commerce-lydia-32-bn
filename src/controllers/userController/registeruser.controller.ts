@@ -114,9 +114,9 @@ class userController {
   forgotPassword = async (req: Request, res: Response): Promise<void> => {
     try {
       
-      const { email, phone } = req.body;
+      const { email } = req.body;
 
-      const user = await UserService.getUserByFields({ email, phone });
+      const user = await UserService.getUserByFields({ email });
 
       if (!user) {
         res.status(401).json({ error: "the details you submitted do not match any user, please correct them or if you do not have an account, create a new one"});
