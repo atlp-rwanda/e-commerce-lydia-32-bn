@@ -66,6 +66,7 @@ export class userService {
     }
   }
 
+
   // New method to get a user by specific fields
   async getUserByFields(fields: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
@@ -80,6 +81,17 @@ export class userService {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
+ 
+   // useless method to get user by email but modified the above to accept any field
+  async getUserByEmail(email: string): Promise<UserAttributes | null> {
+    try {
+      const user = await User.findOne({ where: { email } });
+      return user ? user.toJSON() as UserAttributes : null;
+    } catch (error: any) {
+      throw new Error(`Error fetching user: ${error.message}`);
+    }
+  }
 }
+
 
 export const UserService = new userService();

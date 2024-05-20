@@ -80,11 +80,10 @@ User.init(
     },
     phone: {
       type: new DataTypes.STRING(128),
-      allowNull: false,
     },
     password: {
       type: new DataTypes.STRING(128),
-      allowNull: false,
+      allowNull: true,
     },
     usertype: {
       type: DataTypes.ENUM('buyer', 'seller'),
