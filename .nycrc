@@ -1,9 +1,5 @@
 {
-    "reporter": [
-      "html",
-      "text-summary"
-    ],
-    "exclude": [
-      "dist/tests/"
-    ]
-  }
+  "reporter": ["text", "html"],
+  "report-dir": "coverage",
+  "all": true
+}
