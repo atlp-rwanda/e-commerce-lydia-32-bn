@@ -50,14 +50,129 @@ yarn run undo:seeds
 
 ### User Signup
 
-#### Endpoint: POST /api/register
+#### Endpoint: `POST /api/register`
 
-#### Description: This endpoint allows a new user to register. The user needs to provide their personal details and an email address. If the registration is successful, a verification email is sent to the user's email address.
+#### Description:
+
+This endpoint allows a new user to register by providing their personal details, including an email address. If the registration is successful, a verification email is sent to the user's email address.
+
+#### Request Body:
+
+```json
+{
+  "firstname": "John",
+  "othername": "Doe",
+  "email": "john.doe@example.com",
+  "phone": "1234567890",
+  "password": "StrongPass123",
+  "usertype": "buyer",
+  "street": "123 Main St",
+  "city": "Anytown",
+  "state": "Anystate",
+  "postal_code": "12345",
+  "country": "Anycountry"
+}
+```
+
+#### Responses:
+
+. 201 Created:
+
+```json
+{
+  "message": "Signup was successful, Verification Email sent"
+}
+```
 
 ### Email Verification
 
 #### Endpoint: POST /api/verify
 
-#### Description: This endpoint allows a user to verify their email address. The user needs to provide a valid JWT token received in the verification email.
+#### Description:
 
-#### Security: Bearer token
+This endpoint allows a user to verify their email address by providing a valid JWT token received in the verification email.
+
+#### Responses:
+
+200 OK:
+
+```json
+{
+  "message": "User verified successfully"
+}
+```
+
+#### 400 Bad Request:
+
+```json
+{
+  "error": "User is already verified"
+}
+```
+
+#### 500 Internal Server Error:
+
+```json
+{
+  "error": "Internal server error message"
+}
+```
+
+#### Security:
+
+Bearer token is required in the Authorization header.
+
+### User Retrieval
+
+#### Endpoint: GET /api/user/{userId}
+
+#### Description:
+
+This endpoint allows retrieving user details by their user ID.
+
+#### Parameters:
+
+userId: The unique identifier of the user to retrieve.
+
+#### Responses:
+
+#### 200 OK:
+
+```json
+{
+  "message": "User Retrieved successfully",
+  "user": {
+    "id": 1,
+    "firstname": "John",
+    "othername": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "1234567890",
+    "usertype": "buyer",
+    "street": "123 Main St",
+    "city": "Anytown",
+    "state": "Anystate",
+    "postal_code": "12345",
+    "country": "Anycountry",
+    "isverified": true,
+    "isAdmin": false,
+    "createdAt": "2024-05-20T12:00:00Z",
+    "updatedAt": "2024-05-20T12:00:00Z"
+  }
+}
+```
+
+#### 404 Not Found:
+
+```json
+{
+  "error": "User not found"
+}
+```
+
+#### 500 Internal Server Error:
+
+```json
+{
+  "error": "Internal server error message"
+}
+```

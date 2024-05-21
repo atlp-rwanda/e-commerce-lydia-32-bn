@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import db from './config/db.js';
 import swaggerDocs from './utilis/swagger.js';
@@ -11,6 +12,10 @@ db.authenticate()
   .then((res) => console.log('connected to database successfully'))
   .catch((error) => console.log(error));
 const app = express();
+
+// Use cookie-parser middleware
+app.use(cookieParser());
+
 app.use(express.json());
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
