@@ -8,22 +8,11 @@ import {isBlocked }from '../middleware/isBlockedMiddleware.js';
 
 export const usersRouter = express.Router();
 
-
 /**
  * @swagger
  * tags:
  *   name: Users
  *   description: User management
- */
-
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     BearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
  */
 
 /**
@@ -56,8 +45,6 @@ usersRouter.post('/register', UserController.createUser);
  *     summary: Email Verification
  *     description: Verify user email
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: User verified successfully
