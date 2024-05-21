@@ -1,5 +1,6 @@
 import { validateUserCreation } from '../validations/registeruser.validation.js';
 import User from '../models/userModel.js';
+import { Op } from 'sequelize'; // Import Op from sequelize
 import { validateUserupdates } from '../validations/updatesValidation.js';
 export class userService {
     async createUser(userDetails) {
@@ -42,6 +43,9 @@ export class userService {
             const validateUpdates = validateUserupdates(updates);
             const user = await User.findByPk(userId);
             if (user) {
+                if (!user.isverified) {
+                    throw new Error(`user not verified`);
+                }
                 if (validateUpdates.length > 0) {
                     throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
                 }
@@ -67,6 +71,22 @@ export class userService {
             throw new Error(`Error deleting user: ${error.message}`);
         }
     }
+    // New method to get a user by specific fields
+    async getUserByFields(fields) {
+        try {
+            const user = await User.findOne({
+                where: {
+                    [Op.and]: fields
+                },
+                attributes: { exclude: ['password'] }
+            });
+            return user ? user.toJSON() : null;
+        }
+        catch (error) {
+            throw new Error(`Error fetching user: ${error.message}`);
+        }
+    }
+    // useless method to get user by email but modified the above to accept any field
     async getUserByEmail(email) {
         try {
             const user = await User.findOne({ where: { email } });
