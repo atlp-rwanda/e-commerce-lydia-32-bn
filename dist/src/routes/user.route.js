@@ -3,16 +3,13 @@ import verifyToken from '../middleware/verfication.middleware.js';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
-
 export const usersRouter = express.Router();
-
 /**
  * @swagger
  * tags:
  *   name: Users
  *   description: User management
  */
-
 /**
  * @swagger
  * /api/register:
@@ -35,7 +32,6 @@ export const usersRouter = express.Router();
  *               $ref: '#/components/schemas/User'
  */
 usersRouter.post('/register', UserController.createUser);
-
 /**
  * @swagger
  * /api/verify:
@@ -59,7 +55,6 @@ usersRouter.post('/register', UserController.createUser);
  *       '500':
  *         description: Internal server error
  */
-
 usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', UserController.getAllUsers);
@@ -86,7 +81,7 @@ usersRouter.get('/users', UserController.getAllUsers);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.patch('/users/update/:id',verifyToken, UserController.updateUser);
+usersRouter.patch('/users/update/:id', verifyToken, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login/user', login);
 usersRouter.post('/login', loginByGoogle);
