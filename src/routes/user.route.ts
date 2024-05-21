@@ -92,3 +92,4 @@ usersRouter.post('/login/user', login);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
+usersRouter.post('/changepassword/:id',UserController.changePassword)

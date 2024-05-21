@@ -3,7 +3,8 @@ import User from '../models/userModel.js';
 import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
 import { Op } from 'sequelize'; // Import Op from sequelize
-import { validateUserupdates } from '../validations/updatesValidation.js'
+import {passwordValidation,  validateUserupdates } from '../validations/updatesValidation.js'
+import bcrypt from 'bcrypt'
 
 
 export class userService {
@@ -102,6 +103,30 @@ export class userService {
     } catch (error: any) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
+  }
+  async changePassword(userId:number,oldPassword:string,newPassword:string){
+  try{
+    const isValidated = passwordValidation.validate({password:newPassword})
+    const user = await User.findByPk(userId)
+    if(user){
+      const match = await bcrypt.compare(oldPassword, user.password)
+    if(match){ 
+      
+      if(isValidated.error){
+        throw new Error(`Validation:${isValidated.error.message}`)
+        
+      }
+      await user.update({password:newPassword})
+     return ({code:200,message:"password changed successfully"})
+    }
+  }
+  return ({code:401,message:"Incorrect old password"})
+  
+
+}
+catch(error:any){
+  throw new Error(`failed to change password:${error.message}`)
+}
   }
 }
 

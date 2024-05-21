@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
+import bcrypt, { genSalt } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import generateToken from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
+import { error } from 'console';
+
 
 class userController {
   createUser = async (req: Request, res: Response): Promise<Response> => {
@@ -120,7 +122,6 @@ class userController {
       const user = await UserService.updateUser(userId, validUpdates);
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
-        res.status(200).json({ message: 'User updated successfully:', user });
       } else {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -128,7 +129,24 @@ class userController {
       return res.status(500).json({ error: error.message });
     }
   };
-
+   changePassword = async (req:Request, res:Response) => {
+    try{
+      const userId = parseInt(req.params.id,10)
+     const salt = await genSalt(10)
+      const { newPassword, oldPassword } = req.body
+      const hashedPassword = await bcrypt.hash(newPassword,salt)
+      const user = await UserService.changePassword(userId,oldPassword,hashedPassword)
+      if(user) {
+        res.status(user.code).json({message:user.message})
+      }
+      else{
+      res.status(500).json({error:"user not found"})
+      }
+    }
+    catch(error:any){
+      res.status(500).json({error:error.message})
+    }
+   }
   deleteUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
