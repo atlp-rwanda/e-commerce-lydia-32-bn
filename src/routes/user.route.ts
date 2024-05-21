@@ -1,27 +1,16 @@
 import express from 'express';
 import verifyToken from '../middleware/verfication.middleware.js';
-import { UserController } from '../controllers/registeruser.controller.js';
-import { login } from '../controllers/loginUser.js';
-import { loginByGoogle } from '../controllers/LoginUserByEmail.controller.js';
+import { UserController } from '../controllers/userController/registeruser.controller.js';
+import { login } from '../controllers/userController/loginUser.js';
+import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 
 export const usersRouter = express.Router();
-
 
 /**
  * @swagger
  * tags:
  *   name: Users
  *   description: User management
- */
-
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     BearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
  */
 
 /**
@@ -54,8 +43,6 @@ usersRouter.post('/register', UserController.createUser);
  *     summary: Email Verification
  *     description: Verify user email
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: User verified successfully
@@ -79,4 +66,6 @@ usersRouter.get('/users', UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login/user', login);
-usersRouter.post('/login',loginByGoogle)
+usersRouter.post('/login', loginByGoogle);
+usersRouter.post('/forgot', UserController.forgotPassword);
+usersRouter.get('/reset', UserController.resetPassword);

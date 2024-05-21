@@ -1,7 +1,7 @@
-import { Product, ProductCreationAttributes } from '../models/productModel.js';
+import Product from '../models/productModel.js';
 
 export class ProductService {
-  async createProduct(productDetails: ProductCreationAttributes): Promise<Product> {
+  async createProduct(productDetails: Product): Promise<Product> {
     try {
       const product = await Product.create(productDetails);
       return product;

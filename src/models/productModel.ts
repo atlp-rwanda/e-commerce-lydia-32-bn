@@ -1,7 +1,6 @@
-import { DataTypes, Model, Optional,Sequelize } from 'sequelize';
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import sequelize from '../config/db.js';
-import User from '../models/userModel.js'
-
+import User from '../models/userModel.js';
 
 interface ProductAttributes {
   productId: number;
@@ -11,14 +10,13 @@ interface ProductAttributes {
   productCategory: string;
   price: number;
   quantity: number;
-  images: string[];
+  images: string;
   dimensions?: string;
   isAvailable?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-// Define a type for creation attributes that omits productId and other optional fields
 export interface ProductCreationAttributes extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt'> {}
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
@@ -29,7 +27,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
   public productCategory!: string;
   public price!: number;
   public quantity!: number;
-  public images: string[] = [];
+  public images!: string;
   public dimensions?: string;
   public isAvailable?: boolean;
   public createdAt!: Date;
@@ -48,7 +46,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
           primaryKey: true,
         },
         userId: {
-          type: DataTypes.INTEGER,
+          type: new DataTypes.INTEGER,
           allowNull: false,
           references: {
             model: 'users',
@@ -58,58 +56,56 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
           onUpdate: 'SET NULL',
         },
         productName: {
-          type: DataTypes.STRING(128),
+          type: new DataTypes.STRING(128),
           allowNull: false,
         },
         description: {
-          type: DataTypes.TEXT,
+          type: new DataTypes.TEXT,
           allowNull: false,
         },
         productCategory: {
-          type: DataTypes.STRING(128),
+          type: new DataTypes.STRING(128),
           allowNull: false,
         },
         price: {
-          type: DataTypes.FLOAT,
+          type: new DataTypes.FLOAT,
           allowNull: false,
         },
         quantity: {
-          type: DataTypes.INTEGER,
+          type: new DataTypes.INTEGER,
           allowNull: false,
         },
         images: {
-          type: DataTypes.ARRAY(DataTypes.STRING),
+          type: new DataTypes.STRING,
           allowNull: false,
-          validate: {
-          len: [4, 8], 
-            },
+          get() {
+            const value = this.getDataValue('images');
+            return value ? value.split(',') : [];
+          },
+          set(val: string | string[]) {
+            if (Array.isArray(val)) {
+              this.setDataValue('images', val.join(','));
+            } else {
+              this.setDataValue('images', val);
+            }
+          },
         },
-        dimensions: { 
-        type: DataTypes.STRING(128),
+        dimensions: {
+          type: new DataTypes.STRING(128),
         },
         isAvailable: {
-          type: DataTypes.BOOLEAN,
+          type: new DataTypes.BOOLEAN,
           defaultValue: true,
-        },
-        createdAt: {
-          type: DataTypes.DATE,
-          allowNull: false,
-          defaultValue: DataTypes.NOW,
-        },
-        updatedAt: {
-          type: DataTypes.DATE,
-          allowNull: false,
-          defaultValue: DataTypes.NOW,
         },
       },
       {
         sequelize,
         modelName: 'Product',
         tableName: 'products',
-        timestamps: true,
       }
     );
   }
 }
 
-export  {Product};
+Product.initialize(sequelize);
+export default Product;

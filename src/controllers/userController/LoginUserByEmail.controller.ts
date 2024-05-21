@@ -1,8 +1,9 @@
 import { Response, Request } from 'express';
-import User from '../models/userModel.js';
+import User from '../../models/userModel.js';
 import bcrypt from 'bcrypt'
-import sendVerificationToken from '../helpers/sendEmail.js';
-import generateVerificationToken from '../utilis/generateToken.js';
+import sendVerificationToken from '../../helpers/sendEmail.js';
+import generateVerificationToken from '../../utilis/generateToken.js';
+import jwt from 'jsonwebtoken'
 
 export const loginByGoogle= async (req:Request, res:Response) => {
 
@@ -65,7 +66,12 @@ export const loginByGoogle= async (req:Request, res:Response) => {
 
   
     if (!user.dataValues.isverified) {
-       return res.status(401).json({ message: 'Please verify your email address to log in.'});
+       return res.status(401).json({ 
+        message: 'Please verify your email address to log in.',
+        token : jwt.sign({userId:user.dataValues.id, email:user.dataValues.email, firstname:user.dataValues.firstname}, process.env.VERIFICATION_JWT_SECRET || '', {
+          expiresIn: '3d'
+      })
+      });
     }
 
     
