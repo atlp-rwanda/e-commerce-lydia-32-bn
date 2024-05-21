@@ -1,5 +1,5 @@
 import express from "express";
-import { ProductControllerInstance } from "../controllers/productController.js";
+import { ProductControllerInstance } from "../controllers/productController/productController.js";
 import verifyToken from '../middleware/verfication.middleware.js';
 
 

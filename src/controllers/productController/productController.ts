@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
-import Product from '../models/productModel.js';
-import { ProductService } from '../services/product.service.js';
-import { userService } from '../services/registeruser.service.js';
-import { productSchema } from '../validations/product.validation.js';
+import Product from '../../models/productModel.js';
+import { ProductService } from '../../services/product.service.js';
+import { userService } from '../../services/registeruser.service.js';
+import { productSchema } from '../../validations/product.validation.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 interface ProductDetails {
