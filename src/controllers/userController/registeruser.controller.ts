@@ -3,111 +3,140 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
+import generateToken from '../../utilis/generateToken.js';
+import { validateUserCreation } from '../../validations/registeruser.validation.js';
 
 class userController {
-  createUser = async (req: Request, res: Response): Promise<void> => {
+  createUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-      req.body.password = hashedPassword;
-      const user = await UserService.createUser(req.body);
+      // Validate the request body
+      const validationErrors = validateUserCreation(req.body);
+      if (validationErrors.length > 0) {
+        return res.status(400).json({ errors: validationErrors });
+      }
 
-      const token = jwt.sign(
-        { userId: user.id, email: user.email, firstname: user.firstname },
-        process.env.VERIFICATION_JWT_SECRET || '',
-        { expiresIn: process.env.EXPIRATION_TIME },
-      );
+      const { email, firstname, password } = req.body;
+
+      // Check if the email already exists
+      const existingUser = await UserService.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+
+      // Hash the password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Create the user
+      const user = await UserService.createUser({
+        ...req.body,
+        password: hashedPassword,
+      });
+
+      const token = generateToken(res, user.id, email, firstname);
 
       // Send verification email
       const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>
-          <p>Thank you for signing up! Please verify your email address by clicking the link below:</p>
-          <p><a href="${verificationUrl}">Verify Email</a></p>
-          <p>If you did not sign up for this account, please ignore this email.</p>
-          <p><strong>Important:</strong> For your security, please do not share this link with anyone.</p>
-          <p>Best regards,</p>
+          <div>Thank you for signing up! Please verify your email address by clicking the link below:</div>
+          <div><a href="${verificationUrl}">Verify Email</a></div>
+          <div>If you did not sign up for this account, please ignore this email.</div>
+          <div><strong>Important:</strong> For your security, please do not share this link with anyone.</div>
+          <div>Best regards,</div>
         `;
       sendVerificationToken(user.email, subject, content);
 
-      res.status(201).json({ message: 'Signup was successfull, Verification Email sent', token });
+      return res.status(201).json({ message: 'Signup was successfull, Verification Email sent', token });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   };
 
-  verifyUser = async (req: Request, res: Response): Promise<void> => {
+  verifyUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const { userId } = req.body;
       const user = await UserService.getUserById(userId);
 
       if (!user) {
-        res.status(404).json({ error: 'User not found' });
-        return;
+        return res.status(404).json({ error: 'User not found' });
       }
 
       if (user.isverified) {
-        res.status(400).json({ error: 'User is already verified' });
-        return;
+        return res.status(400).json({ error: 'User is already verified' });
       }
 
       const updatedUser = await UserService.updateUser(userId, { isverified: true });
       res.json({ message: 'User verified successfully' });
+
+      const subject = 'Successfull Email Verification';
+      const content = `
+            <p>Hi ${user.firstname},</p>
+            <div>Congratulations! Your email address has been successfully verified.</div>
+            <div>You can now fully enjoy all the features of our platform.</div>
+            <div>If you have any questions or need further assistance, feel free to contact our support team.</div>
+            <div>Best regards,</div>
+            <div>The E-Commerce Lydia Team</div>
+          `;
+
+      sendVerificationToken(user.email, subject, content);
+
+      return res;
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   };
 
-  getUserById = async (req: Request, res: Response): Promise<void> => {
+  getUserById = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
       const user = await UserService.getUserById(userId);
       if (user) {
-        res.status(200).json({ message: 'User Retrieved succesfully', user });
+        return res.status(200).json({ message: 'User Retrieved succesfully', user });
       } else {
-        res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
       }
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   };
 
-  getAllUsers = async (req: Request, res: Response): Promise<void> => {
+  getAllUsers = async (req: Request, res: Response): Promise<Response> => {
     try {
       const users = await UserService.getAllUsers();
-      res.status(200).json({ message: 'Users Retrieved succesfully', users });
+      return res.status(200).json({ message: 'Users Retrieved succesfully', users });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   };
 
-  updateUser = async (req: Request, res: Response): Promise<void> => {
+  updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
       const updates = req.body;
       const user = await UserService.updateUser(userId, updates);
       if (user) {
-        res.status(200).json({ message: 'User updated successfully', user });
+        return res.status(200).json({ message: 'User updated successfully', user });
       } else {
-        res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
       }
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   };
 
-  deleteUser = async (req: Request, res: Response): Promise<void> => {
+  deleteUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
       const deleted = await UserService.deleteUser(userId);
       if (deleted) {
-        res.status(200).json({ message: 'User deleted successfully' });
+        return res.status(200).json({ message: 'User deleted successfully' });
       } else {
-        res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
       }
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   };
 
