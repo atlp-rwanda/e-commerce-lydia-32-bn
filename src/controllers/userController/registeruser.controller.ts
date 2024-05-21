@@ -247,8 +247,13 @@ class userController {
     try {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
+    const loggedOutCookie = req.cookies.loggedOut;
+    if(loggedOutCookie){
+      res.status(400).json({error: 'You are already logged out'});
+    }
     if(token){
       res.clearCookie('token');
+      res.cookie('loggedOut', token, { httpOnly: true });
       res.status(200).json({ message: 'Logout successful' });
     }
     else{
