@@ -6,22 +6,11 @@ import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.co
 
 export const usersRouter = express.Router();
 
-
 /**
  * @swagger
  * tags:
  *   name: Users
  *   description: User management
- */
-
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     BearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
  */
 
 /**
@@ -54,8 +43,6 @@ usersRouter.post('/register', UserController.createUser);
  *     summary: Email Verification
  *     description: Verify user email
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: User verified successfully
@@ -102,6 +89,6 @@ usersRouter.get('/users', UserController.getAllUsers);
 usersRouter.patch('/users/update/:id',verifyToken, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login/user', login);
-usersRouter.post('/login',loginByGoogle)
+usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);

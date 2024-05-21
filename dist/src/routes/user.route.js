@@ -12,15 +12,6 @@ export const usersRouter = express.Router();
  */
 /**
  * @swagger
- * components:
- *   securitySchemes:
- *     BearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- */
-/**
- * @swagger
  * /api/register:
  *   post:
  *     summary: Sign Up
@@ -48,8 +39,6 @@ usersRouter.post('/register', UserController.createUser);
  *     summary: Email Verification
  *     description: Verify user email
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: User verified successfully
