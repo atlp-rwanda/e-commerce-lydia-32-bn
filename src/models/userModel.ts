@@ -125,7 +125,7 @@ User.init(
   },
   {
     tableName: 'users',
-    sequelize, // passing the `sequelize` instance
+    sequelize, // passing the sequelize instance
   }
 );
 

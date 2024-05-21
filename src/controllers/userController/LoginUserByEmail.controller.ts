@@ -43,7 +43,7 @@ export const loginByGoogle= async (req:Request, res:Response) => {
         country: "",
         isverified: false,
         isAdmin: false,
-        isBlocked: false
+        isBlocked:false
     });
     
       const verificationToken = generateVerificationToken(res, NewUser.dataValues.id, NewUser.dataValues.email, NewUser.dataValues.firstname);

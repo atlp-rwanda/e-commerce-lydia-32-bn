@@ -5,6 +5,7 @@ import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import {isBlocked }from '../middleware/isBlockedMiddleware.js';
+import isAdmin from '../middleware/isAdminMiddleware.js';
 
 export const usersRouter = express.Router();
 
@@ -64,11 +65,11 @@ usersRouter.post('/register', UserController.createUser);
 
 usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users', UserController.getAllUsers);
+usersRouter.get('/users',isAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login/user',isBlocked, login);
 usersRouter.post('/login',loginByGoogle)
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
-usersRouter.put('/block/:id', blockUser)
+usersRouter.put('/block/:id',isAdmin, blockUser)
