@@ -1,5 +1,6 @@
 import express from "express";
 import { ProductControllerInstance } from "../controllers/productController.js";
+import verifyToken from '../middleware/verfication.middleware.js';
 
 
 
@@ -39,4 +40,4 @@ export const productRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-productRouter.post('/product/create', ProductControllerInstance.createProduct);
+productRouter.post('/product/create',verifyToken,ProductControllerInstance.createProduct);

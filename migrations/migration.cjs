@@ -1,5 +1,7 @@
 'use strict';
 
+const { type } = require("os");
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('users', {
@@ -55,6 +57,10 @@ module.exports = {
       isAdmin: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
+      },
+      isBlocked: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         type: Sequelize.DATE,

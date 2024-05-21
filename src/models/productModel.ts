@@ -1,91 +1,115 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional,Sequelize } from 'sequelize';
 import sequelize from '../config/db.js';
+import User from '../models/userModel.js'
+
 
 interface ProductAttributes {
-  id: number;
-  name: string;
+  productId: number;
+  userId: number;
+  productName: string;
   description: string;
+  productCategory: string;
   price: number;
-  category: string;
-  expiry_date?: Date;
-  bonus?: string;
+  quantity: number;
   images: string[];
   dimensions?: string;
-  seller_id: number;
+  isAvailable?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-
-
-interface ProductCreationAttributes extends Optional<ProductAttributes, 'id' | 'expiry_date' | 'bonus'> {}
+// Define a type for creation attributes that omits productId and other optional fields
+export interface ProductCreationAttributes extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt'> {}
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
-  public id!: number;
-  public name!: string;
+  public productId!: number;
+  public userId!: number;
+  public productName!: string;
   public description!: string;
+  public productCategory!: string;
   public price!: number;
-  public category!: string;
-  public expiry_date?: Date;
-  public bonus?: string;
-  public images!: string[];
+  public quantity!: number;
+  public images: string[] = [];
   public dimensions?: string;
-  public seller_id!: number;
+  public isAvailable?: boolean;
+  public createdAt!: Date;
+  public updatedAt!: Date;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  static associate(models: any) {
+    Product.belongsTo(User, { foreignKey: 'userId', as: 'seller', onDelete: 'SET NULL', onUpdate: 'SET NULL' });
+  }
+
+  static initialize(sequelize: Sequelize) {
+    Product.init(
+      {
+        productId: {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        userId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+          onDelete: 'SET NULL',
+          onUpdate: 'SET NULL',
+        },
+        productName: {
+          type: DataTypes.STRING(128),
+          allowNull: false,
+        },
+        description: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+        },
+        productCategory: {
+          type: DataTypes.STRING(128),
+          allowNull: false,
+        },
+        price: {
+          type: DataTypes.FLOAT,
+          allowNull: false,
+        },
+        quantity: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+        images: {
+          type: DataTypes.ARRAY(DataTypes.STRING),
+          allowNull: false,
+          validate: {
+          len: [4, 8], 
+            },
+        },
+        dimensions: { 
+        type: DataTypes.STRING(128),
+        },
+        isAvailable: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: true,
+        },
+        createdAt: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+        },
+        updatedAt: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+        },
+      },
+      {
+        sequelize,
+        modelName: 'Product',
+        tableName: 'products',
+        timestamps: true,
+      }
+    );
+  }
 }
 
-Product.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(128),
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    category: {
-      type: DataTypes.STRING(128),
-      allowNull: false,
-    },
-    expiry_date: {
-      type: DataTypes.DATE,
-    },
-    bonus: {
-      type: DataTypes.STRING(128),
-    },
-    images: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
-      validate: {
-        len: [4, 8], 
-      },
-    },
-    dimensions: { 
-        type: DataTypes.STRING(128),
-      },
-    seller_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'products',
-    sequelize,
-  }
-);
-
-export {Product, ProductAttributes, ProductCreationAttributes};
+export  {Product};

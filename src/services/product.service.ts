@@ -1,4 +1,4 @@
-import { Product, ProductAttributes, ProductCreationAttributes } from '../models/productModel.js';
+import { Product, ProductCreationAttributes } from '../models/productModel.js';
 
 export class ProductService {
   async createProduct(productDetails: ProductCreationAttributes): Promise<Product> {
@@ -18,8 +18,8 @@ export class ProductService {
     try {
       const product = await Product.findOne({
         where: {
-          name: name,
-          seller_id: seller_id
+          productName: name,
+          userId: seller_id
         }
       });
       return product;
@@ -32,7 +32,7 @@ export class ProductService {
     }
   }
 
-  async updateProduct(productId: number, updates: Partial<ProductAttributes>): Promise<Product | null> {
+  async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
       if (!product) {

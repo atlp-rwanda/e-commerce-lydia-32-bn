@@ -5,15 +5,19 @@ import { userService } from '../services/registeruser.service.js';
 import { productSchema } from '../validations/product.validation.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-interface ProductDetails {
-  name: string;
+interface ProductDetails{
+  productId: number;
+  userId: number;
+  productName: string;
   description: string;
+  productCategory: string;
   price: number;
-  category: string;
-  expiry_date?: Date;
-  bonus?: string;
+  quantity: number;
   images: string[];
-  seller_id: number;
+  dimensions?: string;
+  isAvailable?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 class ProductController {
@@ -46,7 +50,7 @@ class ProductController {
   
       
       const productService = new ProductService();
-      const existingProduct = await productService.getProductByNameAndSellerId(productDetails.name, productDetails.seller_id);
+      const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, productDetails.userId);
 
       if (existingProduct) {
         res.status(200).json({ message: 'Product already exists. Consider updating stock levels instead.', product: existingProduct });
