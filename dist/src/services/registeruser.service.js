@@ -2,6 +2,7 @@ import { validateUserCreation } from '../validations/registeruser.validation.js'
 import User from '../models/userModel.js';
 import { Op } from 'sequelize'; // Import Op from sequelize
 import { passwordValidation, validateUserupdates } from '../validations/updatesValidation.js';
+import bcrypt, { genSalt } from 'bcrypt';
 export class userService {
     async createUser(userDetails) {
         const validationErrors = validateUserCreation(userDetails);
@@ -96,22 +97,27 @@ export class userService {
             throw new Error(`Error fetching user: ${error.message}`);
         }
     }
-    async changePassword(email, oldPassword, newPassword) {
+    async changePassword(userId, oldPassword, newPassword) {
         try {
-            // const id=userId
-            const isValidated = passwordValidation.validate({ password: newPassword });
-            const user = await User.findOne({ where: { email } });
+            const salt = await genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+            const { error } = passwordValidation.validate({ password: newPassword });
+            const user = await User.findByPk(userId);
             if (user) {
-                // const match = await bcrypt.compare(oldPassword, user.password)
-                if (true) {
-                    if (isValidated.error) {
-                        throw new Error(`Validation:${isValidated.error.message}`);
-                    }
-                    // await user.update({password:newPassword})
-                    return ({ code: 200, message: user.id });
+                const userData = user.toJSON();
+                if (!userData.isverified) {
+                    return ({ code: 401, message: "User not Verified" });
                 }
+                const match = await bcrypt.compare(oldPassword, userData.password);
+                if (match) {
+                    if (error) {
+                        throw new Error(`Validation:${error.message}`);
+                    }
+                    await user.update({ password: hashedPassword });
+                    return ({ code: 200, message: "password changed successfully" });
+                }
+                return ({ code: 401, message: "Incorrect old password" });
             }
-            return ({ code: 401, message: "Incorrect old password" });
         }
         catch (error) {
             throw new Error(`failed to change password:${error.message}`);

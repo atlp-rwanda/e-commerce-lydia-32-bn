@@ -132,10 +132,9 @@ class userController {
    changePassword = async (req:Request, res:Response) => {
     try{
       const userId = parseInt(req.params.id,10)
-     const salt = await genSalt(10)
       const { newPassword, oldPassword } = req.body
-      const hashedPassword = await bcrypt.hash(newPassword,salt)
-      const user = await UserService.changePassword(userId,oldPassword,hashedPassword)
+      
+      const user = await UserService.changePassword(userId,oldPassword,newPassword)
       if(user) {
         res.status(user.code).json({message:user.message})
       }

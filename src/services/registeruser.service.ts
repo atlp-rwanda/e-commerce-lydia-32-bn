@@ -4,7 +4,7 @@ import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
 import { Op } from 'sequelize'; // Import Op from sequelize
 import {passwordValidation,  validateUserupdates } from '../validations/updatesValidation.js'
-import bcrypt from 'bcrypt'
+import bcrypt, { genSalt } from 'bcrypt'
 
 
 export class userService {
@@ -106,21 +106,26 @@ export class userService {
   }
   async changePassword(userId:number,oldPassword:string,newPassword:string){
   try{
-    const isValidated = passwordValidation.validate({password:newPassword})
+       const salt = await genSalt(10)
+      const hashedPassword = await bcrypt.hash(newPassword,salt)
+    const { error } = passwordValidation.validate({ password: newPassword });
     const user = await User.findByPk(userId)
     if(user){
-      const match = await bcrypt.compare(oldPassword, user.password)
+      const userData = user.toJSON() 
+      if(!userData.isverified) {
+      return ({code:401,message:"User not Verified"})
+      }
+      const match = await bcrypt.compare(oldPassword, userData.password )
     if(match){ 
-      
-      if(isValidated.error){
-        throw new Error(`Validation:${isValidated.error.message}`)
+      if(error){
+        throw new Error(`Validation:${error.message}`)
         
       }
-      await user.update({password:newPassword})
+      await user.update({password:hashedPassword})
      return ({code:200,message:"password changed successfully"})
     }
+    return ({code:401,message:"Incorrect old password"})
   }
-  return ({code:401,message:"Incorrect old password"})
   
 
 }
