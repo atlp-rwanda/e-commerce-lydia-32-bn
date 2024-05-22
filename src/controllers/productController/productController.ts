@@ -22,15 +22,6 @@ interface ProductDetails {
 }
 
 class ProductController {
-
-
-  // private ProductService = new productService();
-  // private UserService = new userService();
-
-  // constructor() {
-  //   this.ProductService = new ProductService();
-  //   this.UserService = new UserService();
-  // }
   async createProduct(req: Request, res: Response): Promise<void> {
     const productDetails: ProductDetails = req.body;
     const token = req.cookies.jwt;
@@ -84,29 +75,21 @@ class ProductController {
   async deleteProduct(req: Request, res: Response): Promise<void> {
 
     const productId: number = Number(req.params.productId);
-    // const token = req.cookies.jwt;
-    // if (!token) {
-    //   res.status(401).json({ message: 'Unauthorized: You are not authorized to  access this endpoint' });
-    //   return;
-    // }
-
     try {
-      //const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
-      //const userId = decodedToken.userId;
       const userId = req.body.userId;
       const user = await UserService.getUserById(userId);
       if(user && user.usertype == 'seller'){
-        const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
-        if(productToBeDeleted){
-          await productService.deleteProduct(productToBeDeleted.productId);
-          res.status(200).json({
-            success: `Product with Id ${productId} is Deleted Successfully`,
-          });
-        }
-        else{
-          res.status(404).json({Error: 'Sorry Either Product Does not exists or belongs to you !'})
-        }
-      }
+          const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
+          if(productToBeDeleted){
+            await productService.deleteProduct(productToBeDeleted.productId);
+            res.status(200).json({
+              success: `Product with Id ${productId} is Deleted Successfully`,
+            });
+          }
+          else{
+            res.status(404).json({Error: 'Sorry Either Product Does not exists or belongs to you !'})
+          }
+        } 
       else {
         res.status(403).json({ Warning: 'Only sellers can delete products' });
         return;
