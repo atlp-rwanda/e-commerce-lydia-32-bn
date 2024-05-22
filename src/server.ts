@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { usersRouter } from './routes/user.route.js';
 import { productRouter} from './routes/productRoutes.js';
+import { sellerRouter } from './routes/sellerRoutes.js';
+
 
 dotenv.config();
 
@@ -24,7 +26,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
-app.use('/api', usersRouter,productRouter);
+app.use('/api', usersRouter,productRouter, sellerRouter);
 
 
 swaggerDocs(app, port);
