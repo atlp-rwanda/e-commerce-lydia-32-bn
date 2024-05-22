@@ -3,6 +3,9 @@ import verifyToken from '../middleware/verfication.middleware.js';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
+import { blockUser } from '../controllers/userController/blockUser.controller.js';
+import {isBlocked }from '../middleware/isBlockedMiddleware.js';
+import isAdmin from '../middleware/isAdminMiddleware.js';
 
 export const usersRouter = express.Router();
 
@@ -62,7 +65,8 @@ usersRouter.post('/register', UserController.createUser);
 
 usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users', UserController.getAllUsers);
+usersRouter.get('/users',isAdmin, UserController.getAllUsers);
+usersRouter.put('/users/update//:id', UserController.updateUser);
 /**
  * @swagger
  * /api/users/update/:id:
@@ -88,8 +92,12 @@ usersRouter.get('/users', UserController.getAllUsers);
  */
 usersRouter.patch('/users/update/:id',verifyToken, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
-usersRouter.post('/login/user', login);
-usersRouter.post('/login', loginByGoogle);
+usersRouter.post('/login/user',isBlocked, login);
+usersRouter.post('/login',loginByGoogle)
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
+<<<<<<< HEAD
 usersRouter.post('/changepassword/:id',UserController.changePassword)
+=======
+usersRouter.put('/block/:id',isAdmin, blockUser)
+>>>>>>> develop
