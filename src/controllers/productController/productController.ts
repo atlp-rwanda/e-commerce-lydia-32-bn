@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import Product from '../../models/productModel.js';
-import { ProductService } from '../../services/product.service.js';
-import { userService } from '../../services/registeruser.service.js';
+import { productService } from '../../services/product.service.js';
+import { UserService } from '../../services/registeruser.service.js';
 import { productSchema } from '../../validations/product.validation.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
@@ -22,6 +22,15 @@ interface ProductDetails {
 }
 
 class ProductController {
+
+
+  // private ProductService = new productService();
+  // private UserService = new userService();
+
+  // constructor() {
+  //   this.ProductService = new ProductService();
+  //   this.UserService = new UserService();
+  // }
   async createProduct(req: Request, res: Response): Promise<void> {
     const productDetails: ProductDetails = req.body;
     const token = req.cookies.jwt;
@@ -39,14 +48,14 @@ class ProductController {
         return;
       }
 
-      const UserService = new userService();
+      //const UserService = new userService();
       const user = await UserService.getUserById(userId);
       if (!user || user.usertype !== 'seller') {
         res.status(403).json({ message: 'Only sellers can create products' });
         return;
       }
 
-      const productService = new ProductService();
+      //const productService = new ProductService();
       const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, productDetails.userId);
       if (existingProduct) {
         res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.'});
@@ -68,6 +77,42 @@ class ProductController {
       res.status(201).json({ message: 'Product created successfully', product: createdProduct });
     } catch (error) {
       res.status(500).json({ message: error });
+      console.log(error);
+    }
+  }
+
+  async deleteProduct(req: Request, res: Response): Promise<void> {
+
+    const productId: number = Number(req.params.productId);
+    // const token = req.cookies.jwt;
+    // if (!token) {
+    //   res.status(401).json({ message: 'Unauthorized: You are not authorized to  access this endpoint' });
+    //   return;
+    // }
+
+    try {
+      //const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
+      //const userId = decodedToken.userId;
+      const userId = req.body.userId;
+      const user = await UserService.getUserById(userId);
+      if(user && user.usertype == 'seller'){
+        const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
+        if(productToBeDeleted){
+          await productService.deleteProduct(productToBeDeleted.productId);
+          res.status(200).json({
+            success: `Product with Id ${productId} is Deleted Successfully`,
+          });
+        }
+        else{
+          res.status(404).json({Error: 'Sorry Either Product Does not exists or belongs to you !'})
+        }
+      }
+      else {
+        res.status(403).json({ Warning: 'Only sellers can delete products' });
+        return;
+      }
+    } catch (error) {
+      res.status(500).json({ error: error });
       console.log(error);
     }
   }
