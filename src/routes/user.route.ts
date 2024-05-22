@@ -96,8 +96,6 @@ usersRouter.post('/login/user',isBlocked, login);
 usersRouter.post('/login',loginByGoogle)
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
-<<<<<<< HEAD
-usersRouter.post('/changepassword/:id',UserController.changePassword)
-=======
+usersRouter.post('/changepassword/:id',verifyToken,UserController.changePassword)
 usersRouter.put('/block/:id',isAdmin, blockUser)
->>>>>>> develop
+
