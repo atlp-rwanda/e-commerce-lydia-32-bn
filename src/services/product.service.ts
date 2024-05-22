@@ -40,7 +40,8 @@ export class ProductService {
           userId:userId
         }
       });
-      return product;
+      console.log(product);
+      return product ? (product.toJSON() as Product) : null;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Error retrieving product: ${error.message}`);

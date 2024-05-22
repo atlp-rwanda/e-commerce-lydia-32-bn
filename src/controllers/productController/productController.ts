@@ -81,13 +81,14 @@ class ProductController {
       if(user && user.usertype == 'seller'){
           const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
           if(productToBeDeleted){
+            console.log(productToBeDeleted);
             await productService.deleteProduct(productToBeDeleted.productId);
             res.status(200).json({
               success: `Product with Id ${productId} is Deleted Successfully`,
             });
           }
           else{
-            res.status(404).json({Error: 'Sorry Either Product Does not exists or belongs to you !'})
+            res.status(404).json({Error: "Sorry Either Product Doesn't exists or doesn't belongs to you !"})
           }
         } 
       else {
