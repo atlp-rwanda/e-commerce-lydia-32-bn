@@ -19,7 +19,9 @@
     "seed": "npx sequelize-cli db:seed:all",
     "server": "nodemon dist/src/server.js",
     "prepare": "husky install",
-    "test": "mocha"
+    "test": "./node_modules/.bin/mocha dist/tests/*.test.js",
+    "coverage": "c8 --reporter=text ./node_modules/.bin/mocha dist/tests/*.test.js",
+    "coveralls": "c8 report --reporter=text-lcov | coveralls"
   },
   "husky": {
     "hooks": {
@@ -39,7 +41,10 @@
     "@types/nodemailer": "^6.4.15",
     "@types/pino": "^7.0.5",
     "bcrypt": "^5.1.1",
+    "c8": "^9.1.0",
+    "chai": "^5.1.1",
     "cookie-parser": "^1.4.6",
+    "coveralls": "^3.1.1",
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -54,6 +59,9 @@
     "remove": "^0.1.5",
     "sequelize": "^6.37.3",
     "sequelize-typescript": "^2.1.6",
+    "sinon": "^18.0.0",
+    "sinon-chai": "^3.7.0",
+    "supertest": "^7.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "typescript": "^5.4.5"

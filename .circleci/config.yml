@@ -1,9 +1,9 @@
 version: 2.1
+
 jobs:
   build:
     docker:
       - image: cimg/node:21.7.2-browsers
-
     steps:
       - checkout
       - run:
@@ -11,27 +11,78 @@ jobs:
           command: 'echo Hello, World!'
       - run:
           name: Install Dependencies
-          command: npm install
+          command: yarn install --frozen-lockfile
       - run:
-          name: Build app
-          command: npm run build
+          name: Compile TypeScript
+          command: yarn run build
+      - store_artifacts:
+          path: dist
 
-  store_test_results:
+  test:
     docker:
       - image: cimg/node:21.7.2-browsers
-
     steps:
       - checkout
       - run:
           name: Install Dependencies
-          command: npm install
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Compile TypeScript
+          command: yarn run build
+      - run:
+          name: Run Tests
+          command: yarn test
       - store_test_results:
           path: ~/project/test-results
           destination: test-results
+      - store_artifacts:
+          path: dist/tests
+
+  coverage:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Compile TypeScript
+          command: yarn run build
+      - run:
+          name: Run Coverage
+          command: yarn coverage
+      - store_artifacts:
+          path: coverage
+
+  coveralls:
+    docker:
+      - image: cimg/node:21.7.2-browsers
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Compile TypeScript
+          command: yarn run build
+      - run:
+          name: Install Coveralls
+          command: yarn global add coveralls
+      - run:
+          name: Upload Coverage to Coveralls
+          command: COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN yarn coveralls
+
 workflows:
   build_and_test:
     jobs:
       - build
-      - store_test_results:
+      - test:
           requires:
             - build
+      - coverage:
+          requires:
+            - test
+      - coveralls:
+          requires: 
+            - coverage
