@@ -87,7 +87,25 @@ class userController {
       return res.status(500).json({ error: error.message });
     }
   };
+  
+   changePassword = async (req:Request, res:Response) => {
+    try{
+      
+      const { newPassword, oldPassword,userId } = req.body
+    
+      const user = await UserService.changePassword(userId,oldPassword,newPassword)
 
+      if(user) {
+        res.status(user.code).json({message:user.message})
+      }
+      else{
+      res.status(500).json({error:"user not found"})
+      }
+    }
+    catch(error:any){
+      res.status(500).json({error:error.message})
+    }
+   }
   getUserById = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
@@ -264,6 +282,7 @@ class userController {
       else{
         res.status(400).json({error: "You're not yet logged In !"});
       }
+      
     }
 } catch (error) {
     console.error(error);
