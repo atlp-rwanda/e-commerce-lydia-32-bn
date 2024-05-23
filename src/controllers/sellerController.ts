@@ -5,6 +5,8 @@ import { userService } from '../services/registeruser.service.js';
 
 
 class SellerController {
+
+  // get products  associated with seller
   async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
     const token = req.cookies.jwt;
 
@@ -98,7 +100,25 @@ class SellerController {
       console.error(error);
     }
   }
+
+  // get only available products in the store
+  async getAvailableProducts(req: Request, res: Response): Promise<void> {
+    try {
+      const sellerServiceInstance = new SellerService();
+      const availableProducts = await sellerServiceInstance.getAvailableProducts();
+
+      if (availableProducts.length === 0 ) {
+        res.status(200).json({ message: 'No available products found' });
+      } else {
+        res.status(200).json({ message: 'Available products fetched successfully', products: availableProducts });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error', error });
+      console.error(error);
+    }
+  }
 }
+
 
 
 export const sellerControllerInstance = new SellerController();

@@ -1,5 +1,5 @@
 import express from 'express';
-import { sellerControllerInstance } from '../controllers/getAllProductsBySeller.js';
+import { sellerControllerInstance } from '../controllers/sellerController.js';
 
 export const sellerRouter = express.Router();
 
@@ -68,7 +68,7 @@ export const sellerRouter = express.Router();
  * @swagger
  * /api/seller/products:
  *   get:
- *     summary: Get all products for a seller
+ *     summary: Get all products for specific seller
  *     description: Retrieves a list of all products associated with the authenticated seller
  *     tags:
  *       - Sellers
@@ -177,3 +177,41 @@ sellerRouter.get('/seller/products', sellerControllerInstance.getAllProductsBySe
  *               $ref: '#/components/schemas/Error'
  */
 sellerRouter.put('/seller/products/:productId/availability', sellerControllerInstance.updateProductAvailability);
+/**
+ * @swagger
+ * /api/products/available:
+ *   get:
+ *     summary: Get available products in the store
+ *     description: Retrieves a list of all available products
+ *     tags:
+ *       - Sellers
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Available products fetched successfully
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *       '404':
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+sellerRouter.get('/products/available', sellerControllerInstance.getAvailableProducts);

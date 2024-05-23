@@ -26,6 +26,7 @@ async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Pr
   }
 }
 
+// update product
 async updateProductt(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
@@ -43,7 +44,16 @@ async updateProductt(productId: number, updates: Partial<Product>): Promise<Prod
     }
   }
 
-
+  // get only available products in the store
+  async getAvailableProducts(): Promise<Product[]> {
+    try {
+      const products = await Product.findAll({ where: { isAvailable: true } });
+      return products;
+    } catch (error) {
+      throw new Error('Failed to fetch available products');
+    }
+  }
 }
+
 
 export const sellerService = new SellerService();
