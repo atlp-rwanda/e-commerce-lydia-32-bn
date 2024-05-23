@@ -51,6 +51,13 @@ const userCreationSchema = Joi.object({
   country: Joi.string().allow('').optional().messages({
     'string.pattern.base': 'Role must contain only letters.',
   }),
+  role: Joi.string()
+    .regex(/^[a-zA-Z]+$/)
+    .messages({
+      'string.empty': 'Role is required.',
+      'string.pattern.base': 'Role must contain only letters.',
+      'any.required': 'Role is required.',
+    }),
   isAdmin: Joi.boolean().optional(),
   isBlocked: Joi.boolean().optional()
 });

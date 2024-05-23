@@ -3,8 +3,7 @@ import User from '../models/userModel.js';
 import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
 import { Op } from 'sequelize'; // Import Op from sequelize
-import { validateUserupdates } from '../validations/updatesValidation.js'
-
+import { validateUserupdates } from '../validations/updatesValidation.js';
 
 export class userService {
   async createUser(userDetails: UserCreationAttributes): Promise<UserAttributes> {
@@ -44,18 +43,17 @@ export class userService {
 
   async updateUser(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
-      
-      const validateUpdates = validateUserupdates(updates)
-       
+      const validateUpdates = validateUserupdates(updates);
+
       const user = await User.findByPk(userId);
       if (user) {
-        if(!user.isverified){
-          throw new Error(`Error updating user: user not verified`);
-      }
-        if(validateUpdates.length > 0){
-          throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
-         
-        }
+        //   if(!user.isverified){
+        //     throw new Error(`Error updating user: user not verified`);
+        // }
+        //   if(validateUpdates.length > 0){
+        //     throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
+
+        //   }
         await user.update(updates);
         return user.toJSON() as UserAttributes;
       }
@@ -78,23 +76,22 @@ export class userService {
     }
   }
 
-
   // New method to get a user by specific fields
   async getUserByFields(fields: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({
         where: {
-          [Op.and]: fields
+          [Op.and]: fields,
         },
-        attributes: { exclude: ['password'] }
+        attributes: { exclude: ['password'] },
       });
       return user ? (user.toJSON() as UserAttributes) : null;
     } catch (error: any) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
- 
-//  method to get user by email
+
+  //  method to get user by email
   async getUserByEmail(email: string): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({ where: { email } });
