@@ -97,3 +97,19 @@ usersRouter.post('/login',loginByGoogle)
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
 usersRouter.put('/block/:id',isAdmin, blockUser)
+
+/**
+ * @swagger
+ * /api/users/logout:
+ *   post:
+ *     summary: Log out
+ *     tags: [Users]
+ *     responses:
+ *       '200':
+ *         description: Successfully logged out
+ *       '400'
+ *         description: You're not logged In
+ *       '500':
+ *         description: Internal server error
+ */
+usersRouter.post('/users/logout', UserController.logout);
