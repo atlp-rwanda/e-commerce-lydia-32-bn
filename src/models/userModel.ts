@@ -118,10 +118,6 @@ User.init(
     },
     isBlocked: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isBlocked: {
-      type: DataTypes.BOOLEAN,
       defaultValue: false
     }
   },
