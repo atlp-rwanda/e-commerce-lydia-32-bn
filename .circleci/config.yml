@@ -52,14 +52,18 @@ jobs:
       - run:
           name: Run Coverage
           command: yarn coverage
-      - store_artifacts:
-          path: coverage
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage
 
   coveralls:
     docker:
       - image: cimg/node:21.7.2-browsers
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
@@ -68,10 +72,10 @@ jobs:
           command: yarn run build
       - run:
           name: Install Coveralls
-          command: yarn global add coveralls
+          command: yarn global add coveralls@latest
       - run:
           name: Upload Coverage to Coveralls
-          command: COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN yarn coveralls
+          command: yarn coveralls
 
 workflows:
   build_and_test:
@@ -84,5 +88,5 @@ workflows:
           requires:
             - test
       - coveralls:
-          requires: 
+          requires:
             - coverage

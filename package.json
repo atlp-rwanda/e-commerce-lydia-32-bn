@@ -19,8 +19,8 @@
     "seed": "npx sequelize-cli db:seed:all",
     "server": "nodemon dist/src/server.js",
     "prepare": "husky install",
-    "test": "./node_modules/.bin/mocha dist/tests/*.test.js",
-    "coverage": "c8 --reporter=text ./node_modules/.bin/mocha dist/tests/*.test.js",
+    "test": "mocha dist/tests/*.test.js",
+    "coverage": "c8 --reporter=lcov --reporter=text mocha dist/tests/*.test.js",
     "coveralls": "c8 report --reporter=text-lcov | coveralls"
   },
   "husky": {
