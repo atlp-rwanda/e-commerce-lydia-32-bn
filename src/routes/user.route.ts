@@ -67,6 +67,70 @@ usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users',isAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
+
+
+/**
+ * @swagger
+ * /users/block/{id}:
+ *   put:
+ *     summary: Block a user
+ *     description: Blocks a user account and sends an email notification
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to be blocked
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 'user is blocked'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *     security:
+ *       - bearerAuth: []
+ *
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *
+ * @route PUT /users/block/{id}
+ * @summary Block a user
+ * @description Blocks a user account and sends an email notification
+ * @param {Object} req - Express request object
+ * @param {string} req.params.id - ID of the user to be blocked
+ * @param {Object} res - Express response object
+ * @returns {Promise<Response>} - Promise resolving with the response object
+ */
+
 usersRouter.put('/block/:id',isAdmin, blockUser)
 /**
  * @swagger

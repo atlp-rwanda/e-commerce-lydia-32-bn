@@ -28,7 +28,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
     const token = jwt.sign(
       { userId: user.id, email: user.email, firstname: user.firstname },
-      process.env.VERIFICATION_JWT_SECRET || 'default_secret',
+      process.env.JWT_SECRET || 'default_secret',
       { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' },
     );
     res.clearCookie('loggedOut');
