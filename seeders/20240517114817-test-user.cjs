@@ -2,7 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-   
     const usersData = [
       {
         firstname: 'test',
@@ -16,16 +15,14 @@ module.exports = {
         state: 'NY',
         postal_code: '10001',
         country: 'USA',
-        isAdmin: false
+        isAdmin: false,
       },
     ];
 
-   
     await queryInterface.bulkInsert('users', usersData, {});
   },
 
   down: async (queryInterface, Sequelize) => {
-  
     await queryInterface.bulkDelete('users', null, {});
-  }
+  },
 };

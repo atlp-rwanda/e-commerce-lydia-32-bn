@@ -16,7 +16,7 @@ const sendVerificationToken = (email: any, subject: any, content: any) => {
     html: content,
   };
 
-  transporter.sendMail(mailOptions, (error: any, info: { response: string; }) => {
+  transporter.sendMail(mailOptions, (error: any, info: { response: string }) => {
     if (error) {
       console.error(error);
     } else {
