@@ -3,12 +3,10 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SellerService } from '../services/seller.Service.js';
 import { userService } from '../services/registeruser.service.js';
 
-
 class SellerController {
-
-  // get products  associated with seller
+  // get products associated with seller
   async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
-    const token = req.cookies.jwt;
+    const token = req.cookies.token;
 
     if (!token) {
       res.status(401).json({ message: 'Unauthorized: Token is missing' });
@@ -16,7 +14,7 @@ class SellerController {
     }
 
     try {
-      const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as JwtPayload;
       const userId = decodedToken.userId;
 
       const userServiceInstance = new userService();
@@ -46,54 +44,52 @@ class SellerController {
     }
   }
 
-  
-
   // New method to toggle product availability
   async updateProductAvailability(req: Request, res: Response): Promise<void> {
-    const token = req.cookies.jwt;
+    const token = req.cookies.token;
     if (!token) {
       res.status(401).json({ message: 'Unauthorized: Token is missing' });
       return;
     }
-  
+
     try {
-      const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as JwtPayload;
       const userId = decodedToken.userId;
       const userServiceInstance = new userService();
       const user = await userServiceInstance.getUserById(userId);
-  
+
       if (!user) {
         res.status(404).json({ message: 'User not found' });
         return;
       }
-  
+
       if (user.usertype !== 'seller') {
         res.status(403).json({ message: 'Only sellers can access this resource' });
         return;
       }
-  
+
       const productId = parseInt(req.params.productId, 10);
       const { isAvailable } = req.body;
-  
+
       if (isNaN(productId) || isAvailable === undefined) {
         res.status(400).json({ message: 'Invalid request parameters' });
         return;
       }
-  
+
       const productServiceInstance = new SellerService();
       const product = await productServiceInstance.getProductByIdAndSellerId(productId, userId);
-  
+
       if (!product) {
         res.status(404).json({ message: 'Product not found' });
         return;
       }
-  
+
       const updatedProduct = await productServiceInstance.updateProductt(productId, { isAvailable });
-  
+
       const availabilityMessage = isAvailable
         ? 'Product is now available for buyers'
         : 'Product is now unavailable for buyers';
-  
+
       res.status(200).json({ message: `${availabilityMessage}`, product: updatedProduct });
     } catch (error) {
       res.status(500).json({ message: 'Internal server error', error });
@@ -107,7 +103,7 @@ class SellerController {
       const sellerServiceInstance = new SellerService();
       const availableProducts = await sellerServiceInstance.getAvailableProducts();
 
-      if (availableProducts.length === 0 ) {
+      if (availableProducts.length === 0) {
         res.status(200).json({ message: 'No available products found' });
       } else {
         res.status(200).json({ message: 'Available products fetched successfully', products: availableProducts });
@@ -118,7 +114,5 @@ class SellerController {
     }
   }
 }
-
-
 
 export const sellerControllerInstance = new SellerController();
