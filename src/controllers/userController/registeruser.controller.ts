@@ -115,8 +115,8 @@ class userController {
 
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const userId = parseInt(req.params.id, 10);
       const updates = req.body;
+      const userId =req.body.userId
       const { userId: _,email,password, ...validUpdates } = updates;
      
       const user = await UserService.updateUser(userId, validUpdates);
@@ -131,10 +131,11 @@ class userController {
   };
    changePassword = async (req:Request, res:Response) => {
     try{
-      const userId = parseInt(req.params.id,10)
-      const { newPassword, oldPassword } = req.body
       
+      const { newPassword, oldPassword,userId } = req.body
+    
       const user = await UserService.changePassword(userId,oldPassword,newPassword)
+
       if(user) {
         res.status(user.code).json({message:user.message})
       }

@@ -65,7 +65,7 @@ usersRouter.post('/register', UserController.createUser);
 
 usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users',isAdmin, UserController.getAllUsers);
+usersRouter.get('/users', UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 /**
  * @swagger

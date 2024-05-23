@@ -3,6 +3,7 @@ import User from '../models/userModel.js';
 import { Op } from 'sequelize'; // Import Op from sequelize
 import { passwordValidation, validateUserupdates } from '../validations/updatesValidation.js';
 import bcrypt, { genSalt } from 'bcrypt';
+import sendVerificationToken from '../helpers/sendEmail.js';
 export class userService {
     async createUser(userDetails) {
         const validationErrors = validateUserCreation(userDetails);
@@ -105,8 +106,16 @@ export class userService {
             const user = await User.findByPk(userId);
             if (user) {
                 const userData = user.toJSON();
+                const content = `
+      <p>Hi ${userData.firstname},</p>
+      <div>Congratulations! Your email address has been successfully verified.</div>
+      <div>You can now fully enjoy all the features of our platform.</div>
+      <div>If you have any questions or need further assistance, feel free to contact our support team.</div>
+      <div>Best regards,</div>
+      <div>The E-Commerce Lydia Team</div>
+    `;
                 if (!userData.isverified) {
-                    return ({ code: 401, message: "User not Verified" });
+                    return ({ code: 401, message: 'You are not verified' });
                 }
                 const match = await bcrypt.compare(oldPassword, userData.password);
                 if (match) {
@@ -114,6 +123,7 @@ export class userService {
                         throw new Error(`Validation:${error.message}`);
                     }
                     await user.update({ password: hashedPassword });
+                    sendVerificationToken(userData.email, 'password changed ', content);
                     return ({ code: 200, message: "password changed successfully" });
                 }
                 return ({ code: 401, message: "Incorrect old password" });
@@ -125,4 +135,3 @@ export class userService {
     }
 }
 export const UserService = new userService();
-
