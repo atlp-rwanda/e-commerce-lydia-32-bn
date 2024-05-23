@@ -119,6 +119,20 @@ const options: swaggerJsdoc.Options = {
             review: { type: 'string' },
           },
         },
+        Role: {
+          type: 'object',
+          properties: {
+            roleId: { type: 'integer', example: 1 },
+          },
+          required: ['roleId'],
+        },
+        Permission: {
+          type: 'object',
+          properties: {
+            permissionId: { type: 'integer', example: 1 },
+          },
+          required: ['permissionId'],
+        },
       },
       security: [
         {

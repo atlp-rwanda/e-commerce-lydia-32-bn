@@ -132,10 +132,16 @@ class userController {
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const updates = req.body;
+<<<<<<< HEAD
       const userId = req.body.userId
       const { userId: _,email,password, ...validUpdates } = updates;
      
       const user = await UserService.updateUserInfo(userId, validUpdates);
+=======
+      const { userId: _, email, password, ...validUpdates } = updates;
+
+      const user = await UserService.updateUser(userId, validUpdates);
+>>>>>>> 2b103d2 (feature: Setting up user roles and permissions)
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
         res.status(200).json({ message: 'User updated successfully:', user });
@@ -163,13 +169,17 @@ class userController {
 
   forgotPassword = async (req: Request, res: Response): Promise<void> => {
     try {
-      
       const { email } = req.body;
 
       const user = await UserService.getUserByFields({ email });
 
       if (!user) {
-        res.status(401).json({ error: "the details you submitted do not match any user, please correct them or if you do not have an account, create a new one"});
+        res
+          .status(401)
+          .json({
+            error:
+              'the details you submitted do not match any user, please correct them or if you do not have an account, create a new one',
+          });
         return;
       }
 
@@ -177,15 +187,13 @@ class userController {
         res.status(401).json({ error: 'User is not verified' });
         return;
       }
-      
-      const token = jwt.sign(
-        { userId: user.id, email: user.email },
-        process.env.VERIFICATION_JWT_SECRET || '',
-        { expiresIn: process.env.EXPIRATION_TIME },
-      );
+
+      const token = jwt.sign({ userId: user.id, email: user.email }, process.env.VERIFICATION_JWT_SECRET || '', {
+        expiresIn: process.env.EXPIRATION_TIME,
+      });
 
       const resetPasswordUrl = `${process.env.RESET_PASSWORD_URL}?token=${token}`;
-      
+
       const subject = 'Request for password reset';
 
       const content = `
@@ -197,10 +205,14 @@ class userController {
             <p>Best regards,</p>
             `;
 
-
       sendVerificationToken(user.email, subject, content);
 
-      res.status(200).json({ message: "the password reset process has been started, check your email to confirm and reset your password", resetPasswordUrl})
+      res
+        .status(200)
+        .json({
+          message: 'the password reset process has been started, check your email to confirm and reset your password',
+          resetPasswordUrl,
+        });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -208,20 +220,18 @@ class userController {
 
   resetPassword = async (req: Request, res: Response): Promise<void> => {
     try {
-      
       const token = req.query.token as string;
-        
-        if (!token) {
-          res.status(400).json({ error: 'Token is required to verify email.' });
-          return;
-        }
-      
+
+      if (!token) {
+        res.status(400).json({ error: 'Token is required to verify email.' });
+        return;
+      }
+
       let decoded: any;
 
       try {
         decoded = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET!);
       } catch (error) {
-        
         res.status(401).json({ error: 'Invalid or expired token. Please request a new verification email.' });
       }
 
@@ -230,15 +240,19 @@ class userController {
       const user = await UserService.getUserByFields({ id: userId, email });
 
       if (!user) {
-        res.status(400).json({ error: "That user doesn't exist, there was a problem with your password setting, please contact the admin"})
+        res
+          .status(400)
+          .json({
+            error: "That user doesn't exist, there was a problem with your password setting, please contact the admin",
+          });
 
         return;
       }
 
-      const { password } = req.body
+      const { password } = req.body;
 
       if (!password) {
-        res.status(400).json({ error: "Please input your password"})
+        res.status(400).json({ error: 'Please input your password' });
 
         return;
       }
@@ -256,7 +270,6 @@ class userController {
             <p>Best regards,</p>
             `;
 
-
       sendVerificationToken(user.email, subject, content);
 
       res.status(200).json({ message: 'Password updated successfully' });
@@ -266,6 +279,7 @@ class userController {
   };
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
+<<<<<<< HEAD
     
     const token = req.cookies.jwt
     const loggedOutCookie = req.cookies.loggedOut;
@@ -283,11 +297,26 @@ class userController {
         res.status(400).json({error: "You're not yet logged In !"});
       }
       
+=======
+      const token = req.cookies.jwt;
+      const loggedOutCookie = req.cookies.loggedOut;
+      console.log(loggedOutCookie);
+      if (loggedOutCookie) {
+        res.status(400).json({ error: 'You are already logged out' });
+      } else {
+        if (token) {
+          res.clearCookie('jwt');
+          res.cookie('loggedOut', token, { httpOnly: true });
+          res.status(200).json({ message: 'Logout successful' });
+        } else {
+          res.status(400).json({ error: "You're not yet logged In !" });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+>>>>>>> 2b103d2 (feature: Setting up user roles and permissions)
     }
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-}
   };
 }
 

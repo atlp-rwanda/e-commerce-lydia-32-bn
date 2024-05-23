@@ -1,8 +1,7 @@
-import {
-  DataTypes, Model, Optional, BuildOptions
-} from 'sequelize';
+import { DataTypes, Model, Optional, BuildOptions } from 'sequelize';
 import sequelize from '../config/db.js';
 import { toDefaultValue } from 'sequelize/types/utils.js';
+import Role from './roleModel.js';
 
 interface UserAttributes {
   id: number;
@@ -17,6 +16,7 @@ interface UserAttributes {
   state: string;
   postal_code: string;
   country: string;
+  roleId: number;
   isverified: boolean;
   isAdmin: boolean;
   isBlocked: boolean;
@@ -51,11 +51,13 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 
   public country!: string;
 
+  public roleId!: number;
+
   public isverified!: boolean;
 
   public isAdmin!: boolean;
 
-  public isBlocked!: boolean
+  public isBlocked!: boolean;
 
   // Timestamps
   public readonly createdAt!: Date;
@@ -108,6 +110,15 @@ User.init(
     country: {
       type: new DataTypes.STRING(128),
     },
+    roleId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Role,
+        key: 'id',
+      },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+    },
     isverified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -123,8 +134,10 @@ User.init(
   },
   {
     tableName: 'users',
-    sequelize, // passing the sequelize instance
-  }
+    sequelize, // passing the `sequelize` instance
+  },
 );
+
+User.belongsTo(Role, { foreignKey: 'roleId' });
 
 export default User;
