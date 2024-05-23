@@ -2,6 +2,7 @@ import {
   DataTypes, Model, Optional, BuildOptions
 } from 'sequelize';
 import sequelize from '../config/db.js';
+import { toDefaultValue } from 'sequelize/types/utils.js';
 
 interface UserAttributes {
   id: number;
@@ -18,6 +19,7 @@ interface UserAttributes {
   country: string;
   isverified: boolean;
   isAdmin: boolean;
+  isBlocked: boolean;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'firstname'> {
@@ -52,6 +54,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public isverified!: boolean;
 
   public isAdmin!: boolean;
+
+  public isBlocked!: boolean
 
   // Timestamps
   public readonly createdAt!: Date;
@@ -112,11 +116,19 @@ User.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    isBlocked: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isBlocked: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   },
   {
     tableName: 'users',
-    sequelize, // passing the `sequelize` instance
-  },
+    sequelize, // passing the sequelize instance
+  }
 );
 
 export default User;
