@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
+import generateToken from '../../utilis/generateToken.js';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {

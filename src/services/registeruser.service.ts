@@ -90,7 +90,7 @@ export class userService {
     }
   }
  
-   // useless method to get user by email but modified the above to accept any field
+//  method to get user by email
   async getUserByEmail(email: string): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({ where: { email } });

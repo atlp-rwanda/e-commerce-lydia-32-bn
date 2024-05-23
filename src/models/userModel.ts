@@ -124,7 +124,7 @@ User.init(
   {
     tableName: 'users',
     sequelize, // passing the sequelize instance
-  },
+  }
 );
 
 export default User;
