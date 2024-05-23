@@ -3,7 +3,6 @@ import verifyToken from '../middleware/verfication.middleware.js';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
-import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import isAdmin from '../middleware/isAdminMiddleware.js';
 export const usersRouter = express.Router();
@@ -65,7 +64,7 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
 /**
  * @swagger
  * /api/users/update/:id:
- *   post:
+ *   patch:
  *     summary: update user information
  *     description: update personal information
  *     tags: [Users]
@@ -91,4 +90,18 @@ usersRouter.post('/login/user', isBlocked, login);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
-usersRouter.put('/block/:id', isAdmin, blockUser);
+/**
+ * @swagger
+ * /api/users/logout:
+ *   post:
+ *     summary: Log out
+ *     tags: [Users]
+ *     responses:
+ *       '200':
+ *         description: Successfully logged out
+ *       '400':
+ *         description: You're not logged In
+ *       '500':
+ *         description: Internal server error
+ */
+usersRouter.post('/users/logout', UserController.logout);

@@ -43,9 +43,6 @@ export class userService {
             const validateUpdates = validateUserupdates(updates);
             const user = await User.findByPk(userId);
             if (user) {
-                if (!user.isverified) {
-                    throw new Error(`Error updating user: user not verified`);
-                }
                 if (validateUpdates.length > 0) {
                     throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
                 }
