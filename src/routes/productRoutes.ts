@@ -45,10 +45,17 @@ productRouter.post('/product/create', verifyToken, ProductControllerInstance.cre
 /**
  * @swagger
  * /api/product/deleteProduct/:productId:
- *   post:
+ *   delete:
  *     summary: Delete an existing product
  *     description: Endpoint to delete an existing product.
  *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of product to be deleted
  *     responses:
  *       '200':
  *         description: Product deleted successfully

@@ -70,7 +70,7 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
 /**
  * @swagger
  * /api/users/update/:id:
- *   post:
+ *   patch:
  *     summary: update user information
  *     description: update personal information
  *     tags: [Users]
@@ -96,7 +96,6 @@ usersRouter.post('/login/user',isBlocked, login);
 usersRouter.post('/login',loginByGoogle)
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
-
 /**
  * @swagger
  * /api/users/logout:
@@ -106,7 +105,7 @@ usersRouter.get('/reset', UserController.resetPassword);
  *     responses:
  *       '200':
  *         description: Successfully logged out
- *       '400'
+ *       '400':
  *         description: You're not logged In
  *       '500':
  *         description: Internal server error

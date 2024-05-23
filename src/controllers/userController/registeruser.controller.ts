@@ -250,9 +250,9 @@ class userController {
     try {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
-    const loggedOutCookie = req.cookies;
+    const loggedOutCookie = req.cookies.loggedOut;
     console.log(loggedOutCookie);
-    if(loggedOutCookie){
+    if(!loggedOutCookie){
       res.status(400).json({error: 'You are already logged out'});
     }
     else{
