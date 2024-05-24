@@ -1,7 +1,6 @@
 import express from "express";
 import { ProductControllerInstance } from "../controllers/productController/productController.js";
 import checkToken from "../middleware/checkToken.js";
-import verifyToken from '../middleware/verfication.middleware.js';
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
 
 
