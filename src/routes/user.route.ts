@@ -146,6 +146,9 @@ usersRouter.put('/users/update/:id', UserController.updateUser);
 /**
  * @swagger
  * /api/users/update/:id:
+ *   patch:
+ *     summary: update user information
+ *     description: update personal information
  *   post:
  *     summary: Update user information
  *     description: Update personal information
@@ -183,7 +186,7 @@ usersRouter.put('/block/:id', isAdmin, blockUser);
  *       '200':
  *         description: Successfully logged out
  *       '400':
- *         description: You're not logged in
+ *         description: You're not logged In
  *       '500':
  *         description: Internal server error
  */
