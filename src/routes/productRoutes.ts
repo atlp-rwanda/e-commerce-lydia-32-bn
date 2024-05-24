@@ -41,3 +41,5 @@ export const productRouter = express.Router();
  *         description: Internal server error
  */
 productRouter.post('/product/create',verifyToken,ProductControllerInstance.createProduct);
+
+productRouter.put('/product/update/:productId', verifyToken, ProductControllerInstance.updateProduct);
