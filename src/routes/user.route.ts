@@ -187,8 +187,6 @@ usersRouter.put('/block/:id', isAdmin, blockUser);
  *         description: Successfully logged out
  *       '400':
  *         description: You're not logged In
- *       '400':
- *         description: You're not logged in
  *       '500':
  *         description: Internal server error
  */
