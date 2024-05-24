@@ -4,7 +4,7 @@ import { UserController } from '../controllers/userController/registeruser.contr
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
-import {isBlocked }from '../middleware/isBlockedMiddleware.js';
+import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import isAdmin from '../middleware/isAdminMiddleware.js';
 
 export const usersRouter = express.Router();
@@ -31,7 +31,7 @@ export const usersRouter = express.Router();
  *             $ref: '#/components/schemas/User'
  *     responses:
  *       '201':
- *         description: Signup was successfull, Verification Email sent
+ *         description: Signup was successful, Verification Email sent
  *         content:
  *           application/json:
  *             schema:
@@ -62,23 +62,101 @@ usersRouter.post('/register', UserController.createUser);
  *       '500':
  *         description: Internal server error
  */
-
 usersRouter.post('/verify', verifyToken, UserController.verifyUser);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: User authentication
+ */
+
+/**
+ * @swagger
+ * /api/login/user:
+ *   post:
+ *     summary: User login
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       '200':
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       '401':
+ *         description: Invalid email or password, or user not verified
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *
+ * components:
+ *   schemas:
+ *     LoginRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: user@example.com
+ *         password:
+ *           type: string
+ *           format: password
+ *           example: myPassword123
+ *
+ *     LoginResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           example: Login successful
+ *         token:
+ *           type: string
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           example: Invalid email or password
+ */
+usersRouter.post('/login/user', isBlocked, login);
 usersRouter.get('/users/:id', UserController.getUserById);
+usersRouter.get('/users', isAdmin, UserController.getAllUsers);
+usersRouter.put('/users/update/:id', UserController.updateUser);
+
 usersRouter.get('/users',isAdmin, UserController.getAllUsers);
 usersRouter.patch('/changepassword',verifyToken, UserController.changePassword);
 /**
  * @swagger
  * /api/users/update/:id:
  *   post:
- *     summary: update user information
- *     description: update personal information
+ *     summary: Update user information
+ *     description: Update personal information
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       '200':
- *         description: User info updatede succesfully
+ *         description: User info updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -90,13 +168,12 @@ usersRouter.patch('/changepassword',verifyToken, UserController.changePassword);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.patch('/users/update/:id',verifyToken, UserController.updateUser);
+usersRouter.patch('/users/update/:id', verifyToken, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
-usersRouter.post('/login/user',isBlocked, login);
-usersRouter.post('/login',loginByGoogle)
+usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
-usersRouter.put('/block/:id',isAdmin, blockUser)
+usersRouter.put('/block/:id', isAdmin, blockUser);
 
 /**
  * @swagger
@@ -107,6 +184,8 @@ usersRouter.put('/block/:id',isAdmin, blockUser)
  *     responses:
  *       '200':
  *         description: Successfully logged out
+ *       '400':
+ *         description: You're not logged in
  *       '400':
  *         description: You're not logged In
  *       '500':
