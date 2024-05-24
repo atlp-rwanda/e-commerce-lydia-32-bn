@@ -1,11 +1,13 @@
 import express from 'express';
-import verifyToken from '../middleware/verfication.middleware.js';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import {isBlocked }from '../middleware/isBlockedMiddleware.js';
 import isAdmin from '../middleware/isAdminMiddleware.js';
+
+import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
+
 
 export const usersRouter = express.Router();
 
@@ -63,7 +65,7 @@ usersRouter.post('/register', UserController.createUser);
  *         description: Internal server error
  */
 
-usersRouter.post('/verify', verifyToken, UserController.verifyUser);
+usersRouter.post('/verify', UserController.verifyUser);
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users',isAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
@@ -90,7 +92,7 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.patch('/users/update/:id',verifyToken, UserController.updateUser);
+usersRouter.patch('/users/update/:id', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login/user',isBlocked, login);
 usersRouter.post('/login',loginByGoogle)

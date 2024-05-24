@@ -2,6 +2,14 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+    throw new Error('Missing JWT_SECRET environment variable');
+}
+
+const JWT_SECRET: string = process.env.JWT_SECRET;
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -28,10 +36,19 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, firstname: user.firstname },
-      process.env.JWT_SECRET || 'default_secret', 
+      { userId: user.id, firstname: user.firstname, usertype: user.usertype, isAdmin: user.isAdmin, isverified: user.isverified, isBlocked: user.isBlocked },
+      JWT_SECRET, 
       { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' }, 
     );
+
+    const expiryDate = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
+
+    res.cookie(
+      'jwt',
+      token,
+      {httpOnly: true, path: '/', expires: expiryDate},
+      
+  ),
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error: any) {

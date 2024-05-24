@@ -1,6 +1,7 @@
 import express from "express";
 import { ProductControllerInstance } from "../controllers/productController/productController.js";
-import verifyToken from '../middleware/verfication.middleware.js';
+
+import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
 
 
 
@@ -40,6 +41,6 @@ export const productRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-productRouter.post('/product/create',verifyToken,ProductControllerInstance.createProduct);
+productRouter.post('/product/create', sellerAuthJWT, ProductControllerInstance.createProduct);
 
-productRouter.put('/product/update/:productId', verifyToken, ProductControllerInstance.updateProduct);
+productRouter.put('/product/update/:productId', sellerAuthJWT, ProductControllerInstance.updateProduct);

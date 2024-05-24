@@ -76,6 +76,7 @@ class ProductController {
     
     const productId = Number(req.params.productId);
     const updateFields = req.body;
+    const loggedInUserId = Number(req.userId)
 
     try {
       const productService = new ProductService();
@@ -83,6 +84,11 @@ class ProductController {
 
       if (!product) {
         res.status(404).json({ message: 'Product not found' });
+        return;
+      }
+
+      if (product.userId !== loggedInUserId) {
+        res.status(404).json({ message: 'you do not own this product therefore you can not update it' });
         return;
       }
 
