@@ -168,7 +168,7 @@ usersRouter.patch('/changepassword',verifyToken, UserController.changePassword);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.patch('/users/update/:id', verifyToken, UserController.updateUser);
+usersRouter.patch('/users/update', verifyToken, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);

@@ -51,7 +51,8 @@ export class userService {
        
       const user = await User.findByPk(userId);
       if (user) {
-        if(!user.isverified){
+        const userData = user.toJSON() as UserAttributes;
+        if(!userData.isverified){
           throw new Error(`Error updating user: user not verified`);
       }
         if(validateUpdates.length > 0){
@@ -59,7 +60,7 @@ export class userService {
          
         }
         await user.update(updates);
-        return user.toJSON() as UserAttributes;
+        return user.toJSON() as UserAttributes
       }
       return null;
     } catch (error: any) {

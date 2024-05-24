@@ -131,8 +131,8 @@ class userController {
 
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const userId = parseInt(req.params.id, 10);
       const updates = req.body;
+      const userId = req.body.userId
       const { userId: _,email,password, ...validUpdates } = updates;
      
       const user = await UserService.updateUser(userId, validUpdates);
