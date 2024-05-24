@@ -246,6 +246,30 @@ class userController {
       res.status(500).json({ error: error.message });
     }
   };
+  logout = async (req: Request, res: Response): Promise<void> => {
+    try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    const loggedOutCookie = req.cookies.loggedOut;
+    console.log(loggedOutCookie);
+    if(loggedOutCookie){
+      res.status(400).json({error: 'You are already logged out'});
+    }
+    else{
+      if(token){
+        res.clearCookie('token');
+        res.cookie('loggedOut', token, { httpOnly: true });
+        res.status(200).json({ message: 'Logout successful' });
+      }
+      else{
+        res.status(400).json({error: "You're not yet logged In !"});
+      }
+    }
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+}
+  };
 }
 
 export const UserController = new userController();

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import Product from '../../models/productModel.js';
-import { ProductService } from '../../services/product.service.js';
-import { userService } from '../../services/registeruser.service.js';
+import { productService } from '../../services/product.service.js';
+import { UserService } from '../../services/registeruser.service.js';
 import { productSchema } from '../../validations/product.validation.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
@@ -39,14 +39,14 @@ class ProductController {
         return;
       }
 
-      const UserService = new userService();
+      //const UserService = new userService();
       const user = await UserService.getUserById(userId);
       if (!user || user.usertype !== 'seller') {
         res.status(403).json({ message: 'Only sellers can create products' });
         return;
       }
 
-      const productService = new ProductService();
+      //const productService = new ProductService();
       const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, productDetails.userId);
       if (existingProduct) {
         res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.'});
@@ -72,7 +72,7 @@ class ProductController {
     }
   }
 
-  async updateProduct(req: Request, res: Response): Promise<void> {
+async updateProduct(req: Request, res: Response): Promise<void> {
     
     const productId = Number(req.params.productId);
     const updateFields = req.body;
@@ -97,6 +97,35 @@ class ProductController {
 
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+      console.log(error);
+    }
+  }
+
+  async deleteProduct(req: Request, res: Response): Promise<void> {
+
+    const productId: number = Number(req.params.productId);
+    try {
+      const userId = req.body.userId;
+      const user = await UserService.getUserById(userId);
+      if(user && user.usertype == 'seller'){
+          const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
+          if(productToBeDeleted){
+            console.log(productToBeDeleted);
+            await productService.deleteProduct(productToBeDeleted.productId);
+            res.status(200).json({
+              success: `Product with Id ${productId} is Deleted Successfully`,
+            });
+          }
+          else{
+            res.status(404).json({Error: "Sorry Either Product Doesn't exists or doesn't belongs to you !"})
+          }
+        } 
+      else {
+        res.status(403).json({ Warning: 'Only sellers can delete products' });
+        return;
+      }
+    } catch (error) {
+      res.status(500).json({ error: error });
       console.log(error);
     }
   }

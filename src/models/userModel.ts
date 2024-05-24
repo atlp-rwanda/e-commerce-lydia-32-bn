@@ -91,14 +91,13 @@ User.init(
     },
     usertype: {
       type: DataTypes.ENUM('buyer', 'seller'),
-      defaultValue: 'buyer'
+      defaultValue: 'buyer',
     },
     street: {
       type: new DataTypes.STRING(128),
     },
     city: {
       type: new DataTypes.STRING(128),
-
     },
     state: {
       type: new DataTypes.STRING(128),
@@ -108,20 +107,19 @@ User.init(
     },
     country: {
       type: new DataTypes.STRING(128),
-
     },
     isverified: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
     },
     isBlocked: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
+      defaultValue: false,
+    },
   },
   {
     tableName: 'users',

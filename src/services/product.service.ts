@@ -35,6 +35,25 @@ export class ProductService {
     }
   }
 
+  async getProductByIdAndUserId(productid: number,userId:number): Promise<Product | null> {
+    try {
+      const product = await Product.findOne({
+        where: {
+          productId: productid,
+          userId:userId
+        }
+      });
+      console.log(product);
+      return product ? (product.toJSON() as Product) : null;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error retrieving product: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while retrieving product.');
+      }
+    }
+  }
+
   async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
@@ -68,6 +87,7 @@ export class ProductService {
     }
   }
 
+
   async getProductByFields(fields: Partial<ProductAttributes>): Promise<ProductAttributes | null> {
     try {
       const product = await Product.findOne({
@@ -80,7 +100,6 @@ export class ProductService {
     } catch (error: any) {
       throw new Error(`Error fetching product by fields: ${error.message}`);
     }
-  }
+ }
 }
-
 export const productService = new ProductService();

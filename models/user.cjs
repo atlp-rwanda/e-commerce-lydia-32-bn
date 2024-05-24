@@ -3,9 +3,7 @@ import { Model } from 'sequelize';
 
 export default (sequelize, DataTypes) => {
   class User extends Model {
-    static associate(models) {
-     
-    }
+    static associate(models) {}
   }
 
   User.init(
@@ -30,34 +28,32 @@ export default (sequelize, DataTypes) => {
       },
       usertype: {
         type: DataTypes.ENUM('buyer', 'seller'),
-        defaultValue: 'buyer'
+        defaultValue: 'buyer',
       },
       street: {
         type: new DataTypes.STRING(128),
       },
       city: {
         type: new DataTypes.STRING(128),
-  
       },
       state: {
         type: new DataTypes.STRING(128),
-      }, 
+      },
       postal_code: {
         type: new DataTypes.STRING(128),
       },
       country: {
         type: new DataTypes.STRING(128),
-  
       },
       isAdmin: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
       },
     },
     {
       sequelize,
       modelName: 'User',
-    }
+    },
   );
 
   return User;

@@ -2,6 +2,7 @@ import { Express, Request, Response } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import log from './logger.js';
+
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
@@ -9,6 +10,14 @@ const options: swaggerJsdoc.Options = {
       title: 'E-COMMERCE-LYDIA-32 API',
       version: '0.1',
     },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+      },
+      {
+        url: 'https://e-commerce-lydia-32-bn.onrender.com',
+      },
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -132,7 +141,7 @@ function swaggerDocs(app: Express, port: number) {
   });
   app.use((req, res, next) => {
     const host = req.get('host');
-    const protocol = req.protocol;
+    const { protocol } = req;
     log.info(`Swagger docs available at ${protocol}://${host}/docs`);
     next();
   });
