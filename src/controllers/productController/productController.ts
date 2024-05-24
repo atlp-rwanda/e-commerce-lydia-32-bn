@@ -79,7 +79,7 @@ async updateProduct(req: Request, res: Response): Promise<void> {
     const loggedInUserId = Number(req.userId)
 
     try {
-      const productService = new ProductService();
+      // const productService = new productService();
       const product = await productService.getProductByFields({ productId });
 
       if (!product) {
