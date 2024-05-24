@@ -46,6 +46,20 @@ export class userService {
   async updateUser(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
       
+       
+      const user = await User.findByPk(userId);
+      if (user) {
+        await user.update(updates);
+        return user.toJSON() as UserAttributes
+      }
+      return null;
+    } catch (error: any) {
+      throw new Error(`Error updating user: ${error.message}`);
+    }
+  }
+  async updateUserInfo(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
+    try {
+      
       const validateUpdates = validateUserupdates(updates)
        
       const user = await User.findByPk(userId);

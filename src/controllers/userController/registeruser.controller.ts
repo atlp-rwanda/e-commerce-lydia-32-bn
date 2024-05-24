@@ -135,7 +135,7 @@ class userController {
       const userId = req.body.userId
       const { userId: _,email,password, ...validUpdates } = updates;
      
-      const user = await UserService.updateUser(userId, validUpdates);
+      const user = await UserService.updateUserInfo(userId, validUpdates);
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
         res.status(200).json({ message: 'User updated successfully:', user });
