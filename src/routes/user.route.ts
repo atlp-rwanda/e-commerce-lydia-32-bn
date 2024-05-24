@@ -107,7 +107,7 @@ usersRouter.put('/block/:id',isAdmin, blockUser)
  *     responses:
  *       '200':
  *         description: Successfully logged out
- *       '400'
+ *       '400':
  *         description: You're not logged In
  *       '500':
  *         description: Internal server error
