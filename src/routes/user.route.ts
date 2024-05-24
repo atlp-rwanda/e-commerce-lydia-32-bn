@@ -148,6 +148,9 @@ usersRouter.patch('/changepassword',verifyToken, UserController.changePassword);
 /**
  * @swagger
  * /api/users/update/:id:
+ *   patch:
+ *     summary: update user information
+ *     description: update personal information
  *   post:
  *     summary: Update user information
  *     description: Update personal information
@@ -184,8 +187,6 @@ usersRouter.put('/block/:id', isAdmin, blockUser);
  *     responses:
  *       '200':
  *         description: Successfully logged out
- *       '400':
- *         description: You're not logged in
  *       '400':
  *         description: You're not logged In
  *       '500':

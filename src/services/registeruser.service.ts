@@ -7,7 +7,6 @@ import { validateUserupdates, passwordValidation } from '../validations/updatesV
 import bcrypt,{genSalt} from 'bcrypt'
 import sendVerificationToken from '../helpers/sendEmail.js';
 
-
 export class userService {
   async createUser(userDetails: UserCreationAttributes): Promise<UserAttributes> {
     const validationErrors = validateUserCreation(userDetails);
