@@ -49,13 +49,13 @@ export class userService {
        
       const user = await User.findByPk(userId);
       if (user) {
-        if(!user.isverified){
-          throw new Error(`Error updating user: user not verified`);
-      }
-        if(validateUpdates.length > 0){
-          throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
+      //   if(!user.isverified){
+      //     throw new Error(`Error updating user: user not verified`);
+      // }
+        // if(validateUpdates.length > 0){
+        //   throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
          
-        }
+        // }
         await user.update(updates);
         return user.toJSON() as UserAttributes;
       }
@@ -94,7 +94,7 @@ export class userService {
     }
   }
  
-   // useless method to get user by email but modified the above to accept any field
+//  method to get user by email
   async getUserByEmail(email: string): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({ where: { email } });
