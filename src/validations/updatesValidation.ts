@@ -33,8 +33,18 @@ const userCreationSchema = Joi.object({
   isAdmin: Joi.boolean().optional()
 });
 
-
-
+export const passwordValidation = Joi.object({
+  password: Joi.string()
+    .min(8)
+    .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])'))
+    .required()
+    .messages({
+      'string.empty': 'Password is required.',
+      'string.min': 'Password must be at least 8 characters long.',
+      'string.pattern.base':
+        'Password must contain at least one lowercase letter, one uppercase letter, and one digit.',
+    }),
+});
 export const validateUserupdates = (userData: any): string[] => {
   const { error } = userCreationSchema.validate(userData, { abortEarly: false });
   if (error) {

@@ -1,7 +1,7 @@
 import express from "express";
 import { ProductControllerInstance } from "../controllers/productController/productController.js";
-import verifyToken from '../middleware/verfication.middleware.js';
-
+import checkToken from "../middleware/checkToken.js";
+import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
 
 
 export const productRouter = express.Router();
@@ -40,4 +40,30 @@ export const productRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-productRouter.post('/product/create',verifyToken,ProductControllerInstance.createProduct);
+
+productRouter.post('/product/create', sellerAuthJWT, ProductControllerInstance.createProduct);
+productRouter.put('/product/update/:productId', sellerAuthJWT, ProductControllerInstance.updateProduct);
+
+/**
+ * @swagger
+ * /api/product/deleteProduct/:productId:
+ *   delete:
+ *     summary: Delete an existing product
+ *     description: Endpoint to delete an existing product.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of product to be deleted
+ *     responses:
+ *       '200':
+ *         description: Product deleted successfully
+ *       '404':
+ *         description: Bad request - Either product doesn't exist or belongs to you
+ *       '401':
+ *         description: Unauthorized - You are not authorized to perform such action
+ */
+productRouter.delete('/product/deleteProduct/:productId', checkToken, ProductControllerInstance.deleteProduct);

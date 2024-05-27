@@ -87,7 +87,25 @@ class userController {
       return res.status(500).json({ error: error.message });
     }
   };
+  
+   changePassword = async (req:Request, res:Response) => {
+    try{
+      
+      const { newPassword, oldPassword,userId } = req.body
+    
+      const user = await UserService.changePassword(userId,oldPassword,newPassword)
 
+      if(user) {
+        res.status(user.code).json({message:user.message})
+      }
+      else{
+      res.status(500).json({error:"user not found"})
+      }
+    }
+    catch(error:any){
+      res.status(500).json({error:error.message})
+    }
+   }
   getUserById = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
@@ -113,11 +131,11 @@ class userController {
 
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const userId = parseInt(req.params.id, 10);
       const updates = req.body;
+      const userId = req.body.userId
       const { userId: _,email,password, ...validUpdates } = updates;
      
-      const user = await UserService.updateUser(userId, validUpdates);
+      const user = await UserService.updateUserInfo(userId, validUpdates);
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
         res.status(200).json({ message: 'User updated successfully:', user });
@@ -248,8 +266,7 @@ class userController {
   };
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.cookies.jwt
     const loggedOutCookie = req.cookies.loggedOut;
     console.log(loggedOutCookie);
     if(loggedOutCookie){
@@ -257,13 +274,14 @@ class userController {
     }
     else{
       if(token){
-        res.clearCookie('token');
+        res.clearCookie('jwt');
         res.cookie('loggedOut', token, { httpOnly: true });
         res.status(200).json({ message: 'Logout successful' });
       }
       else{
         res.status(400).json({error: "You're not yet logged In !"});
       }
+      
     }
 } catch (error) {
     console.error(error);
