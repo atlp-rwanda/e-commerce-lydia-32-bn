@@ -266,6 +266,7 @@ class userController {
   };
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
+    
     const token = req.cookies.jwt
     const loggedOutCookie = req.cookies.loggedOut;
     console.log(loggedOutCookie);

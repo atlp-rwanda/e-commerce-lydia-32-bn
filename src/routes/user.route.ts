@@ -284,4 +284,5 @@ usersRouter.put('/users/update/:id', UserController.updateUser);
  * @param {import('express').Response} res - The Express response object.
  * @returns {Promise<void>} A Promise that resolves when the logout operation is complete.
  */
+
 usersRouter.post('/users/logout', UserController.logout);
