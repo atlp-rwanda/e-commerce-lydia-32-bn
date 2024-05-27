@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { SellerService } from '../services/seller.Service.js';
-import { userService } from '../services/registeruser.service.js';
+import { SellerService } from '../../services/seller.Service.js';
+import { userService } from '../../services/registeruser.service.js';
 
 class SellerController {
   // get products associated with seller
