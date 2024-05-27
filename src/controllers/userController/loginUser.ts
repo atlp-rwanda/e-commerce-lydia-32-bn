@@ -4,37 +4,45 @@ import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
 import generateToken from '../../utilis/generateToken.js';
 
+let isLoggedIn = false;
+
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
-    // Finding the user with the provided email
-    const user = await UserService.getUserByEmail(email);
-    if (!user) {
-      res.status(401).json({ error: 'Invalid email or password' });
+    // Check if the user is already logged in
+    if (isLoggedIn) {
+      res.status(400).json({ error: 'You are already logged in' });
       return;
     }
 
-    // Check if the user is verified
+    let user;
+    try {
+      user = await UserService.getUserByEmail(email);
+    } catch (error) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
     if (!user.isverified) {
       res.status(401).json({ error: 'User is not verified' });
       return;
     }
-
     // Comparing provided password with the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, firstname: user.firstname },
-      process.env.JWT_SECRET || 'default_secret',
-      { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' },
-    );
-    res.clearCookie('loggedOut');
-    res.cookie('token', token, { httpOnly: true });
-    res.status(200).json({ message: 'Login successful', token });
+
+    const token = generateToken(res, user.id, user.email, user.firstname);
+    isLoggedIn = true;
+    res.status(200).json({ message: "Login successful", token });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
