@@ -7,6 +7,7 @@ import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import isAdmin from '../middleware/isAdminMiddleware.js';
 
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
+import checkToken from '../middleware/checkToken.js';
 
 
 export const usersRouter = express.Router();
@@ -145,8 +146,8 @@ usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 
-usersRouter.get('/users',isAdmin, UserController.getAllUsers);
-usersRouter.patch('/changepassword',userAuthJWT, UserController.changePassword);
+usersRouter.get('/users',isAdmin,UserController.getAllUsers);
+usersRouter.patch('/changepassword',checkToken, UserController.changePassword);
 /**
  * @swagger
  * /api/users/update/:id:

@@ -4,7 +4,7 @@ import {
 import sequelize from '../config/db.js';
 import { toDefaultValue } from 'sequelize/types/utils.js';
 
-interface UserAttributes {
+export interface UserAttributes {
   id: number;
   firstname: string;
   othername: string;
