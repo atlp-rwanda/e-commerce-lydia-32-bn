@@ -146,7 +146,7 @@ usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 
 usersRouter.get('/users',isAdmin, UserController.getAllUsers);
-usersRouter.patch('/changepassword',verifyToken, UserController.changePassword);
+usersRouter.patch('/changepassword',userAuthJWT, UserController.changePassword);
 /**
  * @swagger
  * /api/users/update/:id:
