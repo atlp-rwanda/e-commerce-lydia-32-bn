@@ -7,6 +7,7 @@ import User from './models/userModel.js';
 import { usersRouter } from './routes/user.route.js';
 import { productRouter} from './routes/productRoutes.js';
 import { sellerRouter } from './routes/sellerRoutes.js';
+import { wishListRouter } from './routes/wishListRoutes.js';
 
 
 dotenv.config();
@@ -27,7 +28,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
-app.use('/api', usersRouter,productRouter, sellerRouter);
+app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
 
 
 swaggerDocs(app, port);
