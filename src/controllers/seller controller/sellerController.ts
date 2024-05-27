@@ -46,14 +46,14 @@ class SellerController {
 
   // New method to toggle product availability
   async updateProductAvailability(req: Request, res: Response): Promise<void> {
-    const token = req.cookies.token;
+    const token = req.cookies.jwt;
     if (!token) {
       res.status(401).json({ message: 'Unauthorized: Token is missing' });
       return;
     }
 
     try {
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as JwtPayload;
+      const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
       const userId = decodedToken.userId;
       const userServiceInstance = new userService();
       const user = await userServiceInstance.getUserById(userId);
