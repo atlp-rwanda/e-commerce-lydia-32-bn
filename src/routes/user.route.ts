@@ -184,14 +184,25 @@ usersRouter.put('/block/:id', isAdmin, blockUser);
  * @swagger
  * /api/users/logout:
  *   post:
- *     summary: Log out
- *     tags: [Users]
+ *     summary: Logout user
+ *     tags:
+ *       - User
+ *     description: Logout the currently authenticated user by clearing the JWT cookie and setting a loggedOut cookie.
  *     responses:
  *       '200':
- *         description: Successfully logged out
+ *         description: Logout successful
  *       '400':
- *         description: You're not logged In
+ *         description: Bad Request (e.g., already logged out or not logged in)
  *       '500':
- *         description: Internal server error
+ *         description: Internal Server Error
  */
+
+/**
+ * Logout the currently authenticated user.
+ *
+ * @param {import('express').Request} req - The Express request object.
+ * @param {import('express').Response} res - The Express response object.
+ * @returns {Promise<void>} A Promise that resolves when the logout operation is complete.
+ */
+
 usersRouter.post('/users/logout', UserController.logout);

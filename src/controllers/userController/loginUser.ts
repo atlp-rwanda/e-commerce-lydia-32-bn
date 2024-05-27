@@ -50,7 +50,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       {httpOnly: true, path: '/', expires: expiryDate},
       
   ),
-
+  res.clearCookie('loggedOut');
     res.status(200).json({ message: "Login successful", token });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
