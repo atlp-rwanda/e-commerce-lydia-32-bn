@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
     try {
         const token = req.cookies.jwt
         if(!token) {
-          return  res.status(401).json({message: "No token found"})
+          return  res.status(403).json({message: "No token found"})
         }
         const decodedToken = jwt.verify(token,process.env.VERIFICATION_JWT_SECRET || '')
         const user = await User.findByPk((decodedToken as any).userId)

@@ -146,10 +146,10 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
 
 /**
  * @swagger
- * /users/block/{id}:
+ * /api/block/{id}:
  *   put:
  *     summary: Block a user
- *     description: Blocks a user account and sends an email notification
+ *     description: Blocks a user account and sends an email notification. Requires admin privileges.
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -178,6 +178,17 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: 'Only Admin can access this route'
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 'No token found'
  *       500:
  *         description: Internal Server Error
  *         content:
@@ -199,7 +210,7 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
  *
  * @route PUT /users/block/{id}
  * @summary Block a user
- * @description Blocks a user account and sends an email notification
+ * @description Blocks a user account and sends an email notification. Requires admin privileges.
  * @param {Object} req - Express request object
  * @param {string} req.params.id - ID of the user to be blocked
  * @param {Object} res - Express response object
