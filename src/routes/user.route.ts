@@ -145,6 +145,8 @@ usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 
+usersRouter.get('/users',isAdmin, UserController.getAllUsers);
+usersRouter.patch('/changepassword',userAuthJWT, UserController.changePassword);
 /**
  * @swagger
  * /api/users/update/:id:
@@ -171,7 +173,7 @@ usersRouter.put('/users/update/:id', UserController.updateUser);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.patch('/users/update/:id', userAuthJWT, UserController.updateUser);
+usersRouter.patch('/users/update', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
