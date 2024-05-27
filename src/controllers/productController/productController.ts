@@ -72,6 +72,35 @@ class ProductController {
     }
   }
 
+async updateProduct(req: Request, res: Response): Promise<void> {
+    
+    const productId = Number(req.params.productId);
+    const updateFields = req.body;
+    const loggedInUserId = Number(req.userId)
+
+    try {
+      // const productService = new productService();
+      const product = await productService.getProductByFields({ productId });
+
+      if (!product) {
+        res.status(404).json({ message: 'Product not found' });
+        return;
+      }
+
+      if (product.userId !== loggedInUserId) {
+        res.status(404).json({ message: 'you do not own this product therefore you can not update it' });
+        return;
+      }
+
+      const updatedProduct = await productService.updateProduct(productId, updateFields);
+      res.status(200).json({ message: 'Product updated successfully', updatedProduct });
+
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+      console.log(error);
+    }
+  }
+
   async deleteProduct(req: Request, res: Response): Promise<void> {
 
     const productId: number = Number(req.params.productId);
