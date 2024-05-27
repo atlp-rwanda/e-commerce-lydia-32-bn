@@ -1,5 +1,5 @@
 import express from 'express';
-import { sellerControllerInstance } from '../controllers/sellerController.js';
+import { sellerControllerInstance } from '../controllers/seller controller/sellerController.js';
 
 export const sellerRouter = express.Router();
 

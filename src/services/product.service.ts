@@ -1,4 +1,7 @@
 import Product from '../models/productModel.js';
+import ProductAttributes from '../models/productModel.js';
+import { Op } from 'sequelize'; // Import Op from sequelize
+
 
 export class ProductService {
   async createProduct(productDetails: Product): Promise<Product> {
@@ -85,6 +88,18 @@ export class ProductService {
   }
 
 
+  async getProductByFields(fields: Partial<ProductAttributes>): Promise<ProductAttributes | null> {
+    try {
+      const product = await Product.findOne({
+        where: {
+          [Op.and]: fields
+        },
+        attributes: { exclude: ['password'] }
+      });
+      return product ? (product.toJSON() as ProductAttributes) : null;
+    } catch (error: any) {
+      throw new Error(`Error fetching product by fields: ${error.message}`);
+    }
+ }
 }
-
 export const productService = new ProductService();
