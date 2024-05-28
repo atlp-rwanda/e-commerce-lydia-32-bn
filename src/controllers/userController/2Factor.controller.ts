@@ -33,8 +33,6 @@ export const verifyTwoFactor = async (req: Request, res: Response): Promise<void
         {
           userId: user.id,
           firstname: user.firstname,
-          usertype: user.usertype,
-          isAdmin: user.isAdmin,
           isverified: user.isverified,
           isBlocked: user.isBlocked,
         },

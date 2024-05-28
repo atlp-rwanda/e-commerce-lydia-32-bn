@@ -9,7 +9,6 @@ interface UserAttributes {
   email: string;
   phone: string;
   password: string;
-  usertype: 'buyer' | 'seller';
   street: string |  null;
   city: string | null;
   state: string | null;
@@ -17,7 +16,6 @@ interface UserAttributes {
   country: string | null;
   roleId: number;
   isverified: boolean;
-  isAdmin: boolean;
   isBlocked: boolean;
   hasTwoFactor:boolean;
   twoFactorSecret: string | null
@@ -32,7 +30,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public email!: string;
   public phone!: string;
   public password!: string;
-  public usertype!: 'buyer' | 'seller';
 
   public street!: string | null;
 
@@ -47,7 +44,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public  roleId!: number;
 
   public isverified!: boolean;
-  public isAdmin!: boolean;
 
   public isBlocked!: boolean;
 
@@ -88,10 +84,6 @@ User.init(
       type: DataTypes.STRING(128),
       allowNull: false,
     },
-    usertype: {
-      type: DataTypes.ENUM('buyer', 'seller'),
-      defaultValue: 'buyer',
-    },
     street: {
       type: DataTypes.STRING(128),
       allowNull: true,
@@ -121,11 +113,6 @@ User.init(
       defaultValue: 1,
     },
     isverified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-   
-    isAdmin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },

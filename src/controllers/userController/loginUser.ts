@@ -6,6 +6,7 @@ import generateToken from '../../utilis/generateToken.js';
 import sendSms from '../../helpers/sendSms.js'
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import dotenv from 'dotenv';
+import Role from '../../models/roleModel.js';
 
 dotenv.config();
 
@@ -37,8 +38,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
+    const userRole = await Role.findByPk(user.dataValues.roleId) as any;
 
-    if (user.dataValues.usertype === 'seller') {
+    if (userRole || userRole.dataValues.name === 'seller') {
       await user.update({ hasTwoFactor: true });
       const twoFactorCode = Math.floor(10000 + Math.random() * 90000).toString();
       const [updatedRows, [updatedUser]] = await User.update(
@@ -61,8 +63,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       {
         userId: user.id,
         firstname: user.firstname,
-        usertype: user.usertype,
-        isAdmin: user.isAdmin,
         isverified: user.isverified,
         isBlocked: user.isBlocked,
       },
@@ -76,5 +76,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ message: 'Login successful', token });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+    console.log(error)
   }
 };

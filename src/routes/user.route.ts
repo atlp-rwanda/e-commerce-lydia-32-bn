@@ -7,7 +7,6 @@ import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middleware/verfication.middleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
-import isAdmin from '../middleware/isAdminMiddleware.js';
 
 export const usersRouter = express.Router();
 
@@ -142,7 +141,7 @@ usersRouter.post('/verify', verifyToken, UserController.verifyUser);
  */
 usersRouter.post('/login/user', isBlocked, login);
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users',isAdmin, UserController.getAllUsers);
+usersRouter.get('/users',isRoleAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
 
 
@@ -219,7 +218,7 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
  * @returns {Promise<Response>} - Promise resolving with the response object
  */
 
-usersRouter.put('/block/:id',isAdmin, blockUser)
+usersRouter.put('/block/:id',isRoleAdmin, blockUser)
 usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 
@@ -256,7 +255,7 @@ usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
-usersRouter.get('/users', isAdmin, UserController.getAllUsers);
+usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 usersRouter.put('/block/:id', isRoleAdmin, blockUser);
 

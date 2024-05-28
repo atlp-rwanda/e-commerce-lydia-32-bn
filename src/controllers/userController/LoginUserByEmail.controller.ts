@@ -33,9 +33,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         email: getPayLoad?.email || 'default@example.com',
         phone: '',
         password: await bcrypt.hash(defaultPassword, 10),
-        usertype: 'buyer',
         isverified: false,
-        isAdmin: false,
         isBlocked:false,
         hasTwoFactor: false,
         roleId: 1
