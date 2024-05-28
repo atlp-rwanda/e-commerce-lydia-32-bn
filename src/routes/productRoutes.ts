@@ -43,6 +43,44 @@ export const productRouter = express.Router();
  */
 
 productRouter.post('/product/create', sellerAuthJWT, ProductControllerInstance.createProduct);
+
+/**
+ * @swagger
+ * /api/product/update/{productId}:
+ *   put:
+ *     summary: Update an existing product
+ *     description: Endpoint to update an existing product.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the product to be updated
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductDetails'
+ *     responses:
+ *       '200':
+ *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad request - Invalid product data
+ *       '401':
+ *         description: Unauthorized - Token is missing or invalid
+ *       '404':
+ *         description: Not found - Product not found
+ *       '500':
+ *         description: Internal server error
+ */
+
 productRouter.put('/product/update/:productId', sellerAuthJWT, ProductControllerInstance.updateProduct);
 
 /**
