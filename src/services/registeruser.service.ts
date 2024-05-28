@@ -3,8 +3,8 @@ import User from '../models/userModel.js';
 import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
 import { Op } from 'sequelize'; // Import Op from sequelize
-import { validateUserupdates, passwordValidation } from '../validations/updatesValidation.js'
-import bcrypt,{genSalt} from 'bcrypt'
+import { validateUserupdates, passwordValidation } from '../validations/updatesValidation.js';
+import bcrypt, { genSalt } from 'bcrypt';
 import sendVerificationToken from '../helpers/sendEmail.js';
 
 export class userService {
@@ -45,12 +45,10 @@ export class userService {
 
   async updateUser(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
-      
-       
       const user = await User.findByPk(userId);
       if (user) {
         await user.update(updates);
-        return user.toJSON() as UserAttributes
+        return user.toJSON() as UserAttributes;
       }
       return null;
     } catch (error: any) {
@@ -59,21 +57,19 @@ export class userService {
   }
   async updateUserInfo(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
-      
-      const validateUpdates = validateUserupdates(updates)
-       
+      const validateUpdates = validateUserupdates(updates);
+
       const user = await User.findByPk(userId);
       if (user) {
         const userData = user.toJSON() as UserAttributes;
-        if(!userData.isverified){
+        if (!userData.isverified) {
           throw new Error(`Error updating user: user not verified`);
-      }
-        if(validateUpdates.length > 0){
+        }
+        if (validateUpdates.length > 0) {
           // throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
-         
         }
         await user.update(updates);
-        return user.toJSON() as UserAttributes
+        return user.toJSON() as UserAttributes;
       }
       return null;
     } catch (error: any) {
@@ -94,23 +90,22 @@ export class userService {
     }
   }
 
-
   // New method to get a user by specific fields
   async getUserByFields(fields: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({
         where: {
-          [Op.and]: fields
+          [Op.and]: fields,
         },
-        attributes: { exclude: ['password'] }
+        attributes: { exclude: ['password'] },
       });
       return user ? (user.toJSON() as UserAttributes) : null;
     } catch (error: any) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
- 
-//  method to get user by email
+
+  //  method to get user by email
   async getUserByEmail(email: string): Promise<UserAttributes | null> {
     try {
       const user = await User.findOne({ where: { email } });
@@ -119,16 +114,15 @@ export class userService {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
-  async changePassword(userId:number,oldPassword:string,newPassword:string){
-    try{
-         const salt = await genSalt(10)
-  
-          
-        const hashedPassword = await bcrypt.hash(newPassword,salt)
+  async changePassword(userId: number, oldPassword: string, newPassword: string) {
+    try {
+      const salt = await genSalt(10);
+
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
       const { error } = passwordValidation.validate({ password: newPassword });
-      const user = await User.findByPk(userId)
-      if(user){
-        const userData = user.toJSON()
+      const user = await User.findByPk(userId);
+      if (user) {
+        const userData = user.toJSON();
         const content = `
         <p>Hi ${userData.firstname},</p>
         <div>Congratulations! Your paasword  has been successfully changed.</div>
@@ -137,32 +131,27 @@ export class userService {
         <div>Best regards,</div>
         <div>The E-Commerce Lydia Team</div>
       `;
-        if(!userData.isverified) {
-        return ({code:401,message:'You are not verified'})
+        if (!userData.isverified) {
+          return { code: 401, message: 'You are not verified' };
         }
-        const match = await bcrypt.compare(oldPassword, userData.password )
-  
-      if(match){ 
-        if(error){
-          throw new Error(`Validation:${error.message}`)
-          
+        const match = await bcrypt.compare(oldPassword, userData.password);
+
+        if (match) {
+          if (error) {
+            throw new Error(`Validation:${error.message}`);
+          }
+          await user.update({ password: hashedPassword });
+
+          sendVerificationToken(userData.email, 'password changed ', content);
+          console.log('email sent');
+          return { code: 200, message: 'password changed successfully' };
         }
-        await user.update({password:hashedPassword})
-  
-        sendVerificationToken(userData.email,'password changed ',content)
-        console.log('email sent')
-        return ({code:200,message:"password changed successfully"})
-          
+        return { code: 401, message: 'Incorrect old password' };
       }
-      return ({code:401,message:"Incorrect old password"})
+    } catch (error: any) {
+      throw new Error(`failed to change password:${error.message}`);
     }
-    
-  
   }
-  catch(error:any){
-    throw new Error(`failed to change password:${error.message}`)
-  }
-    }
 }
 
 export const UserService = new userService();
