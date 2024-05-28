@@ -4,6 +4,7 @@ import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
+import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
 import isAdmin from '../middleware/isAdminMiddleware.js';
 
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
@@ -286,3 +287,4 @@ usersRouter.put('/users/update/:id', UserController.updateUser);
  */
 
 usersRouter.post('/users/logout', UserController.logout);
+usersRouter.post('/factor', verifyTwoFactor)
