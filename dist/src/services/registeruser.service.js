@@ -92,9 +92,9 @@ export class userService {
         try {
             const user = await User.findOne({
                 where: {
-                    [Op.and]: fields
+                    [Op.and]: fields,
                 },
-                attributes: { exclude: ['password'] }
+                attributes: { exclude: ['password'] },
             });
             return user ? user.toJSON() : null;
         }
@@ -129,7 +129,7 @@ export class userService {
         <div>The E-Commerce Lydia Team</div>
       `;
                 if (!userData.isverified) {
-                    return ({ code: 401, message: 'You are not verified' });
+                    return { code: 401, message: 'You are not verified' };
                 }
                 const match = await bcrypt.compare(oldPassword, userData.password);
                 if (match) {
@@ -139,9 +139,9 @@ export class userService {
                     await user.update({ password: hashedPassword });
                     sendVerificationToken(userData.email, 'password changed ', content);
                     console.log('email sent');
-                    return ({ code: 200, message: "password changed successfully" });
+                    return { code: 200, message: 'password changed successfully' };
                 }
-                return ({ code: 401, message: "Incorrect old password" });
+                return { code: 401, message: 'Incorrect old password' };
             }
         }
         catch (error) {
