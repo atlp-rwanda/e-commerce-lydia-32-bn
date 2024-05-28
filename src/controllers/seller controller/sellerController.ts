@@ -212,4 +212,4 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
   }
 }
 
-export const sellerControllerInstance = new SellerController();
+export const sellerControllerInstance = new SellerController(); 
