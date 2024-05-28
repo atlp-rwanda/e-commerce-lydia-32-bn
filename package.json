@@ -39,6 +39,7 @@
     "@types/nodemailer": "^6.4.15",
     "@types/pino": "^7.0.5",
     "@types/redis": "^4.0.11",
+    "@types/twilio": "^3.19.3",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.11",
@@ -60,6 +61,7 @@
     "speakeasy": "^2.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
+    "twilio": "^5.1.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {

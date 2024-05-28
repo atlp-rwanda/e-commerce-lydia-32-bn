@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
 import generateToken from '../../utilis/generateToken.js';
+import sendSms from '../../helpers/sendSms.js'
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import dotenv from 'dotenv';
 
@@ -13,6 +14,7 @@ if (!process.env.VERIFICATION_JWT_SECRET) {
 }
 
 const JWT_SECRET: string = process.env.VERIFICATION_JWT_SECRET;
+
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -38,11 +40,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     if (user.dataValues.usertype === 'seller') {
       await user.update({ hasTwoFactor: true });
-
-      // Generate a random 5-digit code
       const twoFactorCode = Math.floor(10000 + Math.random() * 90000).toString();
-
-      // Store the random code in the twoFactorSecret column
       const [updatedRows, [updatedUser]] = await User.update(
         { twoFactorSecret: twoFactorCode },
         { where: { id: user.dataValues.id }, returning: true }
@@ -51,6 +49,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       if (updatedRows === 1) {
         const text = `Your 2FA code is: ${twoFactorCode}`;
         sendVerificationToken(user.dataValues.email, '2FA Code', text);
+        sendSms(text, user.dataValues.phone)
         res.status(200).json({ message: '2FA code sent to your email' });
       } else {
         res.status(500).json({ error: 'Failed to update user' });
