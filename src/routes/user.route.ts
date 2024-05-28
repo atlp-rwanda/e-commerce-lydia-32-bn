@@ -66,20 +66,13 @@ usersRouter.post('/register', UserController.createUser);
  */
 usersRouter.post('/verify', UserController.verifyUser);
 
-/**
- * @swagger
- * tags:
- *   name: Authentication
- *   description: User authentication
- */
 
 /**
  * @swagger
  * /api/login/user:
  *   post:
  *     summary: User login
- *     tags:
- *       - Authentication
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
@@ -185,8 +178,7 @@ usersRouter.put('/block/:id', isAdmin, blockUser);
  * /api/users/logout:
  *   post:
  *     summary: Logout user
- *     tags:
- *       - User
+ *     tags: [Users]
  *     description: Logout the currently authenticated user by clearing the JWT cookie and setting a loggedOut cookie.
  *     responses:
  *       '200':
