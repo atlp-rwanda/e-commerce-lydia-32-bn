@@ -172,7 +172,6 @@ async updateProduct(req: Request, res: Response): Promise<void> {
         return;
       }
 
-      console.log(name, minPrice, maxPrice, category);
       
       res.status(200).json({ message: 'Products fetched successfully', products });
 

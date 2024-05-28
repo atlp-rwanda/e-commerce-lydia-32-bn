@@ -69,4 +69,46 @@ productRouter.put('/product/update/:productId', sellerAuthJWT, ProductController
  */
 productRouter.delete('/product/deleteProduct/:productId', checkToken, ProductControllerInstance.deleteProduct);
 
+/**
+ * @swagger
+ * /api/product/search:
+ *   get:
+ *     summary: Search for products
+ *     description: Endpoint to search for products using various query parameters.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Name of the product to search for
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price of the product
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price of the product
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Category of the product
+ *     responses:
+ *       '200':
+ *         description: A list of products that match the search criteria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad request - Invalid search parameters
+ *       '500':
+ *         description: Internal server error
+ */
 productRouter.get('/product/search', validateSearchProduct, ProductControllerInstance.searchProduct);
