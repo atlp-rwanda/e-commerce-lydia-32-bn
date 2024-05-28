@@ -58,12 +58,7 @@ const userCreationSchema = Joi.object({
       'string.pattern.base': 'Role must contain only letters.',
       'any.required': 'Role is required.',
     }),
-  isAdmin: Joi.boolean().optional(),
-  isBlocked: Joi.boolean().optional()
-});
-
-export const UserschemaValidate = Joi.object({
-  isAdmin: Joi.boolean(),
+  isBlocked: Joi.boolean().optional(),
 });
 
 export const validateUserCreation = (userData: any): string[] => {

@@ -60,21 +60,6 @@ class roleService {
     return rolePermissions[role];
   }
 
-  // async addPermissionToRole(roleId: number, permissionId: number) {
-  //   const role = await Role.findByPk(roleId);
-  //   const permission = await Permission.findByPk(permissionId);
-
-  //   if (!role) {
-  //     throw new Error('Role not found');
-  //   }
-
-  //   if (!permission) {
-  //     throw new Error('Permission not found');
-  //   }
-
-  //   await RoleService.addPermissionToRole(roleId, permissionId);
-  // }
-
   async addPermissionToRole(roleId: number, permissionId: number) {
     const role = await Role.findByPk(roleId);
     const permission = await Permission.findByPk(permissionId);

@@ -29,7 +29,7 @@ export const rolesRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/create', RoleController.createRole);
+rolesRouter.post('/roles/create', isRoleAdmin, RoleController.createRole);
 
 /**
  * @swagger
@@ -73,7 +73,7 @@ rolesRouter.get('/roles', isRoleAdmin, RoleController.getAllRoles);
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.get('/roles/:id', RoleController.getRoleById);
+rolesRouter.get('/roles/:id', isRoleAdmin, RoleController.getRoleById);
 
 /**
  * @swagger
@@ -109,7 +109,7 @@ rolesRouter.get('/roles/:id', RoleController.getRoleById);
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.put('/roles/update/:id', RoleController.updateRole);
+rolesRouter.put('/roles/update/:id', isRoleAdmin, RoleController.updateRole);
 
 /**
  * @swagger
@@ -133,7 +133,7 @@ rolesRouter.put('/roles/update/:id', RoleController.updateRole);
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.delete('/roles/delete/:id', RoleController.deleteRole);
+rolesRouter.delete('/roles/delete/:id', isRoleAdmin, RoleController.deleteRole);
 
 /**
  * @swagger
@@ -160,7 +160,7 @@ rolesRouter.delete('/roles/delete/:id', RoleController.deleteRole);
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/permissions/create', RoleController.createPermission);
+rolesRouter.post('/roles/permissions/create', isRoleAdmin, RoleController.createPermission);
 
 /**
  * @swagger
@@ -197,7 +197,7 @@ rolesRouter.post('/roles/permissions/create', RoleController.createPermission);
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/permissions/add/:id', RoleController.addPermission);
+rolesRouter.post('/roles/permissions/add/:id', isRoleAdmin, RoleController.addPermission);
 
 /**
  * @swagger
@@ -233,7 +233,7 @@ rolesRouter.post('/roles/permissions/add/:id', RoleController.addPermission);
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.delete('/roles/permissions/remove/:id', RoleController.removePermission);
+rolesRouter.delete('/roles/permissions/remove/:id', isRoleAdmin, RoleController.removePermission);
 
 /**
  * @swagger
@@ -269,4 +269,4 @@ rolesRouter.delete('/roles/permissions/remove/:id', RoleController.removePermiss
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/assign/:id', RoleController.assignRoleToUser);
+rolesRouter.post('/roles/assign/:id', isRoleAdmin, RoleController.assignRoleToUser);

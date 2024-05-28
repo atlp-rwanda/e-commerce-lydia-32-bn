@@ -42,7 +42,7 @@ const options: swaggerJsdoc.Options = {
             postal_code: { type: 'string' },
             country: { type: 'string' },
           },
-          required: ['names', 'email', 'password', 'userType'],
+          required: ['names', 'email', 'password'],
         },
         Product: {
           type: 'object',
@@ -123,15 +123,17 @@ const options: swaggerJsdoc.Options = {
           type: 'object',
           properties: {
             roleId: { type: 'integer', example: 1 },
+            name: { type: 'string', example: 'create' },
           },
-          required: ['roleId'],
+          required: ['roleId', 'name'],
         },
         Permission: {
           type: 'object',
           properties: {
             permissionId: { type: 'integer', example: 1 },
+            name: { type: 'string', example: 'create' },
           },
-          required: ['permissionId'],
+          required: ['permissionId', 'name'],
         },
       },
       security: [

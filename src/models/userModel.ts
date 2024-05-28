@@ -1,6 +1,5 @@
-import { DataTypes, Model, Optional, BuildOptions } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/db.js';
-import { toDefaultValue } from 'sequelize/types/utils.js';
 import Role from './roleModel.js';
 
 interface UserAttributes {
@@ -22,46 +21,26 @@ interface UserAttributes {
   isBlocked: boolean;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'firstname'> {
-  firstname: string;
-}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
-
   public firstname!: string;
-
   public othername!: string;
-
   public email!: string;
-
   public phone!: string;
-
   public password!: string;
-
   public usertype!: 'buyer' | 'seller';
-
   public street!: string;
-
   public city!: string;
-
   public state!: string;
-
   public postal_code!: string;
-
   public country!: string;
-
   public roleId!: number;
-
   public isverified!: boolean;
-
   public isAdmin!: boolean;
-
   public isBlocked!: boolean;
-
-  // Timestamps
   public readonly createdAt!: Date;
-
   public readonly updatedAt!: Date;
 }
 
@@ -73,42 +52,49 @@ User.init(
       primaryKey: true,
     },
     firstname: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: false,
     },
     othername: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: false,
     },
     email: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: false,
+      unique: true,
     },
     phone: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     password: {
-      type: new DataTypes.STRING(128),
-      allowNull: true,
+      type: DataTypes.STRING(128),
+      allowNull: false,
     },
     usertype: {
       type: DataTypes.ENUM('buyer', 'seller'),
       defaultValue: 'buyer',
     },
     street: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     city: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     state: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     postal_code: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     country: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     roleId: {
       type: DataTypes.INTEGER,
@@ -116,8 +102,7 @@ User.init(
         model: Role,
         key: 'id',
       },
-      onDelete: 'SET NULL',
-      onUpdate: 'CASCADE',
+      defaultValue: 1,
     },
     isverified: {
       type: DataTypes.BOOLEAN,
@@ -134,7 +119,14 @@ User.init(
   },
   {
     tableName: 'users',
-    sequelize, // passing the `sequelize` instance
+    sequelize,
+    hooks: {
+      beforeCreate: (user) => {
+        if (!user.roleId) {
+          user.roleId = 1;
+        }
+      },
+    },
   },
 );
 

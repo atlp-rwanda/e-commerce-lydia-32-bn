@@ -87,25 +87,22 @@ class userController {
       return res.status(500).json({ error: error.message });
     }
   };
-  
-   changePassword = async (req:Request, res:Response) => {
-    try{
-      
-      const { newPassword, oldPassword,userId } = req.body
-    
-      const user = await UserService.changePassword(userId,oldPassword,newPassword)
 
-      if(user) {
-        res.status(user.code).json({message:user.message})
+  changePassword = async (req: Request, res: Response) => {
+    try {
+      const { newPassword, oldPassword, userId } = req.body;
+
+      const user = await UserService.changePassword(userId, oldPassword, newPassword);
+
+      if (user) {
+        res.status(user.code).json({ message: user.message });
+      } else {
+        res.status(500).json({ error: 'user not found' });
       }
-      else{
-      res.status(500).json({error:"user not found"})
-      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
-    catch(error:any){
-      res.status(500).json({error:error.message})
-    }
-   }
+  };
   getUserById = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
@@ -132,16 +129,10 @@ class userController {
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const updates = req.body;
-<<<<<<< HEAD
-      const userId = req.body.userId
-      const { userId: _,email,password, ...validUpdates } = updates;
-     
-      const user = await UserService.updateUserInfo(userId, validUpdates);
-=======
+      const userId = req.body.userId;
       const { userId: _, email, password, ...validUpdates } = updates;
 
-      const user = await UserService.updateUser(userId, validUpdates);
->>>>>>> 2b103d2 (feature: Setting up user roles and permissions)
+      const user = await UserService.updateUserInfo(userId, validUpdates);
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
         res.status(200).json({ message: 'User updated successfully:', user });
@@ -279,25 +270,6 @@ class userController {
   };
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
-<<<<<<< HEAD
-    
-    const token = req.cookies.jwt
-    const loggedOutCookie = req.cookies.loggedOut;
-    console.log(loggedOutCookie);
-    if(loggedOutCookie){
-      res.status(400).json({error: 'You are already logged out'});
-    }
-    else{
-      if(token){
-        res.clearCookie('jwt');
-        res.cookie('loggedOut', token, { httpOnly: true });
-        res.status(200).json({ message: 'Logout successful' });
-      }
-      else{
-        res.status(400).json({error: "You're not yet logged In !"});
-      }
-      
-=======
       const token = req.cookies.jwt;
       const loggedOutCookie = req.cookies.loggedOut;
       console.log(loggedOutCookie);
@@ -315,7 +287,6 @@ class userController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
->>>>>>> 2b103d2 (feature: Setting up user roles and permissions)
     }
   };
 }

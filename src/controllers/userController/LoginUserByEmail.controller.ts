@@ -42,6 +42,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         isverified: false,
         isAdmin: false,
         isBlocked: false,
+        roleId: 1,
       });
 
       const verificationToken = generateVerificationToken(
