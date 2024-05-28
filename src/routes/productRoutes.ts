@@ -2,6 +2,7 @@ import express from "express";
 import { ProductControllerInstance } from "../controllers/productController/productController.js";
 import checkToken from "../middleware/checkToken.js";
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
+import { validateSearchProduct } from "../middleware/validateSearch.js"
 
 
 export const productRouter = express.Router();
@@ -67,3 +68,5 @@ productRouter.put('/product/update/:productId', sellerAuthJWT, ProductController
  *         description: Unauthorized - You are not authorized to perform such action
  */
 productRouter.delete('/product/deleteProduct/:productId', checkToken, ProductControllerInstance.deleteProduct);
+
+productRouter.get('/product/search', validateSearchProduct, ProductControllerInstance.searchProduct);
