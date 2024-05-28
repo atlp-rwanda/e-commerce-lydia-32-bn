@@ -1,7 +1,10 @@
-import { Request, Response } from 'express';
+import { Request, Response, response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SellerService } from '../../services/seller.Service.js';
 import { userService } from '../../services/registeruser.service.js';
+import { validateRequest, getSellerProductSchema, getBuyerProductSchema } from '../../validations/getItem.validation.js';
+import { ProductService } from '../../services/product.service.js';
+
 
 class SellerController {
   // get products associated with seller
@@ -113,6 +116,66 @@ class SellerController {
       console.error(error);
     }
   }
+
+  //get a particular item if it is in the collection or list of products belonging to the seller
+  async getSellerProduct(req: Request, res: Response): Promise<void> {
+      const token = req.cookies.jwt;
+      const productId = parseInt(req.params.productId, 10);
+    
+      if (!token) {
+         res.status(401).json({ message: 'Unauthorized: Token is missing' });
+         return;
+      }
+    
+      try {
+        const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
+        const userId = decodedToken.userId;
+        const userServiceInstance = new userService();
+        const user = await userServiceInstance.getUserById(userId);
+    
+        if (!user) {
+          res.status(404).json({ message: 'User not found' });
+          return;
+        }
+    
+        if (user.usertype !== 'seller') {
+          res.status(403).json({ message: 'Only sellers can access this resource' });
+          return;
+        }
+    
+        const { error } = getSellerProductSchema.validate({ productId});
+    
+        if (error) {
+          res.status(400).json({ errors: error.details.map((err) => err.message) });
+          return;
+        }
+    
+        const productServiceInstance = new ProductService();
+        const isProductExist = await productServiceInstance.getProductByFields({ productId, isAvailable: true });
+    
+        if (!isProductExist) {
+          res.status(404).json({ message: "Oops!!! There is no match for this product in available products" });
+          return;
+        }
+    
+        const itemServiceInstance = new SellerService();
+        const item = await itemServiceInstance.getProductByIdAndSellerId(productId, userId);
+    
+        if (!item) {
+          res.status(404).json({ message: "Oops!!! There is no match of the product in your products" });
+          return;
+        } else {
+          res.status(200).json({ message: "Product found in your products", product: item });
+          return;
+        }
+      } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+        return;
+      }
+    }
 }
+
+
+
 
 export const sellerControllerInstance = new SellerController();

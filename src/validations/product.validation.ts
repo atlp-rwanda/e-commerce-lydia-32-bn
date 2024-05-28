@@ -6,7 +6,7 @@ export const productSchema = Joi.object({
     'number.integer': 'Product ID must be an integer.',
     'number.positive': 'Product ID must be a positive number.',
   }),
-  userId: Joi.number().integer().positive().required().messages({
+  userId: Joi.number().integer().positive().optional().messages({
     'number.base': 'User ID must be a number.',
     'number.integer': 'User ID must be an integer.',
     'number.positive': 'User ID must be a positive number.',

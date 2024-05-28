@@ -2,6 +2,8 @@ import express from 'express';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
+import { validateRequest, getBuyerProductSchema } from '../validations/getItem.validation.js';
+import {getBuyerProduct} from '../controllers/userController/user.getItem.js'
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import isAdmin from '../middleware/isAdminMiddleware.js';
@@ -206,3 +208,55 @@ usersRouter.put('/block/:id', isAdmin, blockUser);
  */
 
 usersRouter.post('/users/logout', UserController.logout);
+
+/**
+ * @swagger
+ * /api/users/products/{productId}:
+ *   get:
+ *     summary: Get a specific product for a buyer
+ *     description: Retrieves details of a specific available product
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product available in store
+ *                 product:
+ *                   $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *               example:
+ *                 message: Oops!!! There is no match for this product in available products
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+
+usersRouter.get('/users/products/:productId', validateRequest(getBuyerProductSchema), getBuyerProduct);

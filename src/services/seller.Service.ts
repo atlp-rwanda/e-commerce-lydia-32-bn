@@ -26,6 +26,7 @@ async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Pr
   }
 }
 
+
 // update product
 async updateProductt(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {

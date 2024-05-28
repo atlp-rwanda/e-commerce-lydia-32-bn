@@ -35,6 +35,23 @@ export class ProductService {
     }
   }
 
+  async getProductById(productId: number): Promise<Product | null> {
+    try {
+      const product = await Product.findOne({
+        where: {
+          productId: productId
+        }
+      });
+      return product;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error retrieving product: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while retrieving product.');
+      }
+    }
+  }
+
   async getProductByIdAndUserId(productid: number,userId:number): Promise<Product | null> {
     try {
       const product = await Product.findOne({
@@ -87,6 +104,15 @@ export class ProductService {
     }
   }
 
+  // get only available products in the store
+  async getAvailableProducts(): Promise<Product[]> {
+    try {
+      const products = await Product.findAll({ where: { isAvailable: true } });
+      return products;
+    } catch (error) {
+      throw new Error('Failed to fetch available products');
+    }
+  }
 
   async getProductByFields(fields: Partial<ProductAttributes>): Promise<ProductAttributes | null> {
     try {
@@ -94,7 +120,7 @@ export class ProductService {
         where: {
           [Op.and]: fields
         },
-        attributes: { exclude: ['password'] }
+        attributes: { exclude: ['userId'] }
       });
       return product ? (product.toJSON() as ProductAttributes) : null;
     } catch (error: any) {
