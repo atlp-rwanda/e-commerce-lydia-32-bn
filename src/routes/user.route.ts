@@ -6,10 +6,8 @@ import { validateRequest, getBuyerProductSchema } from '../validations/getItem.v
 import {getBuyerProduct} from '../controllers/userController/user.getItem.js'
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
-import isAdmin from '../middleware/isAdminMiddleware.js';
-
-import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
-
+import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middleware/verfication.middleware.js';
+import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 
 export const usersRouter = express.Router();
 
@@ -66,7 +64,7 @@ usersRouter.post('/register', UserController.createUser);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.post('/verify', UserController.verifyUser);
+usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 
 /**
  * @swagger
@@ -147,8 +145,8 @@ usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 
-usersRouter.get('/users',isAdmin, UserController.getAllUsers);
-usersRouter.patch('/changepassword',userAuthJWT, UserController.changePassword);
+usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
+usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword);
 /**
  * @swagger
  * /api/users/update/:id:
@@ -180,7 +178,7 @@ usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
-usersRouter.put('/block/:id', isAdmin, blockUser);
+usersRouter.put('/block/:id', isRoleAdmin, blockUser);
 
 /**
  * @swagger

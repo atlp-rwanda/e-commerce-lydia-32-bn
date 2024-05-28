@@ -2,6 +2,7 @@ import express from "express";
 import { ProductControllerInstance } from "../controllers/productController/productController.js";
 import checkToken from "../middleware/checkToken.js";
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
+import { validateSearchProduct } from "../middleware/validateSearch.js"
 
 
 export const productRouter = express.Router();
@@ -42,6 +43,44 @@ export const productRouter = express.Router();
  */
 
 productRouter.post('/product/create', sellerAuthJWT, ProductControllerInstance.createProduct);
+
+/**
+ * @swagger
+ * /api/product/update/{productId}:
+ *   put:
+ *     summary: Update an existing product
+ *     description: Endpoint to update an existing product.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the product to be updated
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductDetails'
+ *     responses:
+ *       '200':
+ *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad request - Invalid product data
+ *       '401':
+ *         description: Unauthorized - Token is missing or invalid
+ *       '404':
+ *         description: Not found - Product not found
+ *       '500':
+ *         description: Internal server error
+ */
+
 productRouter.put('/product/update/:productId', sellerAuthJWT, ProductControllerInstance.updateProduct);
 
 /**
@@ -67,3 +106,47 @@ productRouter.put('/product/update/:productId', sellerAuthJWT, ProductController
  *         description: Unauthorized - You are not authorized to perform such action
  */
 productRouter.delete('/product/deleteProduct/:productId', checkToken, ProductControllerInstance.deleteProduct);
+
+/**
+ * @swagger
+ * /api/product/search:
+ *   get:
+ *     summary: Search for products
+ *     description: Endpoint to search for products using various query parameters.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Name of the product to search for
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price of the product
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price of the product
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Category of the product
+ *     responses:
+ *       '200':
+ *         description: A list of products that match the search criteria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad request - Invalid search parameters
+ *       '500':
+ *         description: Internal server error
+ */
+productRouter.get('/product/search', validateSearchProduct, ProductControllerInstance.searchProduct);
