@@ -2,7 +2,7 @@ import { Request, Response, response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SellerService } from '../../services/seller.Service.js';
 import { userService } from '../../services/registeruser.service.js';
-import {RoleService} from '../../services/roles/roleService.js'
+import Role from '../../models/roleModel.js'
 import { validateRequest, getSellerProductSchema, getBuyerProductSchema } from '../../validations/getItem.validation.js';
 import { ProductService } from '../../services/product.service.js';
 
@@ -28,8 +28,9 @@ class SellerController {
         res.status(404).json({ message: 'User not found' });
         return;
       }
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
 
-      if (user.usertype !== 'seller') {
+      if (userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can access this resource' });
         return;
       }
@@ -66,8 +67,8 @@ class SellerController {
         res.status(404).json({ message: 'User not found' });
         return;
       }
-
-      if (user.usertype !== 'seller') {
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+      if (userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can access this resource' });
         return;
       }
@@ -118,7 +119,7 @@ class SellerController {
     }
   }
 
-  //get a particular item if it is in the collection or list of products belonging to the seller
+
   async getSellerProduct(req: Request, res: Response): Promise<void> {
     const token = req.cookies.jwt;
     const productId = parseInt(req.params.productId, 10);
@@ -139,17 +140,14 @@ class SellerController {
         return;
       }
       
-      const role = await RoleService.getRoleById(user.dataValues.roleId); 
-    if (!role || role.name !== 'seller') {
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+      
+    if(userRole.dataValues.name !== 'seller')  {
       res.status(403).json({ message: 'Only sellers can access this resource' });
       return;
     }
-      if (!role || role.name !== 'seller') {
-        res.status(403).json({ message: 'Only sellers can access this resource' });
-        return;
-      }
-  
-      const { error } = getSellerProductSchema.validate({ productId });
+      
+    const { error } = getSellerProductSchema.validate({ productId });
   
       if (error) {
         res.status(400).json({ errors: error.details.map((err) => err.message) });

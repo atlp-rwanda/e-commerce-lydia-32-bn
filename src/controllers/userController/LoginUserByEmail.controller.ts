@@ -33,24 +33,13 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         email: getPayLoad?.email || 'default@example.com',
         phone: '',
         password: await bcrypt.hash(defaultPassword, 10),
-        usertype: 'buyer',
-        street: '',
-        city: '',
-        state: '',
-        postal_code: '',
-        country: '',
         isverified: false,
-        isAdmin: false,
-        isBlocked: false,
-        roleId: 1,
-      });
-
-      const verificationToken = generateVerificationToken(
-        res,
-        NewUser.dataValues.id,
-        NewUser.dataValues.email,
-        NewUser.dataValues.firstname,
-      );
+        isBlocked:false,
+        hasTwoFactor: false,
+        roleId: 1
+    });
+    
+      const verificationToken = generateVerificationToken(res, NewUser.dataValues.id, NewUser.dataValues.email, NewUser.dataValues.firstname);
       const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`;
       const subject = 'Email Verification';
       const content = `
