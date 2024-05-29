@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { wishListService } from '../../services/wishListService.js';
 import { UserService } from '../../services/registeruser.service.js';
 import Product from '../../models/productModel.js';
+import User from 'models/userModel.js';
 export const addItemToWishList = async(req: Request, res: Response): Promise<void> =>{
 
     try {
@@ -16,11 +17,18 @@ export const addItemToWishList = async(req: Request, res: Response): Promise<voi
         } 
         else{
           const user = await UserService.getUserById(userId);
-          if(user && user.role == 'buyer'){
-            const product = await Product.findByPk(productId);
+          if(user){
+            const roleName = User.getRoleName(userId);
+            if(roleName==='buyer'){
+              const product = await Product.findByPk(productId);
               if (!product) {
                 res.status(404).json({Error: 'Product not found'});
                 return;
+            }
+           }
+           else{
+            res.status(400).json({Error: 'Only  Buyers are allowed to add items to wishlist'});
+            return;
            }
             // Check if the product already exists in the user's wish list
             const existingWishListItem = await wishListService.getWishListItem(userId, productId);

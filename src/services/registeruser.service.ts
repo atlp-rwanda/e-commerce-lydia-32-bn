@@ -6,6 +6,7 @@ import { Op } from 'sequelize'; // Import Op from sequelize
 import { validateUserupdates, passwordValidation } from '../validations/updatesValidation.js';
 import bcrypt, { genSalt } from 'bcrypt';
 import sendVerificationToken from '../helpers/sendEmail.js';
+import Role from 'models/roleModel.js';
 
 export class userService {
   async createUser(userDetails: UserCreationAttributes): Promise<UserAttributes> {

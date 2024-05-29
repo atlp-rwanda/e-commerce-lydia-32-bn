@@ -42,6 +42,21 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public isBlocked!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+public static async getRoleName(userId: number): Promise<string> {
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  
+  const role = await Role.findByPk(user.roleId);
+  if (!role) {
+    throw new Error('Role not found');
+  }
+  
+  return role.name;
+}
+
 }
 
 User.init(
