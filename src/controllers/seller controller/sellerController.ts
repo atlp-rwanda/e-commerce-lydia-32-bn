@@ -2,10 +2,16 @@ import { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SellerService } from '../../services/seller.Service.js';
 import { userService } from '../../services/registeruser.service.js';
-
+import Role from '../../models/roleModel.js';
+import User from '../../models/userModel.js';
+import { any } from 'joi';
+import { decode } from 'punycode';
 
 
 interface Product {
+  dataValues: {
+    [key: string]: any;
+  };
   productId: number;
   userId: number;
   productName: string;
@@ -18,8 +24,6 @@ interface Product {
   isAvailable?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
-
-
 }
 
 interface ProductWithSeller extends Product {
@@ -47,7 +51,6 @@ interface PaginationResponse {
 }
 
 class SellerController {
- // get products associated with seller
 async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
   const token = req.cookies.jwt;
 
@@ -61,24 +64,23 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
     const userId = decodedToken.userId;
 
     const userServiceInstance = new userService();
-    const user = await userServiceInstance.getUserById(userId);
-
+    const user = await User.findByPk(userId)
+   console.log('my user is', decodedToken)
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;
     }
-
-    if (user.usertype !== 'seller') {
+    const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+    if (userRole.dataValues.name !== 'seller') {
       res.status(403).json({ message: 'Only sellers can access this resource' });
       return;
     }
-
     const productServiceInstance = new SellerService();
-    const products = await productServiceInstance.getProductsBySellerId(userId);
+    const products = await productServiceInstance.getProductsBySellerId(userId) as any;
 
     // Pagination logic
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
     const offset = (page - 1) * limit;
     const totalProducts = products.length;
 
@@ -86,6 +88,7 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
       const { productId, userId, productName, description, productCategory, price, quantity, images, dimensions, isAvailable, createdAt, updatedAt } = product.dataValues;
 
       return {
+        dataValues: product.dataValues,
         productId,
         userId,
         productName,
@@ -99,9 +102,9 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
         createdAt,
         updatedAt,
         seller: {
-          id: user.id,
-          name: user.firstname,
-          email: user.email,
+          id: user.dataValues.id,
+          name: user.dataValues.firstname,
+          email: user.dataValues.email,
         },
       };
     });
@@ -131,7 +134,7 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
     }
 
     if (productsWithSeller.length === 0) {
-      res.status(200).json({ message: 'No products found for this seller' });
+      res.status(200).json({ message: 'No products found for this seller', products:[] });
     } else {
       res.status(200).json(response);
     }
@@ -158,9 +161,10 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
       if (!user) {
         res.status(404).json({ message: 'User not found' });
         return;
-      }
+      } 
 
-      if (user.usertype !== 'seller') {
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+      if (userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can access this resource' });
         return;
       }
