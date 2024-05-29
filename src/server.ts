@@ -5,8 +5,9 @@ import db from './config/db.js';
 import swaggerDocs from './utilis/swagger.js';
 import User from './models/userModel.js';
 import { usersRouter } from './routes/user.route.js';
-import { productRouter} from './routes/productRoutes.js';
+import { productRouter } from './routes/productRoutes.js';
 import { sellerRouter } from './routes/sellerRoutes.js';
+import { rolesRouter } from './routes/roleRoutes.js';
 import cartRooutes from './routes/cartRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
+app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
 app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes);
 
 
