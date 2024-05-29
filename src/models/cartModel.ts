@@ -49,7 +49,7 @@ Cart.init(
   },
   {
     sequelize,
-    modelName: "Carts",
+    modelName: "carts",
   },
 );
 
