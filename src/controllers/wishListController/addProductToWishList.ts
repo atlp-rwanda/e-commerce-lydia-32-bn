@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { wishListService } from '../../services/wishListService.js';
 import { UserService } from '../../services/registeruser.service.js';
 import Product from '../../models/productModel.js';
-import User from 'models/userModel.js';
+import User from '../../models/userModel.js';
 export const addItemToWishList = async(req: Request, res: Response): Promise<void> =>{
 
     try {
@@ -18,7 +18,7 @@ export const addItemToWishList = async(req: Request, res: Response): Promise<voi
         else{
           const user = await UserService.getUserById(userId);
           if(user){
-            const roleName = User.getRoleName(userId);
+            const roleName = await User.getRoleName(userId);
             if(roleName==='buyer'){
               const product = await Product.findByPk(productId);
               if (!product) {
