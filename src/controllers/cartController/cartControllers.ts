@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as cartService from '../../services/cart.services.js'
 import { UserAttributes } from "../../models/userModel.js";
 import Product, { ProductCreationAttributes } from "../../models/productModel.js";
-import { AuthenticatedRequest } from "middleware/authMiddleware.js";
+import { AuthenticatedRequest } from "../../middleware/authMiddleware.js";
 
 
 export const addItemToCart = async (req: AuthenticatedRequest, res: Response) => {

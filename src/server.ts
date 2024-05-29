@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
-app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
+app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter,cartRoutes);
 app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes);
 
 
