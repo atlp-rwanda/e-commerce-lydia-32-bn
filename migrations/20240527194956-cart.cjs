@@ -1,37 +1,39 @@
-const { DataTypes } = require('sequelize');
+"use strict";
 
 module.exports = {
-  up: async (queryInterface) => {
-    await queryInterface.createTable('carts', {
-      cartId: {
-        type: DataTypes.INTEGER,
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("carts", {
+      id: {
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
+        type: Sequelize.INTEGER,
       },
       userId: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: 'users',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+      
+      },
+      total: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0,
       },
       createdAt: {
-        type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        type: Sequelize.DATE,
       },
       updatedAt: {
-        type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        type: Sequelize.DATE,
       },
     });
+
   },
 
-  down: async (queryInterface) => {
-    await queryInterface.dropTable('carts');
-  }
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable("carts", {
+      force: true,
+    });
+  },
 };

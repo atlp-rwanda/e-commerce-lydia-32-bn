@@ -266,8 +266,8 @@ class userController {
   };
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
+    
+    const token = req.cookies.jwt
     const loggedOutCookie = req.cookies.loggedOut;
     console.log(loggedOutCookie);
     if(loggedOutCookie){
@@ -275,7 +275,7 @@ class userController {
     }
     else{
       if(token){
-        res.clearCookie('token');
+        res.clearCookie('jwt');
         res.cookie('loggedOut', token, { httpOnly: true });
         res.status(200).json({ message: 'Logout successful' });
       }

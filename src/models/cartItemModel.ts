@@ -1,82 +1,57 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/db.js';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../config/db.js";
+import Product,{ ProductCreationAttributes }  from "./productModel.js";
 
-interface CartItemAttributes {
-  cartItemId: number;
-  cartId: number;
-  productId: number;
+
+export interface CartItemAttributes {
+  id?: number;
+  cartId: number | undefined;
+  productId: number | undefined;
   quantity: number;
-  dimensions?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  product?: ProductCreationAttributes;
 }
 
-interface CartItemCreationAttributes extends Optional<CartItemAttributes, 'cartItemId' | 'createdAt' | 'updatedAt'> {}
-
-class CartItem extends Model<CartItemAttributes, CartItemCreationAttributes> implements CartItemAttributes {
-  public cartItemId!: number;
-  public cartId!: number;
-  public productId!: number;
-  public quantity!: number;
-  public dimensions?: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
+class CartItem extends Model<CartItemAttributes> implements CartItemAttributes {
+  id!: number | undefined;
+  cartId!: number;
+  productId!: number;
+  quantity!: number;
+  product?: ProductCreationAttributes;
 }
 
 CartItem.init(
   {
-    cartItemId: {
-      type: DataTypes.INTEGER,
+    id: {
+      allowNull: false,
       autoIncrement: true,
       primaryKey: true,
+      type: DataTypes.NUMBER,
     },
     cartId: {
-      type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'carts',
-        key: 'cartId',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      type: DataTypes.NUMBER,
     },
     productId: {
-      type: DataTypes.INTEGER,
       allowNull: false,
+      type: DataTypes.NUMBER,
       references: {
-        model: 'products',
-        key: 'productId',
+        model: Product,
+        key: "id",
       },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
     },
     quantity: {
-      type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        min: 1,
-      },
-    },
-    dimensions: {
-      type: DataTypes.STRING(128),
-      allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
+      type: DataTypes.NUMBER,
+      defaultValue: 1,
     },
   },
   {
-    sequelize,
-    modelName: 'CartItem',
-    tableName: 'cart_items',
-  }
+    sequelize: sequelize,
+    modelName: "cartItems",
+  },
 );
+
+CartItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
+
 
 export default CartItem;

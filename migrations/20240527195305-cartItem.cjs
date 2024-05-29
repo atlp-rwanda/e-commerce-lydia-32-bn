@@ -1,58 +1,44 @@
-const { DataTypes } = require('sequelize');
+"use strict";
 
 module.exports = {
-  up: async (queryInterface) => {
-    await queryInterface.createTable('cart_items', {
-      cartItemId: {
-        type: DataTypes.INTEGER,
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("cartItems", {
+      id: {
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
+        type: Sequelize.INTEGER,
       },
       cartId: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: 'carts',
-          key: 'cartId',
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+       
       },
       productId: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: 'products',
-          key: 'productId',
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+       
       },
       quantity: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          min: 1,
-        },
-      },
-      dimensions: {
-        type: DataTypes.STRING(128),
-        allowNull: true,
+        defaultValue: 1,
       },
       createdAt: {
-        type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        type: Sequelize.DATE,
       },
       updatedAt: {
-        type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        type: Sequelize.DATE,
       },
     });
+    
   },
 
-  down: async (queryInterface) => {
-    await queryInterface.dropTable('cart_items');
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable("cartItems", {
+      force: true,
+    });
   },
 };
