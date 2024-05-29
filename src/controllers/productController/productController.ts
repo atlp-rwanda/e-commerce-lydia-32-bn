@@ -5,6 +5,9 @@ import { productService } from '../../services/product.service.js';
 import { UserService } from '../../services/registeruser.service.js';
 import { productSchema } from '../../validations/product.validation.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Op } from 'sequelize'; // Import Op from sequelize
+import { log } from 'console';
+import Role from '../../models/roleModel.js';
 
 interface ProductDetails {
   productId: number;
@@ -40,8 +43,10 @@ class ProductController {
       }
 
       //const UserService = new userService();
-      const user = await UserService.getUserById(userId);
-      if (!user || user.usertype !== 'seller') {
+      const user = await UserService.getUserById(userId) as any;
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+
+      if (!user || userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can create products' });
         return;
       }
@@ -106,8 +111,10 @@ async updateProduct(req: Request, res: Response): Promise<void> {
     const productId: number = Number(req.params.productId);
     try {
       const userId = req.body.userId;
-      const user = await UserService.getUserById(userId);
-      if(user && user.usertype == 'seller'){
+      const user = await UserService.getUserById(userId) as any;
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+
+      if(user &&  userRole.dataValues.name == 'seller'){
           const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
           if(productToBeDeleted){
             console.log(productToBeDeleted);
@@ -126,6 +133,57 @@ async updateProduct(req: Request, res: Response): Promise<void> {
       }
     } catch (error) {
       res.status(500).json({ error: error });
+      console.log(error);
+    }
+  }
+
+  async searchProduct(req: Request, res: Response): Promise<void> {
+
+    const { name, minPrice, maxPrice, category } = req.query;
+
+    try {
+
+      const searchCriteria: any = {};
+
+      if(!(name) && !(minPrice) && !(maxPrice) && !(category)) {
+        res.status(400).json({ error: 'Please provide a search parameter'})
+
+        return;
+      }
+
+      if (name) {
+        searchCriteria.productName = { [Op.iLike]: `%${name}%` };
+      }
+
+      if (minPrice) {
+        searchCriteria.price = { ...searchCriteria.price, [Op.gte]: Number(minPrice) };
+      }
+
+      if (maxPrice) {
+        searchCriteria.price = { ...searchCriteria.price, [Op.lte]: Number(maxPrice) };
+      }
+
+      if (category) {
+        searchCriteria.productCategory = category;
+      }
+
+      const products = await Product.findAll({
+        where: searchCriteria,
+      });
+
+      if ( products.length === 0 ) {
+        res.status(400).json({ error: 'there are no products that match your search criteria'})
+
+        return;
+      }
+
+      
+      res.status(200).json({ message: 'Products fetched successfully', products });
+
+      
+
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
       console.log(error);
     }
   }

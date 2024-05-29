@@ -1,8 +1,6 @@
-import {
-  DataTypes, Model, Optional, BuildOptions
-} from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/db.js';
-import { toDefaultValue } from 'sequelize/types/utils.js';
+import Role from './roleModel.js';
 
 interface UserAttributes {
   id: number;
@@ -11,55 +9,50 @@ interface UserAttributes {
   email: string;
   phone: string;
   password: string;
-  usertype: 'buyer' | 'seller';
-  street: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
+  street: string |  null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+  country: string | null;
+  roleId: number;
   isverified: boolean;
-  isAdmin: boolean;
   isBlocked: boolean;
+  hasTwoFactor:boolean;
+  twoFactorSecret: string | null
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'firstname'> {
-  firstname: string;
-}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
-
   public firstname!: string;
-
   public othername!: string;
-
   public email!: string;
-
   public phone!: string;
-
   public password!: string;
 
-  public usertype!: 'buyer' | 'seller';
+  public street!: string | null;
 
-  public street!: string;
+  public city!: string | null;
 
-  public city!: string;
+  public state!: string | null;
 
-  public state!: string;
+  public postal_code!: string | null;
 
-  public postal_code!: string;
+  public country!: string | null;
 
-  public country!: string;
+  public  roleId!: number;
 
   public isverified!: boolean;
 
-  public isAdmin!: boolean;
+  public isBlocked!: boolean;
 
-  public isBlocked!: boolean
+  public hasTwoFactor!:boolean;
+
+  public twoFactorSecret!: string | null;
 
   // Timestamps
   public readonly createdAt!: Date;
-
   public readonly updatedAt!: Date;
 }
 
@@ -71,48 +64,55 @@ User.init(
       primaryKey: true,
     },
     firstname: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: false,
     },
     othername: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: false,
     },
     email: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: false,
+      unique: true,
     },
     phone: {
-      type: new DataTypes.STRING(128),
-    },
-    password: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: true,
     },
-    usertype: {
-      type: DataTypes.ENUM('buyer', 'seller'),
-      defaultValue: 'buyer',
+    password: {
+      type: DataTypes.STRING(128),
+      allowNull: false,
     },
     street: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     city: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     state: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     postal_code: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
     country: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.STRING(128),
+      allowNull: true,
+    },
+    roleId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Role,
+        key: 'id',
+      },
+      defaultValue: 1,
     },
     isverified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isAdmin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
@@ -120,11 +120,28 @@ User.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    hasTwoFactor: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    twoFactorSecret: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     tableName: 'users',
-    sequelize, // passing the sequelize instance
-  }
+    sequelize,
+    hooks: {
+      beforeCreate: (user) => {
+        if (!user.roleId) {
+          user.roleId = 1;
+        }
+      },
+    },
+  },
 );
+
+User.belongsTo(Role, { foreignKey: 'roleId' });
 
 export default User;
