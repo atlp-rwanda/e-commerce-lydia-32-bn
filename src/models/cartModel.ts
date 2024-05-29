@@ -1,60 +1,49 @@
-import { Model, DataTypes } from "sequelize";
-import sequelize from "../config/db.js";
-import User from "./userModel.js";
-import CartItem from "./cartItemModel.js";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/db.js';
 
-export interface CartAttributes {
-  id?: number;
-  userId: number | undefined;
-  total: number;
-  items?: CartItem[];
-  createdAt?: Date;
-  updatedAt?: Date;
+interface CartAttributes {
+  cartId: number;
+  userId: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-class Cart extends Model<CartAttributes | {}> implements CartAttributes {
-  id!: number | undefined;
-  userId!: number;
-  items!: CartItem[];
-  total!: number;
-  createdAt!: Date | undefined;
-  updatedAt!: Date | undefined;
+interface CartCreationAttributes extends Optional<CartAttributes, 'cartId' | 'createdAt' | 'updatedAt'> {}
+
+class Cart extends Model<CartAttributes, CartCreationAttributes> implements CartAttributes {
+  public cartId!: number;
+  public userId!: number;
+  public createdAt!: Date;
+  public updatedAt!: Date;
 }
 
 Cart.init(
   {
-    id: {
-      allowNull: false,
+    cartId: {
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.NUMBER,
     },
     userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      type: DataTypes.NUMBER,
-    },
-    total: {
-      allowNull: false,
-      type: DataTypes.FLOAT,
-      defaultValue: 0,
     },
     createdAt: {
-      allowNull: false,
       type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
-      allowNull: false,
       type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
     sequelize,
-    modelName: "carts",
-  },
+    modelName: 'Cart',
+    tableName: 'carts',
+  }
 );
-
-Cart.belongsTo(User, { foreignKey: "userId", as: "user" });
-User.hasOne(Cart, { foreignKey: "userId", as: "cart" });
-Cart.hasMany(CartItem, { foreignKey: "cartId", as: "items" });
 
 export default Cart;

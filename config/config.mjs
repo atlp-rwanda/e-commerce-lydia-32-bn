@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
+require('dotenv').config();
+
 
 const env = process.env.NODE_ENV || 'development';
 

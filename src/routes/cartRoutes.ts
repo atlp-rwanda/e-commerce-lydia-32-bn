@@ -1,15 +1,14 @@
-import { addItemToCart } from "../controllers/cartController/cartControllers.js";
+
 import { Router } from "express";
 
 import { isLoggedIn } from "../middleware/authMiddleware.js";
+import { addToCartController } from "../controllers/cartController/cartControllers.js";
 
 
 const cartRoutes = Router();
 
-// cartRoutes.get("/",isLoggedIn,isPasswordOutOfDate,viewUserCart);
-cartRoutes.post("/cart/add",isLoggedIn ,addItemToCart);
-// cartRoutes.put("/",isLoggedIn,isPasswordOutOfDate,validateRemoveProductQty, isProductFound,removeProductFromCart);
-// cartRoutes.delete("/",isLoggedIn,isPasswordOutOfDate, clearAllProductFromCart);
-// cartRoutes.patch("/",isLoggedIn,isPasswordOutOfDate,validateUpdateProductQty, isProductFound, updateProductQuantity);
+
+cartRoutes.post("/cart/add",isLoggedIn ,addToCartController);
+
 
 export default cartRoutes;
