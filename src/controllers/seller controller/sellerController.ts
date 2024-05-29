@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SellerService } from '../../services/seller.Service.js';
 import { userService } from '../../services/registeruser.service.js';
+import Role from '../../models/roleModel.js';
 
 class SellerController {
   // get products associated with seller
@@ -24,8 +25,9 @@ class SellerController {
         res.status(404).json({ message: 'User not found' });
         return;
       }
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
 
-      if (user.usertype !== 'seller') {
+      if (userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can access this resource' });
         return;
       }
@@ -62,8 +64,8 @@ class SellerController {
         res.status(404).json({ message: 'User not found' });
         return;
       }
-
-      if (user.usertype !== 'seller') {
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+      if (userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can access this resource' });
         return;
       }
