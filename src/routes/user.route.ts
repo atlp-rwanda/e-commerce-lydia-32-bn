@@ -67,77 +67,46 @@ usersRouter.post('/verify', verifyToken, UserController.verifyUser);
 
 /**
  * @swagger
- * tags:
- *   name: Authentication
- *   description: User authentication
- */
-
-/**
- * @swagger
  * /api/login/user:
  *   post:
- *     summary: User login
- *     tags:
- *       - Authentication
+ *     summary: Authenticate user
+ *     tags: [Users]
+ *     description: Authenticate a user and generate a JSON Web Token (JWT) for authentication. If the user's role is "seller", it also sends a two-factor authentication (2FA) code via email and SMS.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/LoginRequest'
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
  *     responses:
  *       '200':
- *         description: Successful login
+ *         description: Login successful or 2FA code sent
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/LoginResponse'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
  *       '401':
- *         description: Invalid email or password, or user not verified
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Invalid email or password, user not verified, or user account blocked
  *       '500':
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Internal Server Error
+ */
+
+/**
+ * Authenticate a user and generate a JSON Web Token (JWT) for authentication. If the user's role is "seller", it also sends a two-factor authentication (2FA) code via email and SMS.
  *
- * components:
- *   schemas:
- *     LoginRequest:
- *       type: object
- *       required:
- *         - email
- *         - password
- *       properties:
- *         email:
- *           type: string
- *           format: email
- *           example: user@example.com
- *         password:
- *           type: string
- *           format: password
- *           example: myPassword123
- *
- *     LoginResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *           example: Login successful
- *         token:
- *           type: string
- *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *
- *     ErrorResponse:
- *       type: object
- *       properties:
- *         error:
- *           type: string
- *           example: Invalid email or password
+ * @param {import('express').Request} req - The Express request object.
+ * @param {import('express').Response} res - The Express response object.
+ * @returns {Promise<void>} A Promise that resolves when the login operation is complete.
  */
 usersRouter.post('/login/user', isBlocked, login);
 usersRouter.get('/users/:id', UserController.getUserById);
@@ -264,8 +233,7 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
  * /api/users/logout:
  *   post:
  *     summary: Logout user
- *     tags:
- *       - User
+ *     tags: [Users]
  *     description: Logout the currently authenticated user by clearing the JWT cookie and setting a loggedOut cookie.
  *     responses:
  *       '200':
@@ -285,4 +253,46 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
  */
 
 usersRouter.post('/users/logout', UserController.logout);
+/**
+ * @swagger
+ * /api/factor:
+ *   post:
+ *     summary: Verify two-factor authentication code
+ *     tags: [Users]
+ *     description: Verify the two-factor authentication (2FA) code provided by the user and generate a JSON Web Token (JWT) for authentication if the code is valid.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               twoFactorCode:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: 2FA code verified, login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *       '400':
+ *         description: Invalid user or 2FA not enabled, or invalid 2FA code
+ *       '500':
+ *         description: Internal Server Error
+ */
+
+/**
+ * Verify the two-factor authentication (2FA) code provided by the user and generate a JSON Web Token (JWT) for authentication if the code is valid.
+ *
+ * @param {import('express').Request} req - The Express request object.
+ * @param {string} req.body.twoFactorCode - The 2FA code provided by the user.
+ * @param {import('express').Response} res - The Express response object.
+ * @returns {Promise<void>} A Promise that resolves when the 2FA verification operation is complete.
+ */
 usersRouter.post('/factor', verifyTwoFactor)

@@ -40,7 +40,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
     const userRole = await Role.findByPk(user.dataValues.roleId) as any;
 
-    if (userRole || userRole.dataValues.name === 'seller') {
+    if (userRole.dataValues.name === 'seller') {
       await user.update({ hasTwoFactor: true });
       const twoFactorCode = Math.floor(10000 + Math.random() * 90000).toString();
       const [updatedRows, [updatedUser]] = await User.update(
@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       if (updatedRows === 1) {
         const text = `Your 2FA code is: ${twoFactorCode}`;
         sendVerificationToken(user.dataValues.email, '2FA Code', text);
-        sendSms(text, user.dataValues.phone)
+        sendSms(text, user.dataValues.phone )
         res.status(200).json({ message: '2FA code sent to your email' });
       } else {
         res.status(500).json({ error: 'Failed to update user' });
