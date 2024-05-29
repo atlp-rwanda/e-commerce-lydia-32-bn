@@ -78,28 +78,3 @@ wishListRouter.post('/wishlist/addItem/:productId', checkToken, addItemToWishLis
  *         description: Internal server error
  */
 wishListRouter.delete('/wishlist/removeItem/:productId', checkToken, removeItemFromWishList);
-
-// /**
-//  * @swagger
-//  * /api/wishlist/getAllItems:
-//  *   get:
-//  *     summary: Get All Wishlists
-//  *     description: Endpoint to get items from wishlist.
-//  *     tags: [WishLists]
-//  *     responses:
-//  *       '201':
-//  *         description: Items retrieved successfully
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               $ref: '#/components/schemas/WishList'
-//  *       '400':
-//  *         description: Bad request - Product Is Already in Your WishList
-//  *       '401':
-//  *         description: Unauthorized - You are not authenticated
-//  *       '404':
-//  *         description: No wishlist found
-//  *       '500':
-//  *         description: Internal server error
-//  */
-// wishListRouter.get('/wishlist/getAllItems', checkToken, getAllWishListItems);
