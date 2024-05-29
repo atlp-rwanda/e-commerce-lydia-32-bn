@@ -15,6 +15,20 @@ export class WishListService {
     }
   }
 
+  async getAllWishListItems(): Promise<WishList[]> {
+    try {
+      const wishListItems = await WishList.findAll({
+        include: [{ model: Product, as: 'product' }],
+      });
+      return wishListItems;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error retrieving all wish list items: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while retrieving all wish list items.');
+      }
+    }
+  }
   async getWishListByUserId(userId: number): Promise<WishList[]> {
     try {
       const wishList = await WishList.findAll({

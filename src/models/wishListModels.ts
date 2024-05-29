@@ -22,7 +22,7 @@ class WishList extends Model<WishListAttributes, WishListCreationAttributes> imp
 
   static associate(models: any) {
     WishList.belongsTo(User, { foreignKey: 'userId', as: 'buyer', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-    WishList.belongsTo(Product, { foreignKey: 'productId', as: 'product', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+    WishList.hasMany(Product, { foreignKey: 'productId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
   }
 
   static initialize(sequelize: Sequelize) {

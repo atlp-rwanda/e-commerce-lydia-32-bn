@@ -11,21 +11,21 @@ export const addItemToWishList = async(req: Request, res: Response): Promise<voi
     
         // Check if user is authenticated
         if (!userId) {
-          res.status(401).send('User not authenticated');
+          res.status(401).json({Error: 'User not authenticated'});
           return;
         } 
         else{
           const user = await UserService.getUserById(userId);
-          if(user && user.usertype == 'buyer'){
+          if(user && user.role == 'buyer'){
             const product = await Product.findByPk(productId);
               if (!product) {
-                res.status(404).send('Product not found');
+                res.status(404).json({Error: 'Product not found'});
                 return;
            }
             // Check if the product already exists in the user's wish list
             const existingWishListItem = await wishListService.getWishListItem(userId, productId);
             if (existingWishListItem) {
-               res.status(400).send('Product already in wish list');
+               res.status(400).json({Warning :'Product already in wish list'});
                return;
             }
         // Add product to wish list
@@ -33,12 +33,12 @@ export const addItemToWishList = async(req: Request, res: Response): Promise<voi
             res.status(201).json(wishListItem);
       }
       else{
-          res.status(401).send('Only Buyers are allowed to access this end-point');
+          res.status(401).json({Warning : 'Only Buyers are allowed to access this end-point'});
           return;
       }
      }
      } catch (error) {
         console.error(error);
-        res.status(500).send('Error adding product to wish list');
+        res.status(500).json({Error: 'Error adding product to wish list'});
       }
           }
