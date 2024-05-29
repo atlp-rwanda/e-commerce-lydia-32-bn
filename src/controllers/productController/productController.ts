@@ -7,6 +7,7 @@ import { productSchema } from '../../validations/product.validation.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize'; // Import Op from sequelize
 import { log } from 'console';
+import Role from '../../models/roleModel.js';
 
 interface ProductDetails {
   productId: number;
@@ -42,8 +43,10 @@ class ProductController {
       }
 
       //const UserService = new userService();
-      const user = await UserService.getUserById(userId);
-      if (!user || user.usertype !== 'seller') {
+      const user = await UserService.getUserById(userId) as any;
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+
+      if (!user || userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can create products' });
         return;
       }
@@ -108,8 +111,10 @@ async updateProduct(req: Request, res: Response): Promise<void> {
     const productId: number = Number(req.params.productId);
     try {
       const userId = req.body.userId;
-      const user = await UserService.getUserById(userId);
-      if(user && user.usertype == 'seller'){
+      const user = await UserService.getUserById(userId) as any;
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+
+      if(user &&  userRole.dataValues.name == 'seller'){
           const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
           if(productToBeDeleted){
             console.log(productToBeDeleted);

@@ -9,16 +9,16 @@ export interface UserAttributes {
   email: string;
   phone: string;
   password: string;
-  usertype: 'buyer' | 'seller';
-  street: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
+  street: string |  null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+  country: string | null;
   roleId: number;
   isverified: boolean;
-  isAdmin: boolean;
   isBlocked: boolean;
+  hasTwoFactor:boolean;
+  twoFactorSecret: string | null
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
@@ -30,16 +30,28 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public email!: string;
   public phone!: string;
   public password!: string;
-  public usertype!: 'buyer' | 'seller';
-  public street!: string;
-  public city!: string;
-  public state!: string;
-  public postal_code!: string;
-  public country!: string;
-  public roleId!: number;
+
+  public street!: string | null;
+
+  public city!: string | null;
+
+  public state!: string | null;
+
+  public postal_code!: string | null;
+
+  public country!: string | null;
+
+  public  roleId!: number;
+
   public isverified!: boolean;
-  public isAdmin!: boolean;
+
   public isBlocked!: boolean;
+
+  public hasTwoFactor!:boolean;
+
+  public twoFactorSecret!: string | null;
+
+  // Timestamps
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -71,10 +83,6 @@ User.init(
     password: {
       type: DataTypes.STRING(128),
       allowNull: false,
-    },
-    usertype: {
-      type: DataTypes.ENUM('buyer', 'seller'),
-      defaultValue: 'buyer',
     },
     street: {
       type: DataTypes.STRING(128),
@@ -108,14 +116,18 @@ User.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
     isBlocked: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    hasTwoFactor: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    twoFactorSecret: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     tableName: 'users',
