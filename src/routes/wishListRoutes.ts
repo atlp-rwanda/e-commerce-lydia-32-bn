@@ -49,8 +49,8 @@ wishListRouter.post('/wishlist/addItem/:productId', checkToken, addItemToWishLis
 
 /**
  * @swagger
- * /api/wishlist/addItem/:productId:
- *   post:
+ * /api/wishlist/removeItem/:productId:
+ *   delete:
  *     summary: Remove Item from your Wishlist
  *     description: Endpoint to remove item from wishlist.
  *     tags: [WishLists]
@@ -77,7 +77,7 @@ wishListRouter.post('/wishlist/addItem/:productId', checkToken, addItemToWishLis
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.post('/wishlist/removeItem/:productId', checkToken, removeItemFromWishList);
+wishListRouter.delete('/wishlist/removeItem/:productId', checkToken, removeItemFromWishList);
 
 /**
  * @swagger

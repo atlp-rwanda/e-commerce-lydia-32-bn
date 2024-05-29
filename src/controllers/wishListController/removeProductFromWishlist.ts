@@ -27,7 +27,7 @@ export const removeItemFromWishList = async(req: Request, res: Response): Promis
             }
            }
            else{
-            res.status(400).json({Error: 'Only  Buyers are allowed to add items to wishlist'});
+            res.status(400).json({Error: 'Only  Buyers are allowed to remove items to wishlist'});
             return;
            }
             // Check if the product already exists in the user's wish list
@@ -38,7 +38,7 @@ export const removeItemFromWishList = async(req: Request, res: Response): Promis
             }
         // Add product to wish list
             const wishListItem = await wishListService.removeProductFromWishList(userId, productId);
-            res.status(201).json(wishListItem);
+            res.status(200).json({Success: 'Item successfully removed from wishlist'});
       }
       else{
           res.status(401).json({Warning : 'Only Buyers are allowed to access this end-point'});

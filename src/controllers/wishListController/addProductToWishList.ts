@@ -19,6 +19,7 @@ export const addItemToWishList = async(req: Request, res: Response): Promise<voi
           const user = await UserService.getUserById(userId);
           if(user){
             const roleName = await User.getRoleName(userId);
+            console.log('User role name',roleName);
             if(roleName==='buyer'){
               const product = await Product.findByPk(productId);
               if (!product) {

@@ -61,12 +61,13 @@ public static async getRoleName(userId: number): Promise<string> {
     throw new Error('User not found');
   }
   
-  const role = await Role.findByPk(user.roleId);
+  const role = await Role.findByPk(user.dataValues.roleId);
+  console.log(role);
   if (!role) {
     throw new Error('Role not found');
   }
   
-  return role.name;
+  return role.dataValues.name;
 }
 
 }
