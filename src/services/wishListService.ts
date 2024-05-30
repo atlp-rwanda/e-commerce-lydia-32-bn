@@ -17,9 +17,8 @@ export class WishListService {
 
   async getAllWishListItems(): Promise<WishList[]> {
     try {
-      const wishListItems = await WishList.findAll({
-        include: [{ model: Product, as: 'product' }],
-      });
+      const wishListItems = await WishList.findAll();
+        // include: [{ model: Product, as: 'product' }],);
       return wishListItems;
     } catch (error) {
       if (error instanceof Error) {
@@ -33,7 +32,7 @@ export class WishListService {
     try {
       const wishList = await WishList.findAll({
         where: { userId },
-        include: [{ model: Product, as: 'product' }],
+        //include: [{ model: Product, as: 'product' }],
       });
       return wishList;
     } catch (error) {

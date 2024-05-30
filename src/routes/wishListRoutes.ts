@@ -1,23 +1,13 @@
-import express from "express";
-//import {verifyToken} from '../middleware/verfication.middleware.js';
-import checkToken from "../middleware/checkToken.js";
-//import { userAuthJWT } from "../middleware/verfication.middleware.js";
-import { addItemToWishList } from "../controllers/wishListController/addProductToWishList.js";
-import { removeItemFromWishList  } from "../controllers/wishListController/removeProductFromWishlist.js";
-import { getAllWishListItems} from "../controllers/wishListController/getAllWishListItems.js"
+import express from 'express';
+import checkToken from '../middleware/checkToken.js';
+import { wishListController } from '../controllers/wishListController/wishlistsController.js';
+import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 
 export const wishListRouter = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: WishLists
- *   description: WishLists Management routes
- */
-
-/**
- * @swagger
- * /api/wishlist/addItem/:productId:
+ * /api/wishlist/addItem/{productId}:
  *   post:
  *     summary: Add Item to your Wishlist
  *     description: Endpoint to add item to wishlist.
@@ -45,11 +35,11 @@ export const wishListRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.post('/wishlist/addItem/:productId', checkToken, addItemToWishList);
+wishListRouter.post('/wishlist/addItem/:productId', checkToken, wishListController.addItemToWishList);
 
 /**
  * @swagger
- * /api/wishlist/removeItem/:productId:
+ * /api/wishlist/removeItem/{productId}:
  *   delete:
  *     summary: Remove Item from your Wishlist
  *     description: Endpoint to remove item from wishlist.
@@ -77,4 +67,55 @@ wishListRouter.post('/wishlist/addItem/:productId', checkToken, addItemToWishLis
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.delete('/wishlist/removeItem/:productId', checkToken, removeItemFromWishList);
+wishListRouter.delete('/wishlist/removeItem/:productId', checkToken, wishListController.removeItemFromWishList);
+
+/**
+ * @swagger
+ * /api/wishlist/getUserWishlists:
+ *   get:
+ *     summary: Retrieve all items from your Wishlist
+ *     description: Endpoint to get items from User's wishlist.
+ *     tags: [WishLists]
+ *     responses:
+ *       '201':
+ *         description: Items retrieved from wishlist successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/WishList'
+ *       '400':
+ *         description: Bad request - No Products found in Your WishList
+ *       '401':
+ *         description: Unauthorized - You are not authenticated
+ *       '404':
+ *         description: Wishlist not found
+ *       '500':
+ *         description: Internal server error
+ */
+wishListRouter.get('/wishlist/getUserWishlists', checkToken, wishListController.getWishListItemsByUser);
+
+/**
+ * @swagger
+ * /api/wishlist/getAllWishlists:
+ *   get:
+ *     summary: Retrieve all Wishlists
+ *     description: Endpoint to get all Users' wishlists.
+ *     tags: [WishLists]
+ *     responses:
+ *       '201':
+ *         description: Users' wishlists retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/WishList'
+ *       '400':
+ *         description: Bad request - No Users' Wishlist found
+ *       '401':
+ *         description: Unauthorized - You are not authenticated
+ *       '404':
+ *         description: Wishlist not found
+ *       '500':
+ *         description: Internal server error
+ */
+wishListRouter.get('/wishlist/getAllWishlists', isRoleAdmin, wishListController.getAllWishListItems);
+

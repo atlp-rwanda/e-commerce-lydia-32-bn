@@ -234,7 +234,7 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
  *   post:
  *     summary: Logout user
  *     tags:
- *       - User
+ *       - Users
  *     description: Logout the currently authenticated user by clearing the JWT cookie and setting a loggedOut cookie.
  *     responses:
  *       '200':

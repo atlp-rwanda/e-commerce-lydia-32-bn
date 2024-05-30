@@ -1,4 +1,3 @@
-import express from 'express';
 import { Request, Response } from 'express';
 import { wishListService } from '../../services/wishListService.js';
 import { UserService } from '../../services/registeruser.service.js';
