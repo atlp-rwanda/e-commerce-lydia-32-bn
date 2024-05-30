@@ -1,4 +1,4 @@
-import { addItemToCart, removeProductFromCart, viewUserCart } from "../controllers/cartController/cartControllers.js";
+import { addItemToCart, viewUserCart } from "../controllers/cartController/cartControllers.js";
 import { Router } from "express";
 
 import { isLoggedIn } from "../middleware/authMiddleware.js";
