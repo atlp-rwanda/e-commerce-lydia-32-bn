@@ -63,7 +63,7 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
 
     const userServiceInstance = new userService();
     const user = await User.findByPk(userId)
-   console.log('my user is', decodedToken)
+   console.log('my user is', userId)
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;
