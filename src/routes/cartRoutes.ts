@@ -13,64 +13,83 @@ cartRoutes.post("/cart/add",isLoggedIn,addItemToCart);
 
 
 /**
- * @swagger
- * /api/cart/add:
- *   post:
- *     summary: add item to cart
- *     tags: [Cart]
- *     description: enter details for product to add it to cart
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               productId:
- *                 type: number
- *               quantity:
- *                 type: number
- *     responses:
- *       '200':
- *         description: item added to cart 
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 
- *       '401':
- *         description: login as buyer
- *       '500':
- *         description: Internal Server Error
- */
+* @swagger
+* components:
+*   securitySchemes:
+*     bearerAuth:
+*       type: http
+*       scheme: bearer
+*       bearerFormat: JWT
+*/
 
 /**
- * @swagger
- * /api/cart:
- *   get:
- *     summary: display cart
- *     tags: [Cart]
- *     description: edisplaying items in cart
- *     
- *     responses:
- *       '200':
- *         description: displaying item from cart 
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                   type: object
- *                 
- *       '401':
- *         description: login as buyer
- *       '500':
- *         description: Internal Server Error
- */
+* @swagger
+* /api/cart/add:
+*   post:
+*     summary: Add item to cart
+*     tags: [Cart]
+*     description: Enter details for the product to add it to the cart.
+*     security:
+*       - bearerAuth: []
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               productId:
+*                 type: number
+*               quantity:
+*                 type: number
+*     responses:
+*       '201':
+*         description: cart item created
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: "Item added to cart"
+*       '401':
+*         description: Unauthorized - Please log in as buyer
+*       '500':
+*         description: Internal Server Error
+*/
 
+/**
+* @swagger
+* /api/cart:
+*   get:
+*     summary: Display cart
+*     tags: [Cart]
+*     description: Displaying items in cart.
+*     security:
+*       - bearerAuth: []
+*     responses:
+*       '200':
+*         description: Displaying items from cart 
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 items:
+*                   type: array
+*                   items:
+*                     type: object
+*                     properties:
+*                       productId:
+*                         type: number
+*                       quantity:
+*                         type: number
+*       '401':
+*         description: Unauthorized - Please log in as buyer
+*       '500':
+*         description: Internal Server Error
+*/
 
 
 export default cartRoutes;
