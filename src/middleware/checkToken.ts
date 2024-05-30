@@ -15,7 +15,7 @@ const checkToken = (req: Request, res: Response, next: NextFunction) => {
       console.log(err);
       return res.status(500).json({ error: 'Failed to authenticate token' });
     }
-
+    console.log('User ID is: ' , decoded);
     req.body.userId = (decoded as any).userId;
     next();
   });

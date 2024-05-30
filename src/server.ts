@@ -7,6 +7,8 @@ import { usersRouter } from './routes/user.route.js';
 import { productRouter } from './routes/productRoutes.js';
 import { sellerRouter } from './routes/sellerRoutes.js';
 import { rolesRouter } from './routes/roleRoutes.js';
+import { wishListRouter } from './routes/wishListRoutes.js';
+
 import cartRoutes from './routes/cartRoutes.js';
 
 
@@ -29,6 +31,8 @@ app.get('/', (req, res) => {
 
 // Routes for the endpoints
 app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
+app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
+
 app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes);
 
 
