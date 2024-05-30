@@ -2,21 +2,15 @@ import jwt, {JwtPayload} from 'jsonwebtoken'
 import { userService } from '../../services/registeruser.service.js';
 import {ProductService, productService} from '../../services/product.service.js'
 import {Request, Response} from 'express';
-import { getBuyerProductSchema } from '../../validations/getItem.validation.js';
 
 
 
-export const getBuyerProduct = async (req: Request, res: Response): Promise<void> => {
+ class buyerRequests {
+
+ async getBuyerProduct(req: Request, res: Response): Promise<void>{
   
    try{
     const productId = parseInt(req.params.productId, 10);
-
-    const { error } = getBuyerProductSchema.validate({ productId});
-
-    if (error) {
-      res.status(400).json({ errors: error.details.map((err) => err.message) });
-      return;
-    }
 
     const productServiceInstance = new ProductService();
     const product = await productServiceInstance.getProductByFields({ productId, isAvailable: true });
@@ -34,3 +28,7 @@ export const getBuyerProduct = async (req: Request, res: Response): Promise<void
   }
   
 }
+
+}
+
+export const BuyerRequestInstance = new buyerRequests;

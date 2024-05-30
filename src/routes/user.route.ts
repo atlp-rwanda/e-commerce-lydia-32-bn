@@ -2,13 +2,13 @@ import express from 'express';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
-import { validateRequest, getBuyerProductSchema } from '../validations/getItem.validation.js';
-import {getBuyerProduct} from '../controllers/userController/user.getItem.js'
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middleware/verfication.middleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
+import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js'
+import { validateBuyerProductRequest} from '../middleware/validateSearch.js';
 
 export const usersRouter = express.Router();
 
@@ -255,7 +255,49 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
  */
 
 usersRouter.post('/users/logout', UserController.logout);
+/**
+ * @swagger
+ * /api/factor:
+ *   post:
+ *     summary: Verify two-factor authentication code
+ *     tags: [Users]
+ *     description: Verify the two-factor authentication (2FA) code provided by the user and generate a JSON Web Token (JWT) for authentication if the code is valid.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               twoFactorCode:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: 2FA code verified, login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *       '400':
+ *         description: Invalid user or 2FA not enabled, or invalid 2FA code
+ *       '500':
+ *         description: Internal Server Error
+ */
 
+/**
+ * Verify the two-factor authentication (2FA) code provided by the user and generate a JSON Web Token (JWT) for authentication if the code is valid.
+ *
+ * @param {import('express').Request} req - The Express request object.
+ * @param {string} req.body.twoFactorCode - The 2FA code provided by the user.
+ * @param {import('express').Response} res - The Express response object.
+ * @returns {Promise<void>} A Promise that resolves when the 2FA verification operation is complete.
+ */
+usersRouter.post('/factor', verifyTwoFactor)
 /**
  * @swagger
  * /api/users/products/{productId}:
@@ -306,4 +348,4 @@ usersRouter.post('/users/logout', UserController.logout);
  */
 
 
-usersRouter.get('/users/products/:productId', validateRequest(getBuyerProductSchema), getBuyerProduct);
+usersRouter.get('/users/products/:productId',validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);

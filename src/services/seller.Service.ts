@@ -4,7 +4,7 @@ export class SellerService {
   
 
   // method to retrieve all the products associated with a specific seller
-  async getProductsBySellerId(sellerId: number): Promise<Product[]> {
+async getProductsBySellerId(sellerId: number): Promise<Product[]> {
     try {
       const products = await Product.findAll({ where: { userId: sellerId } });
       return products;
@@ -13,7 +13,7 @@ export class SellerService {
     }
   }
   // retrive single product associated with seller
-async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Product | null> {
+  async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Product | null> {
   try {
     const product = await Product.findOne({ where: { productId, userId: sellerId } });
     return product;
@@ -28,7 +28,7 @@ async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Pr
 
 
 // update product
-async updateProductt(productId: number, updates: Partial<Product>): Promise<Product | null> {
+async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
       if (!product) {
@@ -46,7 +46,7 @@ async updateProductt(productId: number, updates: Partial<Product>): Promise<Prod
   }
 
   // get only available products in the store
-  async getAvailableProducts(): Promise<Product[]> {
+async getAvailableProducts(): Promise<Product[]> {
     try {
       const products = await Product.findAll({ where: { isAvailable: true } });
       return products;

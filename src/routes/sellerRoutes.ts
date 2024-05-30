@@ -1,6 +1,7 @@
 import express from 'express';
 import { sellerControllerInstance } from '../controllers/seller controller/sellerController.js';
-import { validateRequest, getSellerProductSchema, getBuyerProductSchema } from '../validations/getItem.validation.js';
+import { validateSellerProductRequest} from '../middleware/validateSearch.js';
+import { authSellerRole } from '../middleware/checkSellerRole.js'
 
 export const sellerRouter = express.Router();
 
@@ -277,4 +278,4 @@ sellerRouter.get('/products/available', sellerControllerInstance.getAvailablePro
  *               $ref: '#/components/schemas/Error'
  */
 
-sellerRouter.get('/seller/products/:productId', validateRequest(getSellerProductSchema), sellerControllerInstance.getSellerProduct);
+sellerRouter.get('/seller/products/:productId', validateSellerProductRequest,authSellerRole, sellerControllerInstance.getSellerProduct);
