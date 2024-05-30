@@ -76,7 +76,7 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
     const productServiceInstance = new SellerService();
     const products = await productServiceInstance.getProductsBySellerId(userId) as any;
 
-    // Pagination logic
+    // Pagination 
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
     const offset = (page - 1) * limit;
@@ -215,4 +215,5 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
 }
 
 export const sellerControllerInstance = new SellerController(); 
+
 
