@@ -15,24 +15,17 @@ import User from '../../models/userModel.js';
         
             // Check if user is authenticated
             if (!userId) {
-              res.status(401).json({Error: 'User not authenticated'});
+              res.status(401).json({Error: 'You are not authenticated'});
               return;
             } 
             else{
               const user = await UserService.getUserById(userId);
               if(user){
-                const roleName = await User.getRoleName(userId);
-                console.log('User role name',roleName);
-                if(roleName==='buyer'){
                   const product = await Product.findByPk(productId);
                   if (!product) {
                     res.status(404).json({Error: 'Product not found'});
                     return;
                 }
-               }
-               else{
-                res.status(400).json({Error: 'Only  Buyers are allowed to add items to wishlist'});
-                return;
                }
                 // Check if the product already exists in the user's wish list
                 const existingWishListItem = await wishListService.getWishListItem(userId, productId);
@@ -44,11 +37,6 @@ import User from '../../models/userModel.js';
                 const wishListItem = await wishListService.addProductToWishList(userId, productId);
                 res.status(201).json(wishListItem);
           }
-          else{
-              res.status(401).json({Warning : 'Only Buyers are allowed to access this end-point'});
-              return;
-          }
-         }
          } catch (error) {
             console.error(error);
             res.status(500).json({Error: 'Error adding product to wish list'});
@@ -69,17 +57,11 @@ import User from '../../models/userModel.js';
                 else{
                   const user = await UserService.getUserById(userId);
                   if(user){
-                    const roleName = await User.getRoleName(userId);
-                    if(roleName==='buyer'){
                       const product = await Product.findByPk(productId);
                       if (!product) {
                         res.status(404).json({Error: 'Product not found'});
                         return;
                     }
-                   }
-                   else{
-                    res.status(400).json({Error: 'Only  Buyers are allowed to remove items to wishlist'});
-                    return;
                    }
                     // Check if the product already exists in the user's wish list
                     const existingWishListItem = await wishListService.getWishListItem(userId, productId);
@@ -91,11 +73,6 @@ import User from '../../models/userModel.js';
                     const wishListItem = await wishListService.removeProductFromWishList(userId, productId);
                     res.status(200).json({Success: 'Item successfully removed from wishlist'});
               }
-              else{
-                  res.status(401).json({Warning : 'Only Buyers are allowed to access this end-point'});
-                  return;
-              }
-             }
              } catch (error) {
                 console.error(error);
                 res.status(500).json({Error: 'Error removing product to wish list'});
