@@ -153,8 +153,8 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
     try {
       const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
       const userId = decodedToken.userId;
-      const userServiceInstance = new userService();
-      const user = await userServiceInstance.getUserById(userId);
+    
+      const user = await User.findByPk(userId)
   
       if (!user) {
         res.status(404).json({ message: 'User not found' });
