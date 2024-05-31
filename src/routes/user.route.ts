@@ -235,7 +235,8 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
  * /api/users/logout:
  *   post:
  *     summary: Logout user
- *     tags: [Users]
+ *     tags:
+ *       - Users
  *     description: Logout the currently authenticated user by clearing the JWT cookie and setting a loggedOut cookie.
  *     responses:
  *       '200':
@@ -298,6 +299,7 @@ usersRouter.post('/users/logout', UserController.logout);
  * @returns {Promise<void>} A Promise that resolves when the 2FA verification operation is complete.
  */
 usersRouter.post('/factor', verifyTwoFactor)
+
 /**
  * @swagger
  * /api/users/products/{productId}:
@@ -347,5 +349,5 @@ usersRouter.post('/factor', verifyTwoFactor)
  *               $ref: '#/components/schemas/Error'
  */
 
-
 usersRouter.get('/users/products/:productId',validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
+

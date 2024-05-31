@@ -62,9 +62,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign(
       {
         userId: user.dataValues.id,
-          firstname: user.dataValues.firstname,
-          isverified: user.dataValues.isverified,
-          isBlocked: user.dataValues.isBlocked,
+        firstname: user.dataValues.firstname,
+        isverified: user.dataValues.isverified,
+        isBlocked: user.dataValues.isBlocked,
       },
       JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' }
