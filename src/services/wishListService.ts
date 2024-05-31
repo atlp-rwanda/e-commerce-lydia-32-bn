@@ -45,11 +45,12 @@ export class WishListService {
   }
 
 
-    async getWishListItem(userId: number, productId: number): Promise<WishList | null> {
+    async getWishListItem(userId: number, id: number): Promise<WishList | null> {
     try {
       const wishListItem = await WishList.findOne({
-        where: { userId, productId },
+        where: { userId, id },
       });
+      console.log(wishListItem);
       return wishListItem;
     } catch (error) {
       if (error instanceof Error) {
@@ -59,21 +60,36 @@ export class WishListService {
       }
     }
   }
-
-  async removeProductFromWishList(userId: number, productId: number): Promise<void> {
+  async getWishListProduct(userId: number, productId: number): Promise<WishList | null> {
     try {
-      const wishListItem = await WishList.findOne({
+      const wishListProduct = await WishList.findOne({
         where: { userId, productId },
       });
+      console.log(wishListProduct);
+      return wishListProduct;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error retrieving wish list item: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while retrieving wish list item.');
+      }
+    }
+  }
+
+  async removeProductFromWishList(userId: number,id: number): Promise<void> {
+    try {
+      const wishListItem = await WishList.findOne({
+        where: { userId, id },
+      });
       if (!wishListItem) {
-        throw new Error('Product not found in wish list');
+        throw new Error('Item not found in wish list');
       }
       await wishListItem.destroy();
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Error removing product from wish list: ${error.message}`);
+        throw new Error(`Error removing item from wish list: ${error.message}`);
       } else {
-        throw new Error('Unknown error occurred while removing product from wish list.');
+        throw new Error('Unknown error occurred while removing item from wish list.');
       }
     }
   }
