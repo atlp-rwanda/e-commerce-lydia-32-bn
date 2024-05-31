@@ -16,6 +16,40 @@ export const productRouter = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     ProductDetails:
+ *       type: object
+ *       required:
+ *         - productName
+ *         - description
+ *         - productCategory
+ *         - price
+ *         - quantity
+ *         - images
+ *       properties:
+ *         productName:
+ *           type: string
+ *           description: The name of the product
+ *         description:
+ *           type: string
+ *           description: The description of the product
+ *         productCategory:
+ *           type: string
+ *           description: The category of the product
+ *         price:
+ *           type: number
+ *           description: The price of the product
+ *         quantity:
+ *           type: integer
+ *           description: The quantity of the product
+ *         images:
+ *           type: string
+ *           description: The comma-separated list of image URLs for the product
+ *         dimensions:
+ *           type: string
+ *           description: The dimensions of the product
+ *
  * /api/product/create:
  *   post:
  *     summary: Create a new product

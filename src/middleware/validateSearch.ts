@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
+import { getSellerProductSchema, getBuyerProductSchema } from '../validations/getItem.validation.js';
 
 const searchSchema = Joi.object({
     name: Joi.string().optional(),
@@ -23,3 +24,26 @@ const validateSearchProduct = async (req: Request, res: Response, next: NextFunc
 };
 
 export { validateSearchProduct };
+
+
+export const validateSellerProductRequest = (req: Request, res: Response, next: NextFunction) => {
+  const { error } = getSellerProductSchema.validate({ productId: req.params.productId });
+  if (error) {
+    return res.status(400).json({ errors: error.details.map((err) => err.message) });
+  }
+  next();
+};
+
+export const validateBuyerProductRequest = (req: Request, res: Response, next: NextFunction) => {
+ 
+    const { error } = getBuyerProductSchema.validate({ productId: req.params.productId});
+
+    if (error) {
+      res.status(400).json({ errors: error.details.map((err) => err.message) });
+      return;
+    }
+    next();
+};
+
+
+
