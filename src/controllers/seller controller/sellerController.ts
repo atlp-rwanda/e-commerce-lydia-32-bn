@@ -186,7 +186,7 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
         return;
       }
   
-      const updatedProduct = await productServiceInstance.updateProductt(productId, { isAvailable });
+      const updatedProduct = await productServiceInstance.updateProduct(productId, { isAvailable });
   
       const availabilityMessage = isAvailable
         ? 'Product is now available for buyers'
