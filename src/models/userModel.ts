@@ -2,7 +2,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/db.js';
 import Role from './roleModel.js';
 
-interface UserAttributes {
+export interface UserAttributes {
   id: number;
   firstname: string;
   othername: string;

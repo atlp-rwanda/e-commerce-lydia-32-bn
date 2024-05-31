@@ -104,10 +104,9 @@ const options: swaggerJsdoc.Options = {
         CartItem: {
           type: 'object',
           properties: {
-            cartId: { type: 'number' },
             productId: { type: 'number' },
             quantity: { type: 'number' },
-            Dimensions: { type: 'JSON' },
+            
           },
         },
         Cart: {
