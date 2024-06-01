@@ -1,37 +1,72 @@
 version: 2.1
+
 jobs:
   build:
     docker:
-      - image: cimg/node:21.7.2-browsers
+      - image: e-commerce/lyidia
 
     steps:
       - checkout
       - run:
-          name: 'Say hello'
-          command: 'echo Hello, World!'
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - run:
-          name: Build app
-          command: npm run build
+          name: Install Docker
+          command: |
+            sudo apt update
+            sudo apt install -y docker.io
 
-  store_test_results:
+      - run:
+          name: Load environment variables
+          command: |
+            cp .env .env  
+            source .env
+
+      - run:
+          name: Build Docker image
+          command: docker-compose build
+
+      - run:
+          name: Tag Docker image
+          command: docker tag e-commerce/lyidia:latest $DOCKER_USERNAME/team-lydia:latest
+
+      - run:
+          name: Push Docker image
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker push $DOCKER_USERNAME/team-lydia:latest
+
+  deploy:
     docker:
-      - image: cimg/node:21.7.2-browsers
+      - image: e-commerce/lyidia
 
     steps:
       - checkout
       - run:
-          name: Install Dependencies
-          command: npm install
-      - store_test_results:
-          path: ~/project/test-results
-          destination: test-results
+          name: Install Docker
+          command: |
+            sudo apt update
+            sudo apt install -y docker.io
+
+      - run:
+          name: Load environment variables
+          command: |
+            cp .env .env  
+            source .env
+
+      - run:
+          name: Pull Docker image
+          command: |
+            docker pull $DOCKER_USERNAME/team-lydia:latest
+
+      - run:
+          name: Deploy with Docker Compose
+          command: |
+            sudo apt install -y docker-compose
+            docker-compose up -d
+
 workflows:
-  build_and_test:
+  version: 2
+  build_and_deploy:
     jobs:
       - build
-      - store_test_results:
+      - deploy:
           requires:
             - build
