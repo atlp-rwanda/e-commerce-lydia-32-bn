@@ -1,6 +1,6 @@
 import express from 'express';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
-import { login } from '../controllers/userController/loginUser.js';
+import { loginController } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
@@ -108,7 +108,7 @@ usersRouter.post('/verify', verifyToken, UserController.verifyUser);
  * @param {import('express').Response} res - The Express response object.
  * @returns {Promise<void>} A Promise that resolves when the login operation is complete.
  */
-usersRouter.post('/login/user', isBlocked, login);
+usersRouter.post('/login/user', isBlocked, loginController.login);
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users',isRoleAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
