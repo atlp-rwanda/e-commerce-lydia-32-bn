@@ -15,7 +15,7 @@ import {UserService} from '../services/registeruser.service.js'
               return next()
            }
            else{
-            return res.status(400).json({Error: "Only Users are allowed to access this route"});
+            return res.status(400).json({Error: "Only Buyers are allowed to access this route"});
            }
        }
      } catch (error) {

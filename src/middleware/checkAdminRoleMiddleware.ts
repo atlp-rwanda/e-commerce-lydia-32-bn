@@ -4,11 +4,12 @@ import User from '../models/userModel.js';
 import Role from '../models/roleModel.js';
 
 export const isRoleAdmin = async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies.jwt;
+  const cookiesToken = req.cookies.jwt;
   const authHeader = req.headers.authorization;
-  const token2 = authHeader && authHeader.split(' ')[1];
-  if (!token && token2) {
-    res.status(401).json({ message: 'Access denied. No token provided.' });
+  const headersToken = authHeader && authHeader.split(' ')[1];
+  const token = cookiesToken || headersToken;
+  if (!token) {
+    res.status(401).json({ message: 'Access denied. No Authentication token provided.' });
     return;
   }
 

@@ -1,5 +1,7 @@
 import express from 'express';
 import { sellerControllerInstance } from '../controllers/seller controller/sellerController.js';
+import { validateSellerProductRequest} from '../middleware/validateSearch.js';
+import { authSellerRole } from '../middleware/checkSellerRole.js'
 
 export const sellerRouter = express.Router();
 
@@ -215,3 +217,65 @@ sellerRouter.put('/seller/products/:productId/availability', sellerControllerIns
  */
 
 sellerRouter.get('/products/available', sellerControllerInstance.getAvailableProducts);
+/**
+ * @swagger
+ * /api/seller/products/{productId}:
+ *   get:
+ *     summary: Get a specific product for a seller
+ *     description: Retrieves details of a specific product belonging to the authenticated seller
+ *     tags:
+ *       - Sellers
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product found in your products
+ *                 product:
+ *                   $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *               example:
+ *                 message: Oops!!! There is no match of the product in your products
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+sellerRouter.get('/seller/products/:productId', validateSellerProductRequest,authSellerRole, sellerControllerInstance.getSellerProduct);
