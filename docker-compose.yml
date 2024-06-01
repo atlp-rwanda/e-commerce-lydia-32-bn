@@ -1,4 +1,4 @@
-version: latest
+version: '3'
 
 services:
   backend:
@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.nodejs
     ports:
-      - '5000:5050'
+      - '5000:3000'
     env_file:
       - .env
     depends_on:
@@ -21,4 +21,4 @@ services:
         DB_PASSWORD: ${DB_PASSWORD}
         DB_NAME: ${DB_NAME}
     ports:
-      - '3000:4000'
+      - '5432:5432'
