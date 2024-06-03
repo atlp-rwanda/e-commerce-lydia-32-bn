@@ -6,12 +6,7 @@
 
 # E-Commerce Backend Application
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Issues][issues-shield]][https://github.com/atlp-rwanda/e-commerce-lydia-32-bn/issues]
-
 <p align="center">
-
-  <h3 align="center">E-Commerce Backend</h3>
 
   <p align="center">
     A robust backend for managing e-commerce operations.
@@ -43,7 +38,9 @@ The E-Commerce Backend Application is a robust and scalable solution designed to
 
 ### Key Features:
 
--**Product Management**: Add, update, and remove products with detailed information and images. -**User Authentication**: Secure registration and login functionalities for customers and admin users. -**Order Processing**: Seamlessly handle customer orders from cart to checkout, including payment integration. -**Inventory Management**: Track stock levels and manage inventory status in real-time. -**Analytics and Reporting**: Generate reports on sales, user activity, and other key metrics.
+-**Product Management**: Add, update, and remove products with detailed information and images. -**User Authentication**: Secure registration and login functionalities for users.  
+-**Order Processing**:Seamlessly handle customer orders from cart to checkout, including payment integration.  
+-**Inventory Management**: Track stock levels and manage inventory status in real-time.-**Analytics and Reporting**: Generate reports on sales, user activity, and other key metrics.
 
 ### Why It’s Useful:
 
@@ -55,7 +52,9 @@ We built this project to address the common challenges faced by e-commerce busin
 
 This project solves several problems:
 
--**Scalability**: Designed to handle a growing number of products and customers without compromising performance. -**Security**: Implements best practices for data protection and secure transactions. -**Efficiency**: Automates repetitive tasks and integrates with various services to improve overall business operations. -**User Experience**: Ensures a smooth and responsive experience for both customers and administrators.
+-**Scalability**: Designed to handle a growing number of products and customers without compromising performance.  
+-**Security**: Implements best practices for data protection and secure transactions. -**Efficiency**: Automates repetitive tasks and integrates with various services to improve overall business operations.  
+-**User Experience**: Ensures a smooth and responsive experience for both customers and administrators.
 
 ### Built With
 
@@ -77,26 +76,13 @@ List things you need to use the software and how to install them.
   ```sh
   npm install npm@latest -g
   ```
-  Installation -**Clone the repo**
-  git clone https://github.com/atlp-rwanda/e-commerce-lydia-32-bn.git -**Install NPM packages**
-  npm install -**Start the development server**
+  Installation  
+  -**Clone the repo**
+  git clone https://github.com/atlp-rwanda/e-commerce-lydia-32-bn.git  
+  -**Install NPM packages**
+  npm install  
+  -**Start the development server**
   yarn start
-
-## ACKNOWLEDGMENTS
-
-We would like to extend our gratitude to the following contributors for their valuable contributions to this project:
-
-Bahati Yves - https://github.com/bahati10
-Iradukunda Derrick - http://github.com/Derrick-Nuby
-Ishimwe Pacifique - https://github.com/Ishimwe7
-Kwizera Balinda Maurice - https://github.com/Balinda21
-Kirenga Martial - https://github.com/kirengamartial
-Rwibutso Robert - https://github.com/robsdagreat
-Rwigara Rodrigue - https://github.com/rodriguecyber
-
-# Online marketplace interface
-
-This repository hosts an E-commerce API constructed with Node.js, Express.js, PostgreSQL, and Sequelize. It empowers users to execute a range of actions, including product, category, order, and user management, encompassing creation, modification, and deletion.
 
 ## Database Migration
 
@@ -138,131 +124,14 @@ yarn run seeds
 yarn run undo:seeds
 ```
 
-### User Signup
+## ACKNOWLEDGMENTS
 
-#### Endpoint: `POST /api/register`
+We would like to extend our gratitude to the following contributors for their valuable contributions to this project:
 
-#### Description:
-
-This endpoint allows a new user to register by providing their personal details, including an email address. If the registration is successful, a verification email is sent to the user's email address.
-
-#### Request Body:
-
-```json
-{
-  "firstname": "John",
-  "othername": "Doe",
-  "email": "john.doe@example.com",
-  "phone": "1234567890",
-  "password": "StrongPass123",
-  "usertype": "buyer",
-  "street": "123 Main St",
-  "city": "Anytown",
-  "state": "Anystate",
-  "postal_code": "12345",
-  "country": "Anycountry"
-}
-```
-
-#### Responses:
-
-. 201 Created:
-
-```json
-{
-  "message": "Signup was successful, Verification Email sent"
-}
-```
-
-### Email Verification
-
-#### Endpoint: POST /api/verify
-
-#### Description:
-
-This endpoint allows a user to verify their email address by providing a valid JWT token received in the verification email.
-
-#### Responses:
-
-200 OK:
-
-```json
-{
-  "message": "User verified successfully"
-}
-```
-
-#### 400 Bad Request:
-
-```json
-{
-  "error": "User is already verified"
-}
-```
-
-#### 500 Internal Server Error:
-
-```json
-{
-  "error": "Internal server error message"
-}
-```
-
-#### Security:
-
-Bearer token is required in the Authorization header.
-
-### User Retrieval
-
-#### Endpoint: GET /api/user/{userId}
-
-#### Description:
-
-This endpoint allows retrieving user details by their user ID.
-
-#### Parameters:
-
-userId: The unique identifier of the user to retrieve.
-
-#### Responses:
-
-#### 200 OK:
-
-```json
-{
-  "message": "User Retrieved successfully",
-  "user": {
-    "id": 1,
-    "firstname": "John",
-    "othername": "Doe",
-    "email": "john.doe@example.com",
-    "phone": "1234567890",
-    "usertype": "buyer",
-    "street": "123 Main St",
-    "city": "Anytown",
-    "state": "Anystate",
-    "postal_code": "12345",
-    "country": "Anycountry",
-    "isverified": true,
-    "isAdmin": false,
-    "createdAt": "2024-05-20T12:00:00Z",
-    "updatedAt": "2024-05-20T12:00:00Z"
-  }
-}
-```
-
-#### 404 Not Found:
-
-```json
-{
-  "error": "User not found"
-}
-```
-
-#### 500 Internal Server Error:
-
-```json
-{
-  "error": "Internal server error message"
-}
-```
+Bahati Yves - https://github.com/bahati10  
+Iradukunda Derrick - http://github.com/Derrick-Nuby  
+Ishimwe Pacifique - https://github.com/Ishimwe7  
+Kwizera Balinda Maurice - https://github.com/Balinda21  
+Kirenga Martial - https://github.com/kirengamartial  
+Rwibutso Robert - https://github.com/robsdagreat  
+Rwigara Rodrigue - https://github.com/rodriguecyber
