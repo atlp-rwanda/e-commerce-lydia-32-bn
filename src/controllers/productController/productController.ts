@@ -5,13 +5,12 @@ import { Op } from 'sequelize'; // Import Op from sequelize
 import { log } from 'console';
 import Product from '../../models/productModel.js';
 import { productService } from '../../services/product.service.js';
-import { UserService } from '../../services/registeruser.service.js';
+import User from '../../models/userModel.js';
 import { productSchema } from '../../validations/product.validation.js';
 import Role from '../../models/roleModel.js';
 
 interface ProductDetails {
-  productId: number;
-  userId: number;
+  productId?: number;
   productName: string;
   description: string;
   productCategory: string;
@@ -43,7 +42,7 @@ class ProductController {
       }
 
       // const UserService = new userService();
-      const user = (await UserService.getUserById(userId)) as any;
+      const user = (await User.findByPk(userId)) as any;
       const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 
       if (!user || userRole.dataValues.name !== 'seller') {
@@ -51,18 +50,14 @@ class ProductController {
         return;
       }
 
-      // const productService = new ProductService();
-      const existingProduct = await productService.getProductByNameAndSellerId(
-        productDetails.productName,
-        productDetails.userId,
-      );
+      const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, userId);
       if (existingProduct) {
         res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.' });
         return;
       }
 
       const createdProduct = await Product.create({
-        userId: req.body.userId,
+        userId: user.dataValues.id,
         productName: req.body.productName,
         description: req.body.description,
         productCategory: req.body.productCategory,
@@ -111,7 +106,7 @@ class ProductController {
     const productId: number = Number(req.params.productId);
     try {
       const { userId } = req.body;
-      const user = (await UserService.getUserById(userId)) as any;
+      const user = (await User.findByPk(userId)) as any;
       const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 
       if (user && userRole.dataValues.name == 'seller') {

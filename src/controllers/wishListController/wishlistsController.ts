@@ -23,14 +23,14 @@ class WishListController {
           }
         }
         // Check if the product already exists in the user's wish list
-        const existingWishListItem = await wishListService.getWishListItem(userId, productId);
+        const existingWishListItem = await wishListService.getWishListProduct(userId, productId);
         if (existingWishListItem) {
           res.status(400).json({ Warning: 'Product already in wish list' });
           return;
         }
         // Add product to wish list
         const wishListItem = await wishListService.addProductToWishList(userId, productId);
-        res.status(201).json(wishListItem);
+        res.status(201).json({ 'Product added successfully to your wishList ': wishListItem });
       }
     } catch (error) {
       console.error(error);
@@ -41,7 +41,7 @@ class WishListController {
   public removeItemFromWishList = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req.body;
-      const productId = Number(req.params.productId);
+      const itemId = Number(req.params.itemId);
 
       // Check if user is authenticated
       if (!userId) {
@@ -49,21 +49,21 @@ class WishListController {
       } else {
         const user = await UserService.getUserById(userId);
         if (user) {
-          const product = await Product.findByPk(productId);
-          if (!product) {
-            res.status(404).json({ Error: 'Product not found' });
-            return;
+          const roleName = await User.getRoleName(userId);
+          if (roleName === 'buyer') {
+            const existingWishListItem = await wishListService.getWishListItem(userId, itemId);
+            if (!existingWishListItem) {
+              res.status(400).json({ Warning: `Item with id ${itemId} is not found in your wishlist` });
+              return;
+            }
+            const wishListItem = await wishListService.removeProductFromWishList(userId, itemId);
+            res.status(200).json({ Success: 'Item successfully removed from wishlist' });
+          } else {
+            res.status(400).json({ Error: 'User not found !' });
           }
+        } else {
+          res.status(401).json({ Warning: 'Only Buyers are allowed to access this end-point' });
         }
-        // Check if the product already exists in the user's wish list
-        const existingWishListItem = await wishListService.getWishListItem(userId, productId);
-        if (!existingWishListItem) {
-          res.status(400).json({ Warning: 'Product is not found in your wishlist' });
-          return;
-        }
-        // Add product to wish list
-        const wishListItem = await wishListService.removeProductFromWishList(userId, productId);
-        res.status(200).json({ Success: 'Item successfully removed from wishlist' });
       }
     } catch (error) {
       console.error(error);

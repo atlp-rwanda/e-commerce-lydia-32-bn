@@ -26,7 +26,7 @@ export class SellerService {
   }
 
   // update product
-  async updateProductt(productId: number, updates: Partial<Product>): Promise<Product | null> {
+  async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
       if (!product) {
