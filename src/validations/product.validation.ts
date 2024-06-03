@@ -1,12 +1,7 @@
 import Joi from 'joi';
 
 export const productSchema = Joi.object({
-  productId: Joi.number().integer().positive().optional().messages({
-    'number.base': 'Product ID must be a number.',
-    'number.integer': 'Product ID must be an integer.',
-    'number.positive': 'Product ID must be a positive number.',
-  }),
-  userId: Joi.number().integer().positive().required().messages({
+  userId: Joi.number().integer().positive().optional().messages({
     'number.base': 'User ID must be a number.',
     'number.integer': 'User ID must be an integer.',
     'number.positive': 'User ID must be a positive number.',
@@ -46,5 +41,5 @@ export const productSchema = Joi.object({
   }),
   isAvailable: Joi.boolean().optional().messages({
     'boolean.base': 'IsAvailable must be a boolean.',
-  }),
+  }),
 });
