@@ -8,6 +8,8 @@ import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middle
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
 import { authenticateAndAuthorizeUserController }from '../middleware/authenticateAndAuthorizeUser.js'
+import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js'
+import { validateBuyerProductRequest} from '../middleware/validateSearch.js';
 
 export const usersRouter = express.Router();
 
@@ -298,3 +300,55 @@ usersRouter.post('/users/logout', UserController.logout);
  * @returns {Promise<void>} A Promise that resolves when the 2FA verification operation is complete.
  */
 usersRouter.post('/factor', verifyTwoFactor)
+
+/**
+ * @swagger
+ * /api/users/products/{productId}:
+ *   get:
+ *     summary: Get a specific product for a buyer
+ *     description: Retrieves details of a specific available product
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product available in store
+ *                 product:
+ *                   $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *               example:
+ *                 message: Oops!!! There is no match for this product in available products
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+usersRouter.get('/users/products/:productId',validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
+
