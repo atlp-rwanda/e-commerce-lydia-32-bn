@@ -91,7 +91,7 @@ Iradukunda Derrick - http://github.com/Derrick-Nuby
 Ishimwe Pacifique - https://github.com/Ishimwe7
 Kwizera Balinda Maurice -
 Kirenga Martial -  
-Rwibutso Robert -
+Rwibutso Robert - https://github.com/robsdagreat
 Rwigara Rodrigue -
 
 # Online marketplace interface
