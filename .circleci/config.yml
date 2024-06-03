@@ -24,12 +24,20 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      
+      - run:
+          name: Install dependencies
+          command: |
+            pip install docker-compose==1.15.0
+      - run:
+          name: Run tests
+          command: |
+            docker-compose build 
+            docker-compose up
       - run:
           name: Push application Docker image
           command: |
             docker login -e rodrirwigara@gmail.com -u rwigara -p 49jRxLG2vqj7D6%
-            docker tag dockerapp_dockerapp rwigara/rwigara/e-commerce-lydia-32-bn-backend:latest
+            docker tag e-commerce-lydia-32-bn-backend rwigara/e-commerce-lydia-32-bn-backend:latest
             docker push rwigara/e-commerce-lydia-32-bn-backend:latest
 
   store_test_results:
