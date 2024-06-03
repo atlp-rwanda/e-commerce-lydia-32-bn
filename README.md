@@ -86,13 +86,13 @@ List things you need to use the software and how to install them.
 
 We would like to extend our gratitude to the following contributors for their valuable contributions to this project:
 
-Bahati Yves -
+Bahati Yves - https://github.com/bahati10
 Iradukunda Derrick - http://github.com/Derrick-Nuby
 Ishimwe Pacifique - https://github.com/Ishimwe7
-Kwizera Balinda Maurice -
-Kirenga Martial -  
+Kwizera Balinda Maurice - https://github.com/Balinda21
+Kirenga Martial - https://github.com/kirengamartial
 Rwibutso Robert - https://github.com/robsdagreat
-Rwigara Rodrigue -
+Rwigara Rodrigue - https://github.com/rodriguecyber
 
 # Online marketplace interface
 
