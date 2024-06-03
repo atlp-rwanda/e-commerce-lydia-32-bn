@@ -77,16 +77,16 @@ To get a local copy up and running, follow these simple steps.
 
 List things you need to use the software and how to install them.
 
-- npm
+- yarn
   ```sh
-  npm install npm@latest -g
+  npm install --global yarn
   ```
   Installation  
-  -**Clone the repo**
+   -**Clone the repo**
   git clone https://github.com/atlp-rwanda/e-commerce-lydia-32-bn.git  
-  -**Install NPM packages**
-  npm install  
-  -**Start the development server**
+   -**Install Yarn packages**
+  yarn install  
+   -**Start the development server**
   yarn start
 
 ## Database Migration
