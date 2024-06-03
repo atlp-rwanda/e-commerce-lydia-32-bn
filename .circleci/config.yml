@@ -66,6 +66,5 @@ workflows:
       - docker_build_and_push:
           requires:
             - build
-      - install_docker: 
-          requires:
-            - build     
+      - install_docker
+             
