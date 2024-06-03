@@ -4,6 +4,7 @@ class LoginController {
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { token } = req.body;
+      res.clearCookie('loggedOut');
       res.status(200).json({ message: 'Login successful', token });
     } catch (error: any) {
       res.status(500).json({ error: error.message });

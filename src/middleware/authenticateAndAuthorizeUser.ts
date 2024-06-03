@@ -73,7 +73,6 @@ class AuthenticateAndAuthorizeUserController {
 
       const expiryDate = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
       res.cookie('jwt', token, { httpOnly: true, path: '/', expires: expiryDate });
-      res.clearCookie('loggedOut');
 
       req.body.user = user;
       req.body.token = token;
