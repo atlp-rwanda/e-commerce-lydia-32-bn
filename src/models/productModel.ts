@@ -35,6 +35,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
 
   static associate(models: any) {
     Product.belongsTo(User, { foreignKey: 'userId', as: 'seller', onDelete: 'SET NULL', onUpdate: 'SET NULL' });
+    Product.belongsToMany(models.WishList, { through: models.WishListProduct, foreignKey: 'productId', as: 'wishLists' });
   }
 
   static initialize(sequelize: Sequelize) {

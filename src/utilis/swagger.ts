@@ -2,6 +2,8 @@ import { Express, Request, Response } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import log from './logger.js';
+import WishList from 'models/wishListModels.js';
+import { UpdatedAt } from 'sequelize-typescript';
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -68,6 +70,19 @@ const options: swaggerJsdoc.Options = {
             'images',
           ],
         },
+        WishList: {
+          type: 'object',
+          properties: {
+            userId: { type: 'number' },
+            productId: { type: 'number' },
+            createdAt: { type: 'Date' },
+            UpdatedAt: { type: 'Date' }
+          },
+          required: [
+            'userId',
+            'productId',
+          ],
+        },
         Order: {
           type: 'object',
           properties: {
@@ -89,10 +104,9 @@ const options: swaggerJsdoc.Options = {
         CartItem: {
           type: 'object',
           properties: {
-            cartId: { type: 'number' },
             productId: { type: 'number' },
             quantity: { type: 'number' },
-            Dimensions: { type: 'JSON' },
+            
           },
         },
         Cart: {

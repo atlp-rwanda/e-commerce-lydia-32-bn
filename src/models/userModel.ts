@@ -2,7 +2,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/db.js';
 import Role from './roleModel.js';
 
-interface UserAttributes {
+export interface UserAttributes {
   id: number;
   firstname: string;
   othername: string;
@@ -54,6 +54,22 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   // Timestamps
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+public static async getRoleName(userId: number): Promise<string> {
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  
+  const role = await Role.findByPk(user.dataValues.roleId);
+  console.log(role);
+  if (!role) {
+    throw new Error('Role not found');
+  }
+  
+  return role.dataValues.name;
+}
+
 }
 
 User.init(
