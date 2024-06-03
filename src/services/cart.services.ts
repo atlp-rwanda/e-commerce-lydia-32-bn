@@ -32,6 +32,7 @@ export const viewCart = async (user: UserAttributes) => {
     return;
   }
 };
+
 export const addToCart = async (quantity: number, product: Product, user: UserAttributes) => {
   try {
     let cart = await Cart.findOne({ where: { userId: user.id } });
@@ -41,9 +42,8 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
       console.log(cart);
     }
 
-    // @ts-ignore
     let cartItem = await CartItem.findOne({
-      where: { cartId: cart.dataValues.id, productId: product.dataValues.productId },
+      where: { cartId: (cart as any).dataValues.id, productId: product.dataValues.productId },
     });
 
     if (cartItem) {
@@ -56,23 +56,20 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
         );
       }
     } else {
-      // @ts-ignore
       cartItem = await CartItem.create({
-        cartId: cart.dataValues.id,
+        cartId: (cart as any).dataValues.id,
         productId: product.dataValues.productId,
         quantity,
       });
     }
 
     const total = await CartItem.findAll({
-      // @ts-ignore
-      where: { cartId: cart.dataValues.id },
+      where: { cartId: (cart as any).dataValues.id },
       include: [{ model: Product, as: 'product' }],
     })
       .then((cartItems) =>
         cartItems.reduce((acc, item) => {
           if (item.dataValues.product) {
-            // @ts-ignore
             return acc + item.dataValues.quantity * item.dataValues.product.price;
           }
           return acc;
@@ -83,8 +80,7 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
         return 0;
       });
 
-    // @ts-ignore
-    await Cart.update({ total }, { where: { id: cart.dataValues.id } });
+    await Cart.update({ total }, { where: { id: (cart as any).dataValues.id } });
 
     return cart;
   } catch (error: any) {
