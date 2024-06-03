@@ -1,5 +1,5 @@
 // import { Request, Response } from 'express';
-// import 
+// import
 
 // export const deleteItemFromCollection=async(productId:number)=>{
 

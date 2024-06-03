@@ -14,7 +14,7 @@ export const isRoleAdmin = async (req: Request, res: Response, next: NextFunctio
 
   try {
     const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
-    const userId = decodedToken.userId;
+    const { userId } = decodedToken;
     const user = await User.findByPk(userId);
 
     if (!user) {

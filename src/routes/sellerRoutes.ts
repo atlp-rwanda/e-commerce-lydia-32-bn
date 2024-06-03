@@ -8,7 +8,7 @@ export const sellerRouter = express.Router();
  * tags:
  *   name: Sellers
  *   description: Seller-related operations
- * 
+ *
  * components:
  *   schemas:
  *     Product:
@@ -54,7 +54,7 @@ export const sellerRouter = express.Router();
  *           type: string
  *           format: date-time
  *           example: '2023-05-21T12:34:56.789Z'
- *     
+ *
  *     Error:
  *       type: object
  *       properties:

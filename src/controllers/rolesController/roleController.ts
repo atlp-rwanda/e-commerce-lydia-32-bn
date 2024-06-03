@@ -45,9 +45,8 @@ class roleController {
       const role = await RoleService.getRoleById(roleId);
       if (role) {
         return res.status(200).json({ message: 'Role Retrieved succesfully', role });
-      } else {
-        return res.status(404).json({ error: 'Role not found' });
       }
+      return res.status(404).json({ error: 'Role not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -160,7 +159,7 @@ class roleController {
         return res.status(400).json({ message: 'User already has this role' });
       }
 
-      const updatedUser = await UserService.updateUser(userId, { roleId: roleId });
+      const updatedUser = await UserService.updateUser(userId, { roleId });
       return res.status(200).json({ message: 'Role assigned to user successfully' });
     } catch (error: any) {
       return res.status(500).json({ message: `Error assigning role to user: ${error.message}` });
@@ -173,9 +172,8 @@ class roleController {
       const deleted = await RoleService.deleteRole(userId);
       if (deleted) {
         return res.status(200).json({ message: 'Role deleted successfully' });
-      } else {
-        return res.status(404).json({ error: 'Role not found' });
       }
+      return res.status(404).json({ error: 'Role not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }

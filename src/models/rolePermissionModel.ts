@@ -6,6 +6,7 @@ import Permission from './permissionModel.js';
 
 class RolePermission extends Model {
   public roleId!: number;
+
   public permissionId!: number;
 }
 

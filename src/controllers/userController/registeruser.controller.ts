@@ -103,15 +103,15 @@ class userController {
       res.status(500).json({ error: error.message });
     }
   };
+
   getUserById = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
       const user = await UserService.getUserById(userId);
       if (user) {
         return res.status(200).json({ message: 'User Retrieved succesfully', user });
-      } else {
-        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(404).json({ error: 'User not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -129,16 +129,15 @@ class userController {
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const updates = req.body;
-      const userId = req.body.userId;
+      const { userId } = req.body;
       const { userId: _, email, password, ...validUpdates } = updates;
 
       const user = await UserService.updateUserInfo(userId, validUpdates);
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
         res.status(200).json({ message: 'User updated successfully:', user });
-      } else {
-        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(404).json({ error: 'User not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -150,9 +149,8 @@ class userController {
       const deleted = await UserService.deleteUser(userId);
       if (deleted) {
         return res.status(200).json({ message: 'User deleted successfully' });
-      } else {
-        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(404).json({ error: 'User not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -165,12 +163,10 @@ class userController {
       const user = await UserService.getUserByFields({ email });
 
       if (!user) {
-        res
-          .status(401)
-          .json({
-            error:
-              'the details you submitted do not match any user, please correct them or if you do not have an account, create a new one',
-          });
+        res.status(401).json({
+          error:
+            'the details you submitted do not match any user, please correct them or if you do not have an account, create a new one',
+        });
         return;
       }
 
@@ -198,12 +194,10 @@ class userController {
 
       sendVerificationToken(user.email, subject, content);
 
-      res
-        .status(200)
-        .json({
-          message: 'the password reset process has been started, check your email to confirm and reset your password',
-          resetPasswordUrl,
-        });
+      res.status(200).json({
+        message: 'the password reset process has been started, check your email to confirm and reset your password',
+        resetPasswordUrl,
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -231,11 +225,9 @@ class userController {
       const user = await UserService.getUserByFields({ id: userId, email });
 
       if (!user) {
-        res
-          .status(400)
-          .json({
-            error: "That user doesn't exist, there was a problem with your password setting, please contact the admin",
-          });
+        res.status(400).json({
+          error: "That user doesn't exist, there was a problem with your password setting, please contact the admin",
+        });
 
         return;
       }
@@ -268,6 +260,7 @@ class userController {
       res.status(500).json({ error: error.message });
     }
   };
+
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
       const token = req.cookies.jwt;
@@ -275,14 +268,12 @@ class userController {
       console.log(loggedOutCookie);
       if (loggedOutCookie) {
         res.status(400).json({ error: 'You are already logged out' });
+      } else if (token) {
+        res.clearCookie('jwt');
+        res.cookie('loggedOut', token, { httpOnly: true });
+        res.status(200).json({ message: 'Logout successful' });
       } else {
-        if (token) {
-          res.clearCookie('jwt');
-          res.cookie('loggedOut', token, { httpOnly: true });
-          res.status(200).json({ message: 'Logout successful' });
-        } else {
-          res.status(400).json({ error: "You're not yet logged In !" });
-        }
+        res.status(400).json({ error: "You're not yet logged In !" });
       }
     } catch (error) {
       console.error(error);

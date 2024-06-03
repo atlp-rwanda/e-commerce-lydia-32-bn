@@ -41,9 +41,13 @@ export const productSchema = Joi.object({
     'string.empty': 'Images is required.',
     'any.required': 'Images is required.',
   }),
-  dimensions: Joi.string().regex(/^[\w\+\-\*\/\(\)]+$/).allow('').optional().messages({
-    'string.pattern.base': 'Dimensions must contain only letters, numbers, and arithmetic signs (+, -, *, /, (, )).',
-  }),
+  dimensions: Joi.string()
+    .regex(/^[\w\+\-\*\/\(\)]+$/)
+    .allow('')
+    .optional()
+    .messages({
+      'string.pattern.base': 'Dimensions must contain only letters, numbers, and arithmetic signs (+, -, *, /, (, )).',
+    }),
   isAvailable: Joi.boolean().optional().messages({
     'boolean.base': 'IsAvailable must be a boolean.',
   }),

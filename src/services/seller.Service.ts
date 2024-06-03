@@ -1,8 +1,6 @@
 import Product from '../models/productModel.js';
 
 export class SellerService {
-  
-
   // method to retrieve all the products associated with a specific seller
   async getProductsBySellerId(sellerId: number): Promise<Product[]> {
     try {
@@ -12,22 +10,23 @@ export class SellerService {
       throw new Error('Failed to fetch products');
     }
   }
+
   // retrive single product associated with seller
-async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Product | null> {
-  try {
-    const product = await Product.findOne({ where: { productId, userId: sellerId } });
-    return product;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Error retrieving product: ${error.message}`);
-    } else {
-      throw new Error('Unknown error occurred while retrieving product.');
+  async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Product | null> {
+    try {
+      const product = await Product.findOne({ where: { productId, userId: sellerId } });
+      return product;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error retrieving product: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while retrieving product.');
+      }
     }
   }
-}
 
-// update product
-async updateProductt(productId: number, updates: Partial<Product>): Promise<Product | null> {
+  // update product
+  async updateProductt(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
       if (!product) {
@@ -54,6 +53,5 @@ async updateProductt(productId: number, updates: Partial<Product>): Promise<Prod
     }
   }
 }
-
 
 export const sellerService = new SellerService();

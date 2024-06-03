@@ -37,7 +37,7 @@ export const isLoggedIn = async (req: AuthenticatedRequest, res: Response, next:
   } catch (error: any) {
     return res.status(401).json({
       status: 'failed',
-      error: error.message + ' Token has expired. Please login again.',
+      error: `${error.message} Token has expired. Please login again.`,
     });
   }
 };

@@ -2,7 +2,7 @@ import express from 'express';
 import checkToken from '../middleware/checkToken.js';
 import { wishListController } from '../controllers/wishListController/wishlistsController.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import {isBuyer} from '../middleware/isBuyerMiddleware.js'
+import { isBuyer } from '../middleware/isBuyerMiddleware.js';
 
 export const wishListRouter = express.Router();
 
@@ -119,4 +119,3 @@ wishListRouter.get('/wishlist/getUserWishlists', checkToken, wishListController.
  *         description: Internal server error
  */
 wishListRouter.get('/wishlist/getAllWishlists', isRoleAdmin, wishListController.getAllWishListItems);
-

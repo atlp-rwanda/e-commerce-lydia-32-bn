@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Op } from 'sequelize'; // Import Op from sequelize
+import { log } from 'console';
 import Product from '../../models/productModel.js';
 import { productService } from '../../services/product.service.js';
 import { UserService } from '../../services/registeruser.service.js';
 import { productSchema } from '../../validations/product.validation.js';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Op } from 'sequelize'; // Import Op from sequelize
-import { log } from 'console';
 import Role from '../../models/roleModel.js';
 
 interface ProductDetails {
@@ -35,26 +35,29 @@ class ProductController {
 
     try {
       const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
-      const userId = decodedToken.userId;
+      const { userId } = decodedToken;
       const { error } = productSchema.validate(productDetails);
       if (error) {
         res.status(400).json({ message: `Validation error: ${error.details[0].message}` });
         return;
       }
 
-      //const UserService = new userService();
-      const user = await UserService.getUserById(userId) as any;
-      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+      // const UserService = new userService();
+      const user = (await UserService.getUserById(userId)) as any;
+      const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 
       if (!user || userRole.dataValues.name !== 'seller') {
         res.status(403).json({ message: 'Only sellers can create products' });
         return;
       }
 
-      //const productService = new ProductService();
-      const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, productDetails.userId);
+      // const productService = new ProductService();
+      const existingProduct = await productService.getProductByNameAndSellerId(
+        productDetails.productName,
+        productDetails.userId,
+      );
       if (existingProduct) {
-        res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.'});
+        res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.' });
         return;
       }
 
@@ -67,7 +70,7 @@ class ProductController {
         quantity: req.body.quantity,
         images: req.body.images, // Pass images as a comma-separated string
         dimensions: req.body.dimensions,
-        isAvailable: true
+        isAvailable: true,
       });
 
       res.status(201).json({ message: 'Product created successfully', product: createdProduct });
@@ -77,11 +80,10 @@ class ProductController {
     }
   }
 
-async updateProduct(req: Request, res: Response): Promise<void> {
-    
+  async updateProduct(req: Request, res: Response): Promise<void> {
     const productId = Number(req.params.productId);
     const updateFields = req.body;
-    const loggedInUserId = Number(req.userId)
+    const loggedInUserId = Number(req.userId);
 
     try {
       // const productService = new productService();
@@ -99,7 +101,6 @@ async updateProduct(req: Request, res: Response): Promise<void> {
 
       const updatedProduct = await productService.updateProduct(productId, updateFields);
       res.status(200).json({ message: 'Product updated successfully', updatedProduct });
-
     } catch (error: any) {
       res.status(500).json({ message: error.message });
       console.log(error);
@@ -107,46 +108,40 @@ async updateProduct(req: Request, res: Response): Promise<void> {
   }
 
   async deleteProduct(req: Request, res: Response): Promise<void> {
-
     const productId: number = Number(req.params.productId);
     try {
-      const userId = req.body.userId;
-      const user = await UserService.getUserById(userId) as any;
-      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+      const { userId } = req.body;
+      const user = (await UserService.getUserById(userId)) as any;
+      const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 
-      if(user &&  userRole.dataValues.name == 'seller'){
-          const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
-          if(productToBeDeleted){
-            console.log(productToBeDeleted);
-            await productService.deleteProduct(productToBeDeleted.productId);
-            res.status(200).json({
-              success: `Product with Id ${productId} is Deleted Successfully`,
-            });
-          }
-          else{
-            res.status(404).json({Error: "Sorry Either Product Doesn't exists or doesn't belongs to you !"})
-          }
-        } 
-      else {
+      if (user && userRole.dataValues.name == 'seller') {
+        const productToBeDeleted = await productService.getProductByIdAndUserId(productId, userId);
+        if (productToBeDeleted) {
+          console.log(productToBeDeleted);
+          await productService.deleteProduct(productToBeDeleted.productId);
+          res.status(200).json({
+            success: `Product with Id ${productId} is Deleted Successfully`,
+          });
+        } else {
+          res.status(404).json({ Error: "Sorry Either Product Doesn't exists or doesn't belongs to you !" });
+        }
+      } else {
         res.status(403).json({ Warning: 'Only sellers can delete products' });
-        return;
       }
     } catch (error) {
-      res.status(500).json({ error: error });
+      res.status(500).json({ error });
       console.log(error);
     }
   }
 
   async searchProduct(req: Request, res: Response): Promise<void> {
-
     const { name, minPrice, maxPrice, category } = req.query;
 
     try {
-
       const searchCriteria: any = {};
 
-      if(!(name) && !(minPrice) && !(maxPrice) && !(category)) {
-        res.status(400).json({ error: 'Please provide a search parameter'})
+      if (!name && !minPrice && !maxPrice && !category) {
+        res.status(400).json({ error: 'Please provide a search parameter' });
 
         return;
       }
@@ -171,17 +166,13 @@ async updateProduct(req: Request, res: Response): Promise<void> {
         where: searchCriteria,
       });
 
-      if ( products.length === 0 ) {
-        res.status(400).json({ error: 'there are no products that match your search criteria'})
+      if (products.length === 0) {
+        res.status(400).json({ error: 'there are no products that match your search criteria' });
 
         return;
       }
 
-      
       res.status(200).json({ message: 'Products fetched successfully', products });
-
-      
-
     } catch (error: any) {
       res.status(500).json({ message: error.message });
       console.log(error);

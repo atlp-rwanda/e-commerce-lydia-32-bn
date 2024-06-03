@@ -11,7 +11,6 @@ import { wishListRouter } from './routes/wishListRoutes.js';
 
 import cartRoutes from './routes/cartRoutes.js';
 
-
 dotenv.config();
 
 db.authenticate()
@@ -33,11 +32,9 @@ app.get('/', (req, res) => {
 app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
 app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
 
-app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes);
-
+app.use('/api', usersRouter, productRouter, sellerRouter, cartRoutes);
 
 swaggerDocs(app, port);
 app.listen(port, () => {
   console.log(`app is running on http://localhost:${port}`);
 });
-

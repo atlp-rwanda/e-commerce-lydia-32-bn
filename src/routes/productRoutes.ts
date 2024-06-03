@@ -1,9 +1,8 @@
-import express from "express";
-import { ProductControllerInstance } from "../controllers/productController/productController.js";
-import checkToken from "../middleware/checkToken.js";
-import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
-import { validateSearchProduct } from "../middleware/validateSearch.js"
-
+import express from 'express';
+import { ProductControllerInstance } from '../controllers/productController/productController.js';
+import checkToken from '../middleware/checkToken.js';
+import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
+import { validateSearchProduct } from '../middleware/validateSearch.js';
 
 export const productRouter = express.Router();
 
