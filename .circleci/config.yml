@@ -46,10 +46,20 @@ jobs:
       - run:
           name: Install Docker Compose
           command: |
-            apk update && apk upgrade && apk add curl  
-            curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-linux-x86_64" -o ~/docker-compose  
-            chmod +x ~/docker-compose  
-            mv ~/docker-compose /usr/local/bin/docker-compose
+            sudo apt-get update
+            sudo apt-get install -y \
+              apt-transport-https \
+              ca-certificates \
+              curl \
+              gnupg-agent \
+              software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+            sudo add-apt-repository \
+              "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+              $(lsb_release -cs) \
+              stable"
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io
       - run:
           name: Run tests and push Docker image
           command: |
