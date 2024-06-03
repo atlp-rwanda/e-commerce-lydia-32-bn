@@ -1,5 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import {ProductService} from '../../services/product.service.js';
+import { AuthenticatedRequest } from '../../middleware/checkSellerRole.js';
 import { SellerService } from '../../services/seller.Service.js';
 import { userService } from '../../services/registeruser.service.js';
 import Role from '../../models/roleModel.js';
@@ -23,6 +25,7 @@ interface Product {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
 
 interface ProductWithSeller extends Product {
   seller: {
@@ -51,11 +54,12 @@ interface PaginationResponse {
 class SellerController {
 async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
   const token = req.cookies.jwt;
-
+  
   if (!token) {
     res.status(401).json({ message: 'Unauthorized: Token is missing' });
     return;
   }
+
 
   try {
     const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
@@ -123,7 +127,7 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
         limit,
       };
     }
-
+    
     if (page > 1) {
       response.previous = {
         page: page - 1,
@@ -153,7 +157,6 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
     try {
       const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
       const userId = decodedToken.userId;
-    
       const user = await User.findByPk(userId)
   
       if (!user) {
@@ -183,7 +186,7 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
         return;
       }
   
-      const updatedProduct = await productServiceInstance.updateProductt(productId, { isAvailable });
+      const updatedProduct = await productServiceInstance.updateProduct(productId, { isAvailable });
   
       const availabilityMessage = isAvailable
         ? 'Product is now available for buyers'
@@ -199,7 +202,8 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
   // get only available products in the store
   async getAvailableProducts(req: Request, res: Response): Promise<void> {
     try {
-      const sellerServiceInstance = new SellerService();
+      
+      const sellerServiceInstance = new SellerService;
       const availableProducts = await sellerServiceInstance.getAvailableProducts();
 
       if (availableProducts.length === 0) {
@@ -212,8 +216,38 @@ async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
       console.error(error);
     }
   }
+
+
+  async getSellerProduct (req: AuthenticatedRequest, res: Response){
+    const productId = parseInt(req.params.productId, 10);
+    const userId =  req.userId;
+  
+    try {
+      const productService = new ProductService();
+      const isProductExist = await productService.getProductByFields({ productId, isAvailable: true });
+      if (!isProductExist) {
+        return res.status(404).json({ message: "Oops!!! There is no match for this product in available products" });
+      }
+
+      const sellerServiceInstance = new SellerService;   
+      const item = await sellerServiceInstance.getProductByIdAndSellerId(productId, userId);
+      if (!item) {
+        return res.status(404).json({ message: "Oops!!! There is no match of the product in your products" });
+      }
+  
+      return res.status(200).json({ message: "Product found in your products", product: item });
+    } catch (error) {
+      console.error('Error in getSellerProduct:', error);
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      } else {
+        return res.status(500).json({ message: 'An unknown error occurred' });
+      }
+    }
+  }
+  
 }
 
-export const sellerControllerInstance = new SellerController(); 
 
+export const sellerControllerInstance = new SellerController(); 
 
