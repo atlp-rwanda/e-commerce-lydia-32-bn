@@ -87,7 +87,7 @@ List things you need to use the software and how to install them.
 We would like to extend our gratitude to the following contributors for their valuable contributions to this project:
 
 Bahati Yves -
-Iradukunda Derrick -  
+Iradukunda Derrick - http://github.com/Derrick-Nuby
 Ishimwe Pacifique - https://github.com/Ishimwe7
 Kwizera Balinda Maurice -
 Kirenga Martial -  
