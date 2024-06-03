@@ -65,6 +65,7 @@ class AuthenticateAndAuthorizeUserController {
           firstname: user.dataValues.firstname,
           isverified: user.dataValues.isverified,
           isBlocked: user.dataValues.isBlocked,
+          roleId: user.dataValues.roleId
         },
         JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' }
