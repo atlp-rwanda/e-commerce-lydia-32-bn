@@ -41,7 +41,9 @@ The E-Commerce Backend Application is a robust and scalable solution designed to
 -**Product Management**: Add, update, and remove products with detailed information and images.  
  -**User Authentication**: Secure registration and login functionalities for users.  
 -**Order Processing**:Seamlessly handle customer orders from cart to checkout, including payment integration.  
--**Inventory Management**: Track stock levels and manage inventory status in real-time. -**Analytics and Reporting**: Generate reports on sales, user activity, and other key metrics.
+-**Inventory Management**: Track stock levels and manage inventory status in real-time.
+
+-**Analytics and Reporting**: Generate reports on sales, user activity, and other key metrics.
 
 ### Why It’s Useful:
 
@@ -54,7 +56,9 @@ We built this project to address the common challenges faced by e-commerce busin
 This project solves several problems:
 
 -**Scalability**: Designed to handle a growing number of products and customers without compromising performance.  
--**Security**: Implements best practices for data protection and secure transactions. -**Efficiency**: Automates repetitive tasks and integrates with various services to improve overall business operations.  
+-**Security**: Implements best practices for data protection and secure transactions.
+
+-**Efficiency**: Automates repetitive tasks and integrates with various services to improve overall business operations.  
 -**User Experience**: Ensures a smooth and responsive experience for both customers and administrators.
 
 ### Built With
