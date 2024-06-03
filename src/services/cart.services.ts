@@ -1,8 +1,8 @@
-import CartItem, { CartItemAttributes } from "../models/cartItemModel.js";
-import Cart, { CartAttributes } from "../models/cartModel.js";
-import Product from "../models/productModel.js";
-import { UserAttributes } from "../models/userModel.js";
-import { Model } from "sequelize";
+import { Model } from 'sequelize';
+import CartItem, { CartItemAttributes } from '../models/cartItemModel.js';
+import Cart, { CartAttributes } from '../models/cartModel.js';
+import Product from '../models/productModel.js';
+import { UserAttributes } from '../models/userModel.js';
 
 export const viewCart = async (user: UserAttributes) => {
   let userCart;
@@ -12,11 +12,11 @@ export const viewCart = async (user: UserAttributes) => {
       include: [
         {
           model: CartItem,
-          as: "items",
+          as: 'items',
           include: [
             {
               model: Product,
-              as: "product",
+              as: 'product',
             },
           ],
         },
@@ -26,11 +26,10 @@ export const viewCart = async (user: UserAttributes) => {
       userCart = await Cart.create({ userId: user.id });
     }
 
-    return userCart
+    return userCart;
   } catch (error: any) {
-  
     throw new Error(error);
-    return
+    return;
   }
 };
 export const addToCart = async (quantity: number, product: Product, user: UserAttributes) => {
@@ -39,11 +38,13 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
 
     if (!cart) {
       cart = await Cart.create({ userId: user.id });
-      console.log(cart)
+      console.log(cart);
     }
 
-    //@ts-ignore
-    let cartItem = await CartItem.findOne({ where: { cartId: cart.dataValues.id, productId: product.dataValues.productId } });
+    // @ts-ignore
+    let cartItem = await CartItem.findOne({
+      where: { cartId: cart.dataValues.id, productId: product.dataValues.productId },
+    });
 
     if (cartItem) {
       if (cartItem.dataValues.quantity + quantity > product.dataValues.quantity) {
@@ -55,31 +56,34 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
         );
       }
     } else {
-      //@ts-ignore
-      cartItem = await CartItem.create({ cartId: cart.dataValues.id, productId: product.dataValues.productId, quantity });
+      // @ts-ignore
+      cartItem = await CartItem.create({
+        cartId: cart.dataValues.id,
+        productId: product.dataValues.productId,
+        quantity,
+      });
     }
 
     const total = await CartItem.findAll({
-      //@ts-ignore
+      // @ts-ignore
       where: { cartId: cart.dataValues.id },
       include: [{ model: Product, as: 'product' }],
     })
-      .then((cartItems) => {
-        return cartItems.reduce((acc, item) => {
+      .then((cartItems) =>
+        cartItems.reduce((acc, item) => {
           if (item.dataValues.product) {
-            //@ts-ignore
+            // @ts-ignore
             return acc + item.dataValues.quantity * item.dataValues.product.price;
-          } else {
-            return acc;
           }
-        }, 0);
-      })
+          return acc;
+        }, 0),
+      )
       .catch((err) => {
         console.error('Error calculating total:', err);
         return 0;
       });
 
-    //@ts-ignore
+    // @ts-ignore
     await Cart.update({ total }, { where: { id: cart.dataValues.id } });
 
     return cart;
