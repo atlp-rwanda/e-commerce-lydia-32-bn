@@ -52,17 +52,17 @@ export const viewUserCart = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.message });
   }
 };
-export const deleteCart = async(req: Request, res: Response) =>{
+export const deleteCart = async (req: Request, res: Response) => {
   // @ts-ignore
-  const user = req.user;
+  const { user } = req;
   try {
-     await cartService.deleteCart(user)
-    res.status(200).json({message: "Cart deleted successfully"})
+    await cartService.deleteCart(user);
+    res.status(200).json({ message: 'Cart deleted successfully' });
   } catch (error: any) {
-    console.log(error)
-    res.status(500).json({message: error.message})
+    console.log(error);
+    res.status(500).json({ message: error.message });
   }
-}
+};
 export const updateCartItem = async (req: AuthenticatedRequest, res: Response) => {
   const cartItemId = Number(req.params.cartItemId);
   const { quantity } = req.body;

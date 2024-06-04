@@ -15,7 +15,7 @@ cartRoutes.get('/cart', isLoggedIn, viewUserCart);
 cartRoutes.post('/cart/add', isLoggedIn, addItemToCart);
 cartRoutes.post('/cart/update/:cartItemId', isLoggedIn, updateCartItem);
 cartRoutes.delete('/cart/delete/:cartItemId', isLoggedIn, deleteCartItem);
-cartRoutes.delete('/cart/delete', isLoggedIn, deleteCart)
+cartRoutes.delete('/cart/delete', isLoggedIn, deleteCart);
 
 /**
  * @swagger
