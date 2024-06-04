@@ -35,8 +35,6 @@ class userController {
 
       const token = generateToken(res, user.id, email, firstname);
 
-      // Send verification email
-      // edit the front end url section
       const verificationUrl = `${process.env.FRONTEND_URL}/api/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
@@ -57,7 +55,6 @@ class userController {
 
   verifyUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-      // get the token instead of the userid in body
       const token = req.query.token as string;
 
       if (!token) {

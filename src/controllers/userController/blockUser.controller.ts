@@ -6,7 +6,6 @@ import { UserService } from '../../services/registeruser.service.js';
 export const blockUser = async(req: Request, res: Response) => {
 try {
 
-  // get email as a request body because id is unkown to the normal user
     const { email }  = req.body
     const user = await UserService.getUserByFields({ email });
 
