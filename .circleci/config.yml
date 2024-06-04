@@ -1,7 +1,8 @@
 version: 2.1
 jobs:
   dockers:
-    executor: node-docker
+    docker:
+      - image: cimg/node:21.7.2-browsers
     steps:
       - checkout
       - setup_remote_docker
