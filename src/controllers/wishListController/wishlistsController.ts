@@ -10,7 +10,7 @@ import User from '../../models/userModel.js';
      public addItemToWishList = async(req: Request, res: Response): Promise<void> =>{
 
         try {
-            const userId = req.body.userId;
+            const userId = Number(req.userId);
             const productId = Number(req.params.productId);
         
             // Check if user is authenticated
@@ -46,7 +46,7 @@ import User from '../../models/userModel.js';
         public removeItemFromWishList = async(req: Request, res: Response): Promise<void> =>{
 
           try {
-              const userId = req.body.userId;
+              const userId = Number(req.userId);
               const itemId = Number(req.params.itemId);
           
               // Check if user is authenticated
@@ -57,8 +57,6 @@ import User from '../../models/userModel.js';
               else{
                 const user = await UserService.getUserById(userId);
                 if(user){
-                  const roleName = await User.getRoleName(userId);
-                  if(roleName==='buyer'){
                      const existingWishListItem = await wishListService.getWishListItem(userId, itemId);
                      if (!existingWishListItem) {
                      res.status(400).json({Warning :`Item with id ${itemId} is not found in your wishlist`});
@@ -72,11 +70,6 @@ import User from '../../models/userModel.js';
                   return;
                  }      
             }
-            else{
-                res.status(401).json({Warning : 'Only Buyers are allowed to access this end-point'});
-                return;
-            }
-           }
            } catch (error) {
               console.error(error);
               res.status(500).json({Error: 'Error removing product to wish list'});
@@ -86,7 +79,7 @@ import User from '../../models/userModel.js';
         
         public getWishListItemsByUser = async (req: Request, res: Response): Promise<void> => {
            try {
-                  const userId = req.body.userId;
+                  const userId = Number(req.userId);
                   const wishListItems = await wishListService.getWishListByUserId(userId);
                   if(wishListItems.length==0){
                     res.status(400).json({Message:'Your Wishlist is empty !'});

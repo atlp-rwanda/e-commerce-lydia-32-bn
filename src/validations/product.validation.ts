@@ -41,5 +41,5 @@ export const productSchema = Joi.object({
   }),
   isAvailable: Joi.boolean().optional().messages({
     'boolean.base': 'IsAvailable must be a boolean.',
-  }),
+  }),
 });

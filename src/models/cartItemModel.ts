@@ -1,7 +1,6 @@
-import { DataTypes, Model } from "sequelize";
-import sequelize from "../config/db.js";
-import Product,{ ProductCreationAttributes }  from "./productModel.js";
-
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/db.js';
+import Product, { ProductCreationAttributes } from './productModel.js';
 
 export interface CartItemAttributes {
   id?: number;
@@ -36,7 +35,7 @@ CartItem.init(
       type: DataTypes.NUMBER,
       references: {
         model: Product,
-        key: "id",
+        key: 'id',
       },
     },
     quantity: {
@@ -47,11 +46,11 @@ CartItem.init(
   },
   {
     sequelize: sequelize,
-    modelName: "cartItems",
+    modelName: 'cartItems',
   },
 );
 
-CartItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
-
+CartItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(CartItem, { foreignKey: 'productId', as: 'cartItems' });
 
 export default CartItem;

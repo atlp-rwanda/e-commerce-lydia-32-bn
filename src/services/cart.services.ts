@@ -1,9 +1,8 @@
-
-import CartItem, { CartItemAttributes } from "../models/cartItemModel.js";
-import Cart, { CartAttributes } from "../models/cartModel.js";
-import Product from "../models/productModel.js";
-import { UserAttributes } from "../models/userModel.js";
-import { Model } from "sequelize";
+import CartItem, { CartItemAttributes } from '../models/cartItemModel.js';
+import Cart, { CartAttributes } from '../models/cartModel.js';
+import Product from '../models/productModel.js';
+import { UserAttributes } from '../models/userModel.js';
+import { Model } from 'sequelize';
 
 export const viewCart = async (user: UserAttributes) => {
   let userCart;
@@ -13,11 +12,11 @@ export const viewCart = async (user: UserAttributes) => {
       include: [
         {
           model: CartItem,
-          as: "items",
+          as: 'items',
           include: [
             {
               model: Product,
-              as: "product",
+              as: 'product',
             },
           ],
         },
@@ -27,11 +26,10 @@ export const viewCart = async (user: UserAttributes) => {
       userCart = await Cart.create({ userId: user.id });
     }
 
-    return userCart
+    return userCart;
   } catch (error: any) {
-  
     throw new Error(error);
-    return
+    return;
   }
 };
 export const addToCart = async (quantity: number, product: Product, user: UserAttributes) => {
@@ -40,11 +38,13 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
 
     if (!cart) {
       cart = await Cart.create({ userId: user.id });
-      console.log(cart)
+      console.log(cart);
     }
 
-    //@ts-ignore
-    let cartItem = await CartItem.findOne({ where: { cartId: cart.dataValues.id, productId: product.dataValues.productId } });
+    let cartItem = await CartItem.findOne({
+      //@ts-ignore
+      where: { cartId: cart.dataValues.id, productId: product.dataValues.productId },
+    });
 
     if (cartItem) {
       if (cartItem.dataValues.quantity + quantity > product.dataValues.quantity) {
@@ -56,8 +56,12 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
         );
       }
     } else {
-      //@ts-ignore
-      cartItem = await CartItem.create({ cartId: cart.dataValues.id, productId: product.dataValues.productId, quantity });
+      cartItem = await CartItem.create({
+        //@ts-ignore
+        cartId: cart.dataValues.id,
+        productId: product.dataValues.productId,
+        quantity,
+      });
     }
 
     const total = await CartItem.findAll({
@@ -68,7 +72,6 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
       .then((cartItems) => {
         return cartItems.reduce((acc, item) => {
           if (item.dataValues.product) {
-            //@ts-ignore
             return acc + item.dataValues.quantity * item.dataValues.product.price;
           } else {
             return acc;
@@ -90,3 +93,54 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
   }
 };
 
+export const updateCartItem = async (cartItemId: number, quantity: number) => {
+  console.log(`updateCartItem called with cartItemId: ${cartItemId}, quantity: ${quantity}`);
+
+  if (isNaN(quantity) || quantity <= 0) {
+    throw new Error('Invalid quantity');
+  }
+
+  try {
+    const cartItem = await CartItem.findByPk(cartItemId);
+    if (!cartItem) {
+      throw new Error('Cart item not found');
+    }
+
+    const product = await Product.findByPk(cartItem.dataValues.productId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    if (quantity > product.dataValues.quantity) {
+      throw new Error("Quantity can't exceed product stock");
+    }
+
+    await cartItem.update({ quantity });
+
+    // Return the updated cartItem
+    return await CartItem.findByPk(cartItemId, {
+      include: [{ model: Product, as: 'product' }],
+    });
+  } catch (error: any) {
+    console.error('Error updating cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const deleteCartItem = async (cartItemId: number) => {
+  console.log(`deleteCartItem called with cartItemId: ${cartItemId}`);
+
+  try {
+    const cartItem = await CartItem.findByPk(cartItemId);
+    if (!cartItem) {
+      throw new Error('Cart item not found');
+    }
+
+    await CartItem.destroy({ where: { id: cartItemId } });
+
+    return cartItem;
+  } catch (error: any) {
+    console.error('Error deleting cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
