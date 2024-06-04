@@ -284,20 +284,14 @@ class userController {
   };
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
-      const token = req.cookies.jwt;
-      const loggedOutCookie = req.cookies.loggedOut;
-      console.log(loggedOutCookie);
-      if (loggedOutCookie) {
-        res.status(400).json({ error: 'You are already logged out' });
-      } else {
-        if (token) {
-          res.clearCookie('jwt');
-          res.cookie('loggedOut', token, { httpOnly: true });
-          res.status(200).json({ message: 'Logout successful' });
-        } else {
-          res.status(400).json({ error: "You're not yet logged In !" });
-        }
+      if (!req.userId) {
+        res.status(401).json({ error: 'User is not logged in' });
+        return;
       }
+      
+      res.clearCookie('jwt', { path: '/' });
+    
+      res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
