@@ -64,5 +64,9 @@ workflows:
       - store_test_results:
           requires:
             - build
-      - dockers-install
-      - docker-build-and-push
+      - dockers-install:
+          requires:
+            - build
+      - docker-build-and-push:
+          requires:
+            - build
