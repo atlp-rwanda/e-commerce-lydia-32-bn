@@ -21,7 +21,7 @@ export const buyerCheckout = async (req: AuthenticatedRequest, res: Response, ne
 
     const user = await User.findByPk(userId) as any;
     const userRole = await Role.findByPk(user.dataValues.roleId) as any;
-
+// 
     if (!user || userRole.dataValues.name !== 'buyer') {
       res.status(403).json({ message: 'Forbidden. Only buyers can proceed with checkout.' });
       return;
