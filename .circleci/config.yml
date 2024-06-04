@@ -4,24 +4,7 @@ executors:
   node-docker:
     docker:
       - image: rwigara/e-commerce-lydia-32-bn-backend:latest
-    environment:
-      NODE_ENV: "development"
-      DB_NAME: smsksjiz
-      DB_USER: smsksjiz
-      DB_PASSWORD: f1fOPcWCQhe3EjannsJ9qxi7AEN2qwAR
-      DB_HOST: kala.db.elephantsql.com
-      PORT: 3000
-      EMAIL_USER: bahatiyves10@gmail.com
-      EMAIL_PASSWORD: qyseodqtcdksibad
-      VERIFICATION_JWT_SECRET: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQSflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-      EXPIRATION_TIME: "1h"
-      FRONTEND_URL: http://localhost:3000
-      GOOGLE_CLIENT_ID: 697049136642-pq264hjahhk12embobvc0lcq9itf4k4a.apps.googleusercontent.com
-      TWILIO_ACCOUNT_SID: ACea9e3bf173ff916a5eb3dcd5cf21f302
-      TWILIO_AUTH_TOKEN: e1b62b9ecc80d3aac896b559c9ac7a0f
-      TWILIO_FROM_NUMBER: +14584550094
-      DOCKERHUB_USERNAME: rwigara
-      DOCKERHUB_PASSWORD: 49jRxLG2vqj7D6%
+    
 
 jobs:
   build:
