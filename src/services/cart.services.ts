@@ -32,17 +32,17 @@ export const viewCart = async (user: UserAttributes) => {
     const itemsCart = userCart.items;
     if (itemsCart) {
       // console.log("My user cart is ", itemsCart);
- const cartItem = (itemsCart as any).product
-console.log("m product is", cartItem)
-    //  (itemsCart as any).product.forEach((item: any) => {
-    //     if (item.product && item.product.dataValues) {
-    //       console.log("Product details:", item.product);
-    //     } else {
-    //       console.log("Product details not found for item:", item);
-    //     }
-    //   });
+      const cartItem = (itemsCart as any).product;
+      console.log('m product is', cartItem);
+      //  (itemsCart as any).product.forEach((item: any) => {
+      //     if (item.product && item.product.dataValues) {
+      //       console.log("Product details:", item.product);
+      //     } else {
+      //       console.log("Product details not found for item:", item);
+      //     }
+      //   });
     } else {
-      console.log("No items in the cart.");
+      console.log('No items in the cart.');
     }
 
     return userCart;
