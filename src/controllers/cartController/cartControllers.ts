@@ -18,15 +18,18 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
       return res.status(404).json({
         message: 'Product not found',
       });
-    } else if (quantity > product!.dataValues.quantity) {
+    }
+    if (quantity > product!.dataValues.quantity) {
       return res.status(400).json({
         message: "Quantity can't exceed product stock",
       });
-    } else if (quantity <= 0) {
+    }
+    if (quantity <= 0) {
       return res.status(400).json({
         message: 'Invalid product quantity',
       });
-    } else if (product.dataValues.userId === currentUser.id) {
+    }
+    if (product.dataValues.userId === currentUser.id) {
       res.status(403).json({
         message: "You can't add your own product to cart",
       });
@@ -39,7 +42,7 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
 };
 
 export const viewUserCart = async (req: Request, res: Response) => {
-  //@ts-ignore
+  // @ts-ignore
   const currentUser: UserAttributes = req.user;
   try {
     const userCart = await cartService.viewCart(currentUser);

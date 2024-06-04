@@ -1,10 +1,10 @@
+import { Router } from 'express';
 import {
   addItemToCart,
   viewUserCart,
   deleteCartItem,
   updateCartItem,
 } from '../controllers/cartController/cartControllers.js';
-import { Router } from 'express';
 
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 

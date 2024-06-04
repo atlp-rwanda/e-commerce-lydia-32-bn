@@ -49,7 +49,7 @@ CartItem.init(
     },
   },
   {
-    sequelize: sequelize,
+    sequelize,
     modelName: 'cartItems',
   },
 );

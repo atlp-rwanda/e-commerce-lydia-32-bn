@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import UserModel from '../models/userModel.js';
 import RoleModel from '../models/roleModel.js';
 import sendSms from '../helpers/sendSms.js';
 import sendVerificationToken from '../helpers/sendEmail.js';
-import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -38,14 +38,14 @@ class AuthenticateAndAuthorizeUserController {
         return;
       }
 
-      const userRole = await RoleModel.findByPk(user.dataValues.roleId) as any;
+      const userRole = (await RoleModel.findByPk(user.dataValues.roleId)) as any;
 
       if (userRole.dataValues.name === 'seller') {
         await user.update({ hasTwoFactor: true });
         const twoFactorCode = Math.floor(10000 + Math.random() * 90000).toString();
         const [updatedRows, [updatedUser]] = await UserModel.update(
           { twoFactorSecret: twoFactorCode },
-          { where: { id: user.dataValues.id }, returning: true }
+          { where: { id: user.dataValues.id }, returning: true },
         );
 
         if (updatedRows === 1) {
@@ -65,10 +65,10 @@ class AuthenticateAndAuthorizeUserController {
           firstname: user.dataValues.firstname,
           isverified: user.dataValues.isverified,
           isBlocked: user.dataValues.isBlocked,
-          roleId: user.dataValues.roleId
+          roleId: user.dataValues.roleId,
         },
         JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' }
+        { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' },
       );
 
       const expiryDate = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);

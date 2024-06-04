@@ -1,7 +1,7 @@
 import express from 'express';
 import { wishListController } from '../controllers/wishListController/wishlistsController.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import {isBuyer} from '../middleware/isBuyerMiddleware.js'
+import { isBuyer } from '../middleware/isBuyerMiddleware.js';
 import { userAuthJWT } from '../middleware/verfication.middleware.js';
 
 export const wishListRouter = express.Router();
