@@ -1,8 +1,8 @@
+import { Model } from 'sequelize';
 import CartItem, { CartItemAttributes } from '../models/cartItemModel.js';
 import Cart, { CartAttributes } from '../models/cartModel.js';
 import Product from '../models/productModel.js';
 import { UserAttributes } from '../models/userModel.js';
-import { Model } from 'sequelize';
 
 export const viewCart = async (user: UserAttributes) => {
   let userCart;
@@ -25,7 +25,7 @@ export const viewCart = async (user: UserAttributes) => {
 
     let totalPrice = 0;
     if (userCart) {
-      const items = (userCart as any).dataValues.items;
+      const { items } = (userCart as any).dataValues;
       if (items && Array.isArray(items)) {
         if (items.length === 0) {
           return { message: 'Your cart is empty' };
@@ -40,7 +40,7 @@ export const viewCart = async (user: UserAttributes) => {
 
         await userCart.update({ total: totalPrice });
       } else {
-        console.error("Items is undefined or not an array");
+        console.error('Items is undefined or not an array');
       }
     } else {
       return { message: 'Your cart is empty' };
@@ -62,7 +62,7 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
     }
 
     let cartItem = await CartItem.findOne({
-      //@ts-ignore
+      // @ts-ignore
       where: { cartId: cart.dataValues.id, productId: product.dataValues.productId },
     });
 
@@ -77,7 +77,7 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
       }
     } else {
       cartItem = await CartItem.create({
-        //@ts-ignore
+        // @ts-ignore
         cartId: cart.dataValues.id,
         productId: product.dataValues.productId,
         quantity,
@@ -85,25 +85,24 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
     }
 
     const total = await CartItem.findAll({
-      //@ts-ignore
+      // @ts-ignore
       where: { cartId: cart.dataValues.id },
       include: [{ model: Product, as: 'product' }],
     })
-      .then((cartItems) => {
-        return cartItems.reduce((acc, item) => {
+      .then((cartItems) =>
+        cartItems.reduce((acc, item) => {
           if (item.dataValues.product) {
             return acc + item.dataValues.quantity * item.dataValues.product.price;
-          } else {
-            return acc;
           }
-        }, 0);
-      })
+          return acc;
+        }, 0),
+      )
       .catch((err) => {
         console.error('Error calculating total:', err);
         return 0;
       });
 
-    //@ts-ignore
+    // @ts-ignore
     await Cart.update({ total }, { where: { id: cart.dataValues.id } });
 
     return cart;

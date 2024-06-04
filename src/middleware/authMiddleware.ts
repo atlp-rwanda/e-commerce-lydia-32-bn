@@ -30,7 +30,6 @@ export const isLoggedIn = async (req: AuthenticatedRequest, res: Response, next:
       });
     }
 
-
     req.user = loggedUser.dataValues;
     next();
   } catch (error: any) {

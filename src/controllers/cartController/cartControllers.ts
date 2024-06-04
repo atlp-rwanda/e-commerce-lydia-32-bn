@@ -53,6 +53,7 @@ export const viewUserCart = async (req: Request, res: Response) => {
   }
 };
 
+
 export const updateCartItem = async (req: AuthenticatedRequest, res: Response) => {
   const cartItemId = Number(req.params.cartItemId);
   const { quantity } = req.body;
