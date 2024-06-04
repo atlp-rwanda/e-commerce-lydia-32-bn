@@ -2,10 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import User from '../../models/userModel.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
 
-export const blockUser = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findByPk(id);
+export const blockUser = async(req: Request, res: Response) => {
+try {
+
+  // get email as a request body because id is unkown to the normal user
+    const { id }  = req.params
+    const user = await User.findByPk(id)
 
     if (user) {
       const [updatedRows, [updatedUser]] = await User.update(

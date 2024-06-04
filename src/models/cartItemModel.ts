@@ -49,11 +49,12 @@ CartItem.init(
     },
   },
   {
-    sequelize,
+    sequelize: sequelize,
     modelName: 'cartItems',
   },
 );
 
 CartItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(CartItem, { foreignKey: 'productId', as: 'cartItems' });
 
 export default CartItem;

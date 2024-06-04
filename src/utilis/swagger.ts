@@ -1,8 +1,6 @@
 import { Express, Request, Response } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import WishList from 'models/wishListModels.js';
-import { UpdatedAt } from 'sequelize-typescript';
 import log from './logger.js';
 
 const options: swaggerJsdoc.Options = {

@@ -1,8 +1,8 @@
-import { Model } from 'sequelize';
 import CartItem, { CartItemAttributes } from '../models/cartItemModel.js';
 import Cart, { CartAttributes } from '../models/cartModel.js';
 import Product from '../models/productModel.js';
 import { UserAttributes } from '../models/userModel.js';
+import { Model } from 'sequelize';
 
 export const viewCart = async (user: UserAttributes) => {
   try {
@@ -61,7 +61,8 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
     }
 
     let cartItem = await CartItem.findOne({
-      where: { cartId: (cart as any).dataValues.id, productId: product.dataValues.productId },
+      //@ts-ignore
+      where: { cartId: cart.dataValues.id, productId: product.dataValues.productId },
     });
 
     if (cartItem) {
@@ -75,7 +76,8 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
       }
     } else {
       cartItem = await CartItem.create({
-        cartId: (cart as any).dataValues.id,
+        //@ts-ignore
+        cartId: cart.dataValues.id,
         productId: product.dataValues.productId,
         quantity,
       });
@@ -103,6 +105,58 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
     return cart;
   } catch (error: any) {
     console.error('Error from add to cart:', error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const updateCartItem = async (cartItemId: number, quantity: number) => {
+  console.log(`updateCartItem called with cartItemId: ${cartItemId}, quantity: ${quantity}`);
+
+  if (isNaN(quantity) || quantity <= 0) {
+    throw new Error('Invalid quantity');
+  }
+
+  try {
+    const cartItem = await CartItem.findByPk(cartItemId);
+    if (!cartItem) {
+      throw new Error('Cart item not found');
+    }
+
+    const product = await Product.findByPk(cartItem.dataValues.productId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    if (quantity > product.dataValues.quantity) {
+      throw new Error("Quantity can't exceed product stock");
+    }
+
+    await cartItem.update({ quantity });
+
+    // Return the updated cartItem
+    return await CartItem.findByPk(cartItemId, {
+      include: [{ model: Product, as: 'product' }],
+    });
+  } catch (error: any) {
+    console.error('Error updating cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const deleteCartItem = async (cartItemId: number) => {
+  console.log(`deleteCartItem called with cartItemId: ${cartItemId}`);
+
+  try {
+    const cartItem = await CartItem.findByPk(cartItemId);
+    if (!cartItem) {
+      throw new Error('Cart item not found');
+    }
+
+    await CartItem.destroy({ where: { id: cartItemId } });
+
+    return cartItem;
+  } catch (error: any) {
+    console.error('Error deleting cart item:', error.message);
     throw new Error(error.message);
   }
 };

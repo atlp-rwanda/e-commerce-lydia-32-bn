@@ -1,8 +1,8 @@
 import express from 'express';
-import checkToken from '../middleware/checkToken.js';
 import { wishListController } from '../controllers/wishListController/wishlistsController.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import { isBuyer } from '../middleware/isBuyerMiddleware.js';
+import {isBuyer} from '../middleware/isBuyerMiddleware.js'
+import { userAuthJWT } from '../middleware/verfication.middleware.js';
 
 export const wishListRouter = express.Router();
 
@@ -36,7 +36,7 @@ export const wishListRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.post('/wishlist/addItem/:productId', checkToken, isBuyer, wishListController.addItemToWishList);
+wishListRouter.post('/wishlist/addItem/:productId', userAuthJWT, isBuyer, wishListController.addItemToWishList);
 
 /**
  * @swagger
@@ -68,7 +68,7 @@ wishListRouter.post('/wishlist/addItem/:productId', checkToken, isBuyer, wishLis
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.delete('/wishlist/removeItem/:itemId', checkToken, isBuyer, wishListController.removeItemFromWishList);
+wishListRouter.delete('/wishlist/removeItem/:itemId', userAuthJWT, isBuyer, wishListController.removeItemFromWishList);
 
 /**
  * @swagger
@@ -93,7 +93,7 @@ wishListRouter.delete('/wishlist/removeItem/:itemId', checkToken, isBuyer, wishL
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.get('/wishlist/getUserWishlists', checkToken, isBuyer, wishListController.getWishListItemsByUser);
+wishListRouter.get('/wishlist/getUserWishlists', userAuthJWT, isBuyer, wishListController.getWishListItemsByUser);
 
 /**
  * @swagger

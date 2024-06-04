@@ -1,14 +1,15 @@
 import express from 'express';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
-import { login } from '../controllers/userController/loginUser.js';
+import { loginController } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middleware/verfication.middleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js';
-import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
-import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
+import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
+import { authenticateAndAuthorizeUserController }from '../middleware/authenticateAndAuthorizeUser.js'
+import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js'
+import { validateBuyerProductRequest} from '../middleware/validateSearch.js';
 
 export const usersRouter = express.Router();
 
@@ -110,7 +111,7 @@ usersRouter.post('/verify', verifyToken, UserController.verifyUser);
  * @param {import('express').Response} res - The Express response object.
  * @returns {Promise<void>} A Promise that resolves when the login operation is complete.
  */
-usersRouter.post('/login/user', isBlocked, login);
+usersRouter.post('/login/user', isBlocked, authenticateAndAuthorizeUserController.authenticateAndAuthorizeUser, loginController.login);
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
