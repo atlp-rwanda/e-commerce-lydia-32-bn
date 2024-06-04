@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import generateToken from '../../utilis/generateToken.js';
+import {generateToken, verifyToken} from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
 
 class userController {
@@ -37,7 +37,7 @@ class userController {
 
       // Send verification email
       // edit the front end url section
-      const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>
@@ -58,7 +58,19 @@ class userController {
   verifyUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       // get the token instead of the userid in body
-      const { userId } = req.body;
+      const token = req.query.token as string;
+
+      if (!token) {
+        return res.status(400).json({error: "No token provided"})
+      }
+
+      const decodedToken = verifyToken(token);
+      
+      if(!decodedToken) {
+        return res.status(400).json({error: "Invalid token or expired."})
+      }
+
+      const userId = decodedToken.userId;
       const user = await UserService.getUserById(userId);
 
       if (!user) {

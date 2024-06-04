@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import User from '../../models/userModel.js';
 import bcrypt from 'bcrypt';
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import generateVerificationToken from '../../utilis/generateToken.js';
+import {generateToken} from '../../utilis/generateToken.js';
 import jwt from 'jsonwebtoken';
 
 export const loginByGoogle = async (req: Request, res: Response) => {
@@ -39,7 +39,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         roleId: 1
     });
     
-      const verificationToken = generateVerificationToken(res, NewUser.dataValues.id, NewUser.dataValues.email, NewUser.dataValues.firstname);
+      const verificationToken = generateToken(res, NewUser.dataValues.id, NewUser.dataValues.email, NewUser.dataValues.firstname);
       const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`;
       const subject = 'Email Verification';
       const content = `
@@ -70,7 +70,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
       });
     }
 
-    generateVerificationToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
+    generateToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
 
     return res.status(200).json({ message: 'login successfully' });
   } catch (error) {

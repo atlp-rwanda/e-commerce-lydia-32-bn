@@ -4,7 +4,7 @@ import { login } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
-import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middleware/verfication.middleware.js';
+import { userAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
 
@@ -63,7 +63,7 @@ usersRouter.post('/register', UserController.createUser);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.post('/verify', verifyToken, UserController.verifyUser);
+usersRouter.get('/verify', UserController.verifyUser);
 
 /**
  * @swagger
