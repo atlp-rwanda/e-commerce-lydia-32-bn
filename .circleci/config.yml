@@ -31,6 +31,7 @@ jobs:
           environment:
             COMPOSE_VERSION: 'v2.25.0'
           command: |
+            apk update && apk upgrade && apk add curl
             curl -sSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
             mkdir -p ~/.docker/cli-plugins
             chmod +x ~/docker-compose
