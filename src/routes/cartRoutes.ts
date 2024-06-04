@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   addItemToCart,
   viewUserCart,
+  deleteCart,
   deleteCartItem,
   updateCartItem,
 } from '../controllers/cartController/cartControllers.js';
@@ -14,6 +15,7 @@ cartRoutes.get('/cart', isLoggedIn, viewUserCart);
 cartRoutes.post('/cart/add', isLoggedIn, addItemToCart);
 cartRoutes.post('/cart/update/:cartItemId', isLoggedIn, updateCartItem);
 cartRoutes.delete('/cart/delete/:cartItemId', isLoggedIn, deleteCartItem);
+cartRoutes.delete('/cart/delete', isLoggedIn, deleteCart)
 
 /**
  * @swagger
@@ -66,14 +68,12 @@ cartRoutes.delete('/cart/delete/:cartItemId', isLoggedIn, deleteCartItem);
  * @swagger
  * /api/cart:
  *   get:
- *     summary: Display cart
+ *     summary: View user cart
  *     tags: [Cart]
- *     description: Displaying items in cart.
- *     security:
- *       - bearerAuth: []
+ *     description: Retrieve the current user's cart details.
  *     responses:
  *       '200':
- *         description: Displaying items from cart
+ *         description: Successfully retrieved user's cart
  *         content:
  *           application/json:
  *             schema:
@@ -84,12 +84,32 @@ cartRoutes.delete('/cart/delete/:cartItemId', isLoggedIn, deleteCartItem);
  *                   items:
  *                     type: object
  *                     properties:
- *                       productId:
- *                         type: number
+ *                       product:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                           price:
+ *                             type: number
  *                       quantity:
  *                         type: number
+ *                 total:
+ *                   type: number
+ *                 message:
+ *                   type: string
  *       '401':
- *         description: Unauthorized - Please log in as buyer
+ *         description: Unauthorized - user not logged in or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
  *       '500':
  *         description: Internal Server Error
  */
@@ -176,6 +196,47 @@ cartRoutes.delete('/cart/delete/:cartItemId', isLoggedIn, deleteCartItem);
  *         description: Cart item not found
  *       500:
  *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/cart/delete:
+ *   delete:
+ *     summary: Delete user cart
+ *     tags: [Cart]
+ *     description: Delete the current user's cart.
+ *     responses:
+ *       '200':
+ *         description: Cart deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       '401':
+ *         description: Unauthorized - user not logged in or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  */
 
 export default cartRoutes;

@@ -163,3 +163,14 @@ export const deleteCartItem = async (cartItemId: number) => {
     throw new Error(error.message);
   }
 };
+
+export const deleteCart = async(user: UserAttributes)=> {
+try {
+  const userCart = await Cart.findOne({where:{ userId: user.id}})
+   await userCart?.destroy()
+  
+} catch (error: any) {
+  console.log("Error deleting cart", error.message)
+  throw new Error(error.message)
+}
+}
