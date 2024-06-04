@@ -4,6 +4,8 @@ import sendVerificationToken from '../../helpers/sendEmail.js';
 
 export const blockUser = async(req: Request, res: Response) => {
 try {
+
+  // get email as a request body because id is unkown to the normal user
     const { id }  = req.params
     const user = await User.findByPk(id)
 
