@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/userModel.js';
 import RoleModel from '../models/roleModel.js';
-import sendSms from '../helpers/sendSms.js';
 import sendVerificationToken from '../helpers/sendEmail.js';
 import dotenv from 'dotenv';
 
@@ -51,7 +50,6 @@ class AuthenticateAndAuthorizeUserController {
         if (updatedRows === 1) {
           const text = `Your 2FA code is: ${twoFactorCode}`;
           sendVerificationToken(user.dataValues.email, '2FA Code', text);
-          sendSms(text, user.dataValues.phone);
           res.status(200).json({ message: '2FA code sent to your email' });
         } else {
           res.status(500).json({ error: 'Failed to update user' });
