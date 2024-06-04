@@ -5,9 +5,8 @@ import Product from '../models/productModel.js';
 import { UserAttributes } from '../models/userModel.js';
 
 export const viewCart = async (user: UserAttributes) => {
-  let userCart;
   try {
-    userCart = await Cart.findOne({
+    const userCart = await Cart.findOne({
       where: { userId: user.id },
       include: [
         {
@@ -21,15 +20,34 @@ export const viewCart = async (user: UserAttributes) => {
           ],
         },
       ],
+      raw: true,
+      nest: true,
     });
+
     if (!userCart) {
-      userCart = await Cart.create({ userId: user.id });
+      const newCart = await Cart.create({ userId: user.id });
+      return newCart;
+    }
+
+    const itemsCart = userCart.items;
+    if (itemsCart) {
+      // console.log("My user cart is ", itemsCart);
+ const cartItem = (itemsCart as any).product
+console.log("m product is", cartItem)
+    //  (itemsCart as any).product.forEach((item: any) => {
+    //     if (item.product && item.product.dataValues) {
+    //       console.log("Product details:", item.product);
+    //     } else {
+    //       console.log("Product details not found for item:", item);
+    //     }
+    //   });
+    } else {
+      console.log("No items in the cart.");
     }
 
     return userCart;
   } catch (error: any) {
     throw new Error(error);
-    return;
   }
 };
 
