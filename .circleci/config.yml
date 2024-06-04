@@ -27,12 +27,14 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Install Docker Compose
+          name: Install Docker client
           command: |
-            apk update && apk upgrade && apk add curl  
-            curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-linux-x86_64" -o ~/docker-compose  
-            chmod +x ~/docker-compose  
-            mv ~/docker-compose /usr/local/bin/docker-compose
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+            
   docker-build-and-push: 
     executor: node-docker
     steps:
