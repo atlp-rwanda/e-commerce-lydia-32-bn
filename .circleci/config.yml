@@ -33,16 +33,6 @@ jobs:
             curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-linux-x86_64" -o ~/docker-compose  
             chmod +x ~/docker-compose  
             mv ~/docker-compose /usr/local/bin/docker-compose
-  docker-build-and-tag: 
-    executor: node-docker
-    steps:
-      - checkout
-      - setup_remote_docker    
-      - run:
-          name: build docker and push Docker image
-          command: |
-            docker login -u $DOCKERUSERNAME -p $DOCKERHUB_PASSWORD
-            docker tag rwigara/e-commerce-lydia-32-bn-backend:latest rwigara/e-commerce-lydia-32-bn-backend:latest
             
   docker-build-and-push: 
     executor: node-docker
@@ -76,8 +66,5 @@ workflows:
           requires:
             - build
       - dockers-install
-      - docker-build-and-tag:
-          requires:
-           - dockers-install
       - docker-build-and-push
           
