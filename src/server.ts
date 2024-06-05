@@ -9,7 +9,7 @@ import { sellerRouter } from './routes/sellerRoutes.js';
 import { rolesRouter } from './routes/roleRoutes.js';
 import { wishListRouter } from './routes/wishListRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
-import orderRoutes from './routes/checkoutRoute.js'
+import orderRoutes from './routes/orderRoute.js'
 
 
 dotenv.config();

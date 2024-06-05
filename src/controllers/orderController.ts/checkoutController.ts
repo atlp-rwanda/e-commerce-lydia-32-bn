@@ -2,6 +2,14 @@ import { Request, Response } from 'express';
 import * as orderService from '../../services/orderService/orderService.js';
 import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
 
+interface AddressData {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
 export const checkout = async (req: AuthenticatedRequest, res: Response) => {
   const { payment, address } = req.body;
   const currentUser = req.user; 

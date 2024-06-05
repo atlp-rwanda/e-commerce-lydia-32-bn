@@ -8,7 +8,7 @@ interface OrderAttributes {
   totalAmount: number;
   status: string;
   payment: string;
-  address: string;
+  address: any[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,7 +21,7 @@ class Order extends Model<OrderAttributes, OrderCreationAttributes> implements O
   public totalAmount!: number;
   public status!: string;
   public payment!: string;
-  public address!: string;
+  public address!: any[];
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -57,8 +57,9 @@ Order.init(
       defaultValue: 'pending',
     },
     address: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSON, 
       allowNull: false,
+      defaultValue: [],
     },
     createdAt: {
       type: DataTypes.DATE,

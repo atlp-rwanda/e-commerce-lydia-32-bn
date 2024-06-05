@@ -6,7 +6,15 @@ import Product from '../../models/productModel.js';
 import User from '../../models/userModel.js';
 import { UserAttributes } from '../../models/userModel.js';
 
-export const addToOrder = async (currentUser: any, payment: any, address: any) => {
+interface AddressData {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
+export const addToOrder = async (currentUser: any, payment: any, address: AddressData[]) => {
   try {
     console.log('my user id is', currentUser.id); 
     let cart: any = await Cart.findOne({
@@ -19,7 +27,7 @@ export const addToOrder = async (currentUser: any, payment: any, address: any) =
       totalAmount: cart.dataValues.total,
       status: "pending",
       payment: payment,
-      address: address
+      address: address 
     });
 
     return order;
