@@ -3,16 +3,14 @@ import * as orderService from '../../services/orderService/orderService.js';
 import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
 
 interface AddressData {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
   country: string;
+  city: string;
+  street: string;
 }
 
 export const checkout = async (req: AuthenticatedRequest, res: Response) => {
   const { payment, address } = req.body;
-  const currentUser = req.user; 
+  const currentUser = req.user;
 
   try {
     const newOrder = await orderService.addToOrder(currentUser, payment, address);

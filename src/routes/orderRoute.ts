@@ -1,7 +1,7 @@
 import { checkout } from '../controllers/orderController.ts/checkoutController.js';
 import { Router } from 'express';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
-import { buyerCheckout } from '../middleware/buyerCheckout.js';
+
 
 /**
  * @swagger
@@ -60,6 +60,6 @@ import { buyerCheckout } from '../middleware/buyerCheckout.js';
  */
 
 const orderRoutes = Router();
-orderRoutes.post('/order',buyerCheckout, isLoggedIn, checkout);
+orderRoutes.post('/order', isLoggedIn, checkout);
 
 export default orderRoutes;
