@@ -2,7 +2,7 @@ import { DataTypes, HasMany, Model, Optional, Sequelize } from "sequelize"
 import sequelise from '../config/db.js'
 import Product from './productModel.js'
 import User from "./userModel.js"
-interface ReviewAttributes{
+export interface ReviewAttributes{
     id:number
     userId:number
     productId:Number
