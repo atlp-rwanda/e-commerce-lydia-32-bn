@@ -41,4 +41,35 @@ export const paymentRouter = express.Router();
  *         description: Internal server error
  */
 
-paymentRouter.post('payment/pay', checkToken, isBuyer, PaymentController.createPaymentIntent);
+paymentRouter.post('/payment/pay', checkToken, isBuyer, PaymentController.createPaymentIntent.bind(PaymentController));
+
+
+/**
+ * @swagger
+ * /api/webhook:
+ *   post:
+ *     summary: confirm payment
+ *     description: Endpoint to confirm customer payment.
+ *     tags: [Payments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Payment'
+ *     responses:
+ *       '201':
+ *         description: Payment done successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Payment'
+ *       '400':
+ *         description: Bad request - Invalid payment details
+ *       '401':
+ *         description: Unauthorized - Token is missing or invalid
+ *       '500':
+ *         description: Internal server error
+ */
+//paymentRouter.post('/webhook', express.raw({ type: 'application/json' }), PaymentController.handleWebhook.bind(PaymentController));
+

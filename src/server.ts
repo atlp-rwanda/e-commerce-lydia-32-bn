@@ -9,7 +9,7 @@ import { sellerRouter } from './routes/sellerRoutes.js';
 import { rolesRouter } from './routes/roleRoutes.js';
 import { wishListRouter } from './routes/wishListRoutes.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
-
+import PaymentController from './controllers/paymentController/paymentController.js'
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js'
 
@@ -31,16 +31,12 @@ app.get('/', (req, res) => {
   res.send('welcome to our project');
 });
 
+paymentRouter.post('/webhook', express.raw({ type: 'application/json' }), PaymentController.handleWebhook.bind(PaymentController));
+
 // Routes for the endpoints
-app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
-app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
-
-app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes, orderRoutes);
-
-app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter, wishListRouter, cartRoutes, paymentRouter);
+app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter, wishListRouter, cartRoutes, orderRoutes, paymentRouter);
 
 swaggerDocs(app, port);
 app.listen(port, () => {
   console.log(`app is running on http://localhost:${port}`);
 });
-

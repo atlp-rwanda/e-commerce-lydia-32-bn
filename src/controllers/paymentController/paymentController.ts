@@ -1,24 +1,33 @@
 import { Request, Response } from 'express';
 import stripe from '../../config/stripe.js';
 import Payment, { PaymentCreationAttributes } from '../../models/paymentModel.js';
+import Order from '../../models/orderModel.js';
+import { or } from 'sequelize';
 
 interface PaymentRequestBody {
   amount: number;
   currency: string;
   orderId: number;
+  userId: number;
 }
 
 class PaymentController {
   public async createPaymentIntent(req: Request, res: Response): Promise<void> {
 
-    const { amount, currency, orderId }: PaymentRequestBody = req.body;
-    const userId = Number(req.userId);
+    const { amount, currency, orderId, userId }: PaymentRequestBody = req.body;
+    //const userId = Number(req.body.userId);
 
     if (!userId) {
         res.status(400).send({ error: 'User ID is missing' });
         return;
       }
-
+    const order = await Order.findByPk(orderId);
+    if(!order){
+      res.status(400).send({ error: 'We con not find order with ID: '+orderId });
+      return;
+    }
+      console.log('In CREATING PAYMENT INTENT')
+      console.log('Order ',order);
     try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
@@ -54,6 +63,7 @@ class PaymentController {
 
   private async savePaymentDetails(paymentData: PaymentCreationAttributes): Promise<Payment> {
     try {
+      console.log('In SAVING PAYMENT DETAILS')
       const payment = await Payment.create(paymentData);
       return payment;
     } catch (error) {
@@ -63,6 +73,76 @@ class PaymentController {
             throw new Error('An unknown error occurred while saving payment details');
           }
     }
+  }
+
+  public async handleWebhook(req: Request, res: Response): Promise<void> {
+    console.log('In HANDLINGS WEBHOOK')
+    const sig = req.headers['stripe-signature'] as string;
+    const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_DEV;
+    //console.log('Request body: ',req.body);
+    //console.log('Signature: ',sig);
+    //console.log('End-point secret: ',endpointSecret);
+
+    if (!sig || !endpointSecret) {
+      res.status(400).send({ error: 'Missing Stripe signature or endpoint secret' });
+      return;
+    }
+    let event;
+    console.log('In CREATING EVENTS')
+    try {
+      //console.log('Request body: ',req.body);
+      //console.log('Request Stringified body: ',JSON.stringify(req.body));
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      console.log('EVENT CONSTRUCTED')
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      res.status(400).send(`Webhook Error: ${errorMessage}`);
+      return;
+    }
+
+    // if (event.type === 'payment_intent.succeeded') {
+    //   const paymentIntent = event.data.object;
+    //   // Update order status in your database
+    //  // await this.updateOrderStatus(paymentIntent.metadata.orderId, 'Paid');
+    // }
+    switch(event.type){
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+      //Update order status in your database
+     // await this.updateOrderStatus(paymentIntent.metadata.orderId, 'Paid');
+        break;
+      case 'payment_intent.payment_failed':
+          const paymentIntentFailed = event.data.object;
+          console.log('PaymentIntent failed!', paymentIntentFailed);
+          // Update order status in your database
+         // await this.updateOrderStatus(paymentIntentFailed.metadata.orderId, 'Payment Failed');
+          break;
+          
+      case 'payment_intent.canceled':
+          const paymentIntentCanceled = event.data.object;
+          console.log('PaymentIntent was canceled!', paymentIntentCanceled);
+          // Update order status in your database
+          //await this.updateOrderStatus(paymentIntentCanceled.metadata.orderId, 'Canceled');
+          break;
+          
+      case 'payment_intent.processing':
+          const paymentIntentProcessing = event.data.object;
+          console.log('PaymentIntent is processing!', paymentIntentProcessing);
+          // Optionally, update order status in your database
+          //await this.updateOrderStatus(paymentIntentProcessing.metadata.orderId, 'Processing');
+          break;
+          
+      case 'payment_intent.requires_action':
+          const paymentIntentRequiresAction = event.data.object;
+          console.log('PaymentIntent requires action!', paymentIntentRequiresAction);
+          // Optionally, update order status in your database
+          //await this.updateOrderStatus(paymentIntentRequiresAction.metadata.orderId, 'Requires Action');
+          break;  
+      default:
+        res.status(400).send(`Unhandled event type ${event.type}`);
+    }
+
+    res.status(200).send();
   }
 }
 

@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
-import sequelize from '../config/db';
-import User from './userModel';
-import Order from './orderModel';
+import sequelize from '../config/db.js';
+import User from './userModel.js';
+import Order from './orderModel.js';
 
 interface PaymentAttributes {
   id: number;
