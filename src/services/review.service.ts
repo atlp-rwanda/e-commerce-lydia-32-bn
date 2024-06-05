@@ -17,11 +17,16 @@ class reviewServices {
             if(!reviewDetail.RatingValue  && reviewDetail.review =='' || reviewDetail.review == '' ){
                 return ({status:401,message:"enter Rating Value and Review MEssage"})
             }
+            if(reviewDetail.RatingValue < 0 || reviewDetail.RatingValue >10){
+       
+              return ({status:401,message:"Enter Rating Value between 0-10"})
+
+            }
              const purchasedProduct = await Order.findAll({where:{userId:userId}})
+             if(purchasedProduct.length==0){
+                return ({status:401,message:"you are not in order list"})
+             }
         //    if(!purchasedProduct.includes(reviewDetail.productId)){}
-         if(purchasedProduct.length==0){
-            return ({status:401,message:"you are not in order list"})
-         }
             const reviews = await Review.create({
                 userId:userId,
                 productId:reviewDetail.productId,
