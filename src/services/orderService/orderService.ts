@@ -1,6 +1,7 @@
 import Order from '../../models/orderModel.js';
 import Cart from '../../models/cartModel.js';
 import CartItem from '../../models/cartItemModel.js'; // Import CartItem model
+import { ORDER_STATUS } from '../../utilis/orderStatusConstants.js';
 
 interface AddressData {
   country: string;
@@ -47,4 +48,34 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
     console.error('Error from add to order:', error.message);
     throw new Error(error.message);
   }
+};
+
+
+
+export const getOrderByIdAndBuyerId = async (orderId: string, buyerId: number) => {
+  return await Order.findOne({
+    where: {
+      id: orderId,
+      userId: buyerId,
+    },
+  });
+};
+
+export const updateOrderStatus = async (orderId: string, orderStatus: string) => {
+  
+  if (!Object.values(ORDER_STATUS).includes(orderStatus)) {
+    throw new Error('Invalid order status');
+  }
+
+  const [, updatedOrders] = await Order.update(
+    { status: orderStatus }, 
+    {
+      where: {
+        id: orderId, 
+      },
+      returning: true, 
+    }
+  );
+
+  return updatedOrders[0]; 
 };
