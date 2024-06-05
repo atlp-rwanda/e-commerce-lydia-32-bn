@@ -29,7 +29,6 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
       ],
     });
 
-
     if (!cart) {
       throw new Error('Cart not found');
     }
@@ -44,13 +43,11 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
     }
 
     console.log('my cart total is', cart.dataValues.total);
-    console.log('my cart is', cart)
+    console.log('my cart is', cart);
     let totalPrice = 0;
     if (cart) {
       const { items } = (cart as any).dataValues;
       if (items && Array.isArray(items)) {
-       
-
         items.forEach((item: any) => {
           const productPrice = Number(item.dataValues.product.dataValues.price);
           const productQuantity = Number(item.dataValues.quantity);
@@ -59,7 +56,7 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
         });
 
         await cart.update({ total: totalPrice });
-      } 
+      }
     }
     const order = await Order.create({
       userId: currentUser.id,

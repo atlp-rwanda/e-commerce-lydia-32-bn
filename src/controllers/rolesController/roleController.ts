@@ -201,9 +201,8 @@ class roleController {
       const deleted = await RoleService.deletePermission(permissionId);
       if (deleted) {
         return res.status(200).json({ message: 'Permission deleted successfully' });
-      } else {
-        return res.status(404).json({ error: 'Permission not found' });
       }
+      return res.status(404).json({ error: 'Permission not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }

@@ -20,7 +20,9 @@ class Order extends Model<OrderAttributes, OrderCreationAttributes> implements O
   public id!: number;
 
   public userId!: number;
+
   public products!: any[];
+
   public totalAmount!: number;
 
   public status!: string;
