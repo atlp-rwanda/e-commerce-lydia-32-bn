@@ -117,9 +117,8 @@ export class ProductService {
     try {
       const product = await Product.findOne({
         where: {
-          [Op.and]: fields,
-        },
-        attributes: { exclude: ['userId'] },
+          [Op.and]: fields
+        }
       });
       return product ? (product.toJSON() as ProductAttributes) : null;
     } catch (error: any) {
