@@ -26,39 +26,17 @@ interface ProductDetails {
 class ProductController {
   async createProduct(req: Request, res: Response): Promise<void> {
     const productDetails: ProductDetails = req.body;
-    const token = req.cookies.jwt;
-    if (!token) {
-      res.status(401).json({ message: 'Unauthorized: Token is missing' });
-      return;
-    }
+    const userId = req.userId;
 
-    try {
-      const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
-      const userId = decodedToken.userId;
-      const { error } = productSchema.validate(productDetails);
-      if (error) {
-        res.status(400).json({ message: `Validation error: ${error.details[0].message}` });
-        return;
-      }
-
-      //const UserService = new userService();
-      const user = await User.findByPk(userId) as any;
-      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
-
-      if (!user || userRole.dataValues.name !== 'seller') {
-        res.status(403).json({ message: 'Only sellers can create products' });
-        return;
-      }
-
-      
-      const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, userId);
+    try{
+      const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, Number(userId));
       if (existingProduct) {
         res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.'});
         return;
       }
 
       const createdProduct = await Product.create({
-        userId: user.dataValues.id,
+        userId: Number(userId),
         productName: req.body.productName,
         description: req.body.description,
         productCategory: req.body.productCategory,
@@ -76,31 +54,29 @@ class ProductController {
     }
   }
 
-async updateProduct(req: Request, res: Response): Promise<void> {
-    
+  async updateProduct(req: Request, res: Response): Promise<void> {
     const productId = Number(req.params.productId);
     const updateFields = req.body;
-    const loggedInUserId = Number(req.userId)
+    const sellerId = Number(req.userId);
+    
 
     try {
-      // const productService = new productService();
-      const product = await productService.getProductByFields({ productId });
+      const product = await productService.getProductByFields({productId});
 
       if (!product) {
         res.status(404).json({ message: 'Product not found' });
         return;
       }
 
-      if (product.userId !== loggedInUserId) {
-        res.status(404).json({ message: 'you do not own this product therefore you can not update it' });
+      if (product.userId !== sellerId) {
+        res.status(403).json({ message: 'You do not own this product, therefore you cannot update it' });
         return;
       }
 
       const updatedProduct = await productService.updateProduct(productId, updateFields);
       res.status(200).json({ message: 'Product updated successfully', updatedProduct });
-
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error });
       console.log(error);
     }
   }
