@@ -1,14 +1,11 @@
-import express from 'express';
-import { ProductControllerInstance } from '../controllers/productController/productController.js';
-import checkToken from '../middleware/checkToken.js';
-import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
-import {
-  validateSearchProduct,
-  validateCreateProductRequest,
-  validateUpdateProductRequest,
-} from '../middleware/validateSearch.js';
+import express from "express";
+import { ProductControllerInstance } from "../controllers/productController/productController.js";
+import checkToken from "../middleware/checkToken.js";
+import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
+import { validateSearchProduct } from "../middleware/validateSearch.js"
+import { validateCreateProductRequest, validateUpdateProductRequest} from '../middleware/validateSearch.js';
+import { authSellerRole } from '../middleware/checkSellerRole.js'
 
-import { authSellerRole } from '../middleware/checkSellerRole.js';
 
 export const productRouter = express.Router();
 
@@ -81,13 +78,7 @@ export const productRouter = express.Router();
  *         description: Internal server error
  */
 
-productRouter.post(
-  '/product/create',
-  sellerAuthJWT,
-  validateCreateProductRequest,
-  authSellerRole,
-  ProductControllerInstance.createProduct,
-);
+productRouter.post('/product/create', sellerAuthJWT, validateCreateProductRequest, authSellerRole, ProductControllerInstance.createProduct);
 
 /**
  * @swagger
@@ -126,12 +117,7 @@ productRouter.post(
  *         description: Internal server error
  */
 
-productRouter.put(
-  '/product/update/:productId',
-  validateUpdateProductRequest,
-  authSellerRole,
-  ProductControllerInstance.updateProduct,
-);
+productRouter.put('/product/update/:productId', validateUpdateProductRequest, authSellerRole , ProductControllerInstance.updateProduct);
 
 /**
  * @swagger

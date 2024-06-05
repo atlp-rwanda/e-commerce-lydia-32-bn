@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
+import Product from '../../models/productModel.js';
+import { productService } from '../../services/product.service.js';
+import  User from '../../models/userModel.js';
+import { productSchema } from '../../validations/product.validation.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize'; // Import Op from sequelize
 import { log } from 'console';
-import Product from '../../models/productModel.js';
-import { productService } from '../../services/product.service.js';
-import User from '../../models/userModel.js';
-import { productSchema } from '../../validations/product.validation.js';
 import Role from '../../models/roleModel.js';
 
 interface ProductDetails {
@@ -26,15 +26,12 @@ interface ProductDetails {
 class ProductController {
   async createProduct(req: Request, res: Response): Promise<void> {
     const productDetails: ProductDetails = req.body;
-    const { userId } = req;
+    const userId = req.userId;
 
-    try {
-      const existingProduct = await productService.getProductByNameAndSellerId(
-        productDetails.productName,
-        Number(userId),
-      );
+    try{
+      const existingProduct = await productService.getProductByNameAndSellerId(productDetails.productName, Number(userId));
       if (existingProduct) {
-        res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.' });
+        res.status(409).json({ message: 'Product already exists. Consider updating stock levels instead.'});
         return;
       }
 
@@ -47,7 +44,7 @@ class ProductController {
         quantity: req.body.quantity,
         images: req.body.images, // Pass images as a comma-separated string
         dimensions: req.body.dimensions,
-        isAvailable: true,
+        isAvailable: true
       });
 
       res.status(201).json({ message: 'Product created successfully', product: createdProduct });
@@ -61,9 +58,10 @@ class ProductController {
     const productId = Number(req.params.productId);
     const updateFields = req.body;
     const sellerId = Number(req.userId);
+    
 
     try {
-      const product = await productService.getProductByFields({ productId });
+      const product = await productService.getProductByFields({productId});
 
       if (!product) {
         res.status(404).json({ message: 'Product not found' });
@@ -84,40 +82,46 @@ class ProductController {
   }
 
   async deleteProduct(req: Request, res: Response): Promise<void> {
+
     const productId: number = Number(req.params.productId);
     try {
-      const { userId } = req.body;
-      const user = (await User.findByPk(userId)) as any;
-      const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
+      const userId = req.body.userId;
+      const user = await User.findByPk(userId) as any;
+      const userRole = await Role.findByPk(user.dataValues.roleId) as any;
 
-      if (user && userRole.dataValues.name == 'seller') {
-        const productToBeDeleted = await productService.getProductByIdAndUserId(productId, userId);
-        if (productToBeDeleted) {
-          console.log(productToBeDeleted);
-          await productService.deleteProduct(productToBeDeleted.productId);
-          res.status(200).json({
-            success: `Product with Id ${productId} is Deleted Successfully`,
-          });
-        } else {
-          res.status(404).json({ Error: "Sorry Either Product Doesn't exists or doesn't belongs to you !" });
-        }
-      } else {
+      if(user &&  userRole.dataValues.name == 'seller'){
+          const productToBeDeleted = await productService.getProductByIdAndUserId(productId,userId); 
+          if(productToBeDeleted){
+            console.log(productToBeDeleted);
+            await productService.deleteProduct(productToBeDeleted.productId);
+            res.status(200).json({
+              success: `Product with Id ${productId} is Deleted Successfully`,
+            });
+          }
+          else{
+            res.status(404).json({Error: "Sorry Either Product Doesn't exists or doesn't belongs to you !"})
+          }
+        } 
+      else {
         res.status(403).json({ Warning: 'Only sellers can delete products' });
+        return;
       }
     } catch (error) {
-      res.status(500).json({ error });
+      res.status(500).json({ error: error });
       console.log(error);
     }
   }
 
   async searchProduct(req: Request, res: Response): Promise<void> {
+
     const { name, minPrice, maxPrice, category } = req.query;
 
     try {
+
       const searchCriteria: any = {};
 
-      if (!name && !minPrice && !maxPrice && !category) {
-        res.status(400).json({ error: 'Please provide a search parameter' });
+      if(!(name) && !(minPrice) && !(maxPrice) && !(category)) {
+        res.status(400).json({ error: 'Please provide a search parameter'})
 
         return;
       }
@@ -142,13 +146,17 @@ class ProductController {
         where: searchCriteria,
       });
 
-      if (products.length === 0) {
-        res.status(400).json({ error: 'there are no products that match your search criteria' });
+      if ( products.length === 0 ) {
+        res.status(400).json({ error: 'there are no products that match your search criteria'})
 
         return;
       }
 
+      
       res.status(200).json({ message: 'Products fetched successfully', products });
+
+      
+
     } catch (error: any) {
       res.status(500).json({ message: error.message });
       console.log(error);

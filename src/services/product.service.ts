@@ -1,6 +1,7 @@
-import { Op } from 'sequelize'; // Import Op from sequelize
 import Product from '../models/productModel.js';
 import ProductAttributes from '../models/productModel.js';
+import { Op } from 'sequelize'; // Import Op from sequelize
+
 
 export class ProductService {
   async createProduct(productDetails: Product): Promise<Product> {
@@ -21,8 +22,8 @@ export class ProductService {
       const product = await Product.findOne({
         where: {
           productName: name,
-          userId: seller_id,
-        },
+          userId: seller_id
+        }
       });
       return product;
     } catch (error) {
@@ -38,8 +39,8 @@ export class ProductService {
     try {
       const product = await Product.findOne({
         where: {
-          productId,
-        },
+          productId: productId
+        }
       });
       return product;
     } catch (error) {
@@ -51,13 +52,13 @@ export class ProductService {
     }
   }
 
-  async getProductByIdAndUserId(productid: number, userId: number): Promise<Product | null> {
+  async getProductByIdAndUserId(productid: number,userId:number): Promise<Product | null> {
     try {
       const product = await Product.findOne({
         where: {
           productId: productid,
-          userId,
-        },
+          userId:userId
+        }
       });
       console.log(product);
       return product ? (product.toJSON() as Product) : null;
@@ -117,13 +118,13 @@ export class ProductService {
     try {
       const product = await Product.findOne({
         where: {
-          [Op.and]: fields,
-        },
+          [Op.and]: fields
+        }
       });
       return product ? (product.toJSON() as ProductAttributes) : null;
     } catch (error: any) {
       throw new Error(`Error fetching product by fields: ${error.message}`);
     }
-  }
+ }
 }
 export const productService = new ProductService();
