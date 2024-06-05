@@ -11,6 +11,7 @@ import { wishListRouter } from './routes/wishListRoutes.js';
 import {reviewRouter} from './routes/reviewroute.js'
 
 import cartRoutes from './routes/cartRoutes.js';
+import orderRoutes from './routes/orderRoute.js'
 
 
 dotenv.config();
@@ -35,6 +36,7 @@ app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
 app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
 
 app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes,reviewRouter);
+app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes, orderRoutes);
 
 
 swaggerDocs(app, port);
