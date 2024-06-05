@@ -5,6 +5,7 @@ import User from '../models/userModel.js';
 interface OrderAttributes {
   id: number;
   userId: number;
+  products: any[];
   totalAmount: number;
   status: string;
   payment: string;
@@ -17,12 +18,21 @@ interface OrderCreationAttributes extends Optional<OrderAttributes, 'id' | 'crea
 
 class Order extends Model<OrderAttributes, OrderCreationAttributes> implements OrderAttributes {
   public id!: number;
+
   public userId!: number;
+
+  public products!: any[];
+
   public totalAmount!: number;
+
   public status!: string;
+
   public payment!: string;
+
   public address!: any[];
+
   public createdAt!: Date;
+
   public updatedAt!: Date;
 }
 
@@ -41,6 +51,11 @@ Order.init(
         key: 'id',
       },
     },
+    products: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      defaultValue: [],
+    },
     totalAmount: {
       allowNull: false,
       type: DataTypes.FLOAT,
@@ -57,7 +72,7 @@ Order.init(
       defaultValue: 'pending',
     },
     address: {
-      type: DataTypes.JSON, 
+      type: DataTypes.JSON,
       allowNull: false,
       defaultValue: [],
     },
@@ -75,7 +90,7 @@ Order.init(
   {
     sequelize,
     modelName: 'orders',
-  }
+  },
 );
 
 Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });

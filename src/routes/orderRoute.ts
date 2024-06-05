@@ -1,6 +1,6 @@
-import { checkout } from '../controllers/orderController.ts/checkoutController.js';
 import { Router } from 'express';
-import {buyerCheckout} from '../middleware/buyerCheckout.js'
+import { checkout } from '../controllers/orderController.ts/checkoutController.js';
+import { buyerCheckout } from '../middleware/buyerCheckout.js';
 
 /**
  * @swagger

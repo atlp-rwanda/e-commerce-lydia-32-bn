@@ -11,6 +11,7 @@ interface PermissionCreationAttributes extends Optional<PermissionAttributes, 'i
 
 class Permission extends Model<PermissionAttributes, PermissionCreationAttributes> implements PermissionAttributes {
   public id!: number;
+
   public name!: string;
 }
 

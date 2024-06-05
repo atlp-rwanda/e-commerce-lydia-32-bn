@@ -12,9 +12,13 @@ export interface CartItemAttributes {
 
 class CartItem extends Model<CartItemAttributes> implements CartItemAttributes {
   id!: number | undefined;
+
   cartId!: number;
+
   productId!: number;
+
   quantity!: number;
+
   product?: ProductCreationAttributes;
 }
 
@@ -45,7 +49,7 @@ CartItem.init(
     },
   },
   {
-    sequelize: sequelize,
+    sequelize,
     modelName: 'cartItems',
   },
 );

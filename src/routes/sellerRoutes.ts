@@ -1,7 +1,7 @@
 import express from 'express';
 import { sellerControllerInstance } from '../controllers/seller controller/sellerController.js';
-import { validateSellerProductRequest} from '../middleware/validateSearch.js';
-import { authSellerRole } from '../middleware/checkSellerRole.js'
+import { validateSellerProductRequest } from '../middleware/validateSearch.js';
+import { authSellerRole } from '../middleware/checkSellerRole.js';
 
 export const sellerRouter = express.Router();
 
@@ -10,7 +10,7 @@ export const sellerRouter = express.Router();
  * tags:
  *   name: Sellers
  *   description: Seller-related operations
- * 
+ *
  * components:
  *   schemas:
  *     Product:
@@ -56,7 +56,7 @@ export const sellerRouter = express.Router();
  *           type: string
  *           format: date-time
  *           example: '2023-05-21T12:34:56.789Z'
- *     
+ *
  *     Error:
  *       type: object
  *       properties:
@@ -217,6 +217,7 @@ sellerRouter.put('/seller/products/:productId/availability', sellerControllerIns
  */
 
 sellerRouter.get('/products/available', sellerControllerInstance.getAvailableProducts);
+
 /**
  * @swagger
  * /api/seller/products/{productId}:
@@ -278,4 +279,9 @@ sellerRouter.get('/products/available', sellerControllerInstance.getAvailablePro
  *               $ref: '#/components/schemas/Error'
  */
 
-sellerRouter.get('/seller/products/:productId', validateSellerProductRequest,authSellerRole, sellerControllerInstance.getSellerProduct);
+sellerRouter.get(
+  '/seller/products/:productId',
+  validateSellerProductRequest,
+  authSellerRole,
+  sellerControllerInstance.getSellerProduct,
+);

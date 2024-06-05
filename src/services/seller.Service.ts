@@ -1,10 +1,8 @@
 import Product from '../models/productModel.js';
 
 export class SellerService {
-  
-
   // method to retrieve all the products associated with a specific seller
-async getProductsBySellerId(sellerId: number): Promise<Product[]> {
+  async getProductsBySellerId(sellerId: number): Promise<Product[]> {
     try {
       const products = await Product.findAll({ where: { userId: sellerId } });
       return products;
@@ -12,23 +10,23 @@ async getProductsBySellerId(sellerId: number): Promise<Product[]> {
       throw new Error('Failed to fetch products');
     }
   }
+
   // retrive single product associated with seller
   async getProductByIdAndSellerId(productId: number, sellerId: number): Promise<Product | null> {
-  try {
-    const product = await Product.findOne({ where: { productId, userId: sellerId } });
-    return product;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Error retrieving product: ${error.message}`);
-    } else {
-      throw new Error('Unknown error occurred while retrieving product.');
+    try {
+      const product = await Product.findOne({ where: { productId, userId: sellerId } });
+      return product;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error retrieving product: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while retrieving product.');
+      }
     }
   }
-}
 
-
-// update product
-async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
+  // update product
+  async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
       if (!product) {
@@ -46,7 +44,7 @@ async updateProduct(productId: number, updates: Partial<Product>): Promise<Produ
   }
 
   // get only available products in the store
-async getAvailableProducts(): Promise<Product[]> {
+  async getAvailableProducts(): Promise<Product[]> {
     try {
       const products = await Product.findAll({ where: { isAvailable: true } });
       return products;
@@ -55,6 +53,5 @@ async getAvailableProducts(): Promise<Product[]> {
     }
   }
 }
-
 
 export const sellerService = new SellerService();

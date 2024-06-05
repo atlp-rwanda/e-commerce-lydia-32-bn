@@ -1,13 +1,13 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
 import { UserService, RoleService } from '../services/services.js';
-import {Request, Response, NextFunction} from 'express'
-import  User from '../models/userModel.js';
+import User from '../models/userModel.js';
 import Role from '../models/roleModel.js';
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
   userId?: any;
-  }
+}
 
 export const authSellerRole = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const token = req.cookies.jwt;
@@ -19,8 +19,8 @@ export const authSellerRole = async (req: AuthenticatedRequest, res: Response, n
     const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
     const userId = decodedToken.userId ? decodedToken.userId : null;
 
-    const user = await User.findByPk(userId) as any;
-    const userRole = await Role.findByPk(user.dataValues.roleId) as any;
+    const user = (await User.findByPk(userId)) as any;
+    const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 
     if (!user || userRole.dataValues.name !== 'seller') {
       res.status(403).json({ message: 'Only sellers can create products' });

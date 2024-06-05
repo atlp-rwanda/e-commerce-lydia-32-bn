@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from 'express';
 import Product from '../models/productModel';
-import { UserAttributes } from "../models/userModel";
+import { UserAttributes } from '../models/userModel';
 
 export const isQuantityValid = async (req: Request, res: Response, next: NextFunction) => {
   //@ts-ignore
@@ -11,7 +11,7 @@ export const isQuantityValid = async (req: Request, res: Response, next: NextFun
 
     if (!product) {
       return res.status(404).json({
-        message: "Product not found",
+        message: 'Product not found',
       });
     } else if (quantity > product!.dataValues.quantity) {
       return res.status(400).json({
@@ -19,7 +19,7 @@ export const isQuantityValid = async (req: Request, res: Response, next: NextFun
       });
     } else if (quantity <= 0) {
       return res.status(400).json({
-        message: "Invalid product quantity",
+        message: 'Invalid product quantity',
       });
     } else if (product.dataValues.userId === currentUser.id) {
       res.status(403).json({
