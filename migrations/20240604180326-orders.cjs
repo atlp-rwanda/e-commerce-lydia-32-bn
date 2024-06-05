@@ -1,4 +1,4 @@
-// XXXXXXXXXXXXXXXX-create-orders.js
+
 'use strict';
 
 module.exports = {

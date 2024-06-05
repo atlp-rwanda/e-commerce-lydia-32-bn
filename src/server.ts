@@ -11,7 +11,7 @@ import { wishListRouter } from './routes/wishListRoutes.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
 
 import cartRoutes from './routes/cartRoutes.js';
-import orderRoutes from './routes/checkoutRoute.js'
+import orderRoutes from './routes/orderRoute.js'
 
 
 dotenv.config();
