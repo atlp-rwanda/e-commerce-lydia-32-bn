@@ -31,7 +31,7 @@ export const BuyerMiddleware = async (req: AuthenticatedRequest, res: Response, 
     console.log('User Role:', userRole);
 
     if (!userRole || userRole.name !== 'buyer') {
-      return res.status(403).json({ message: 'Only buyers can proceed with review.' });
+      return res.status(403).json({ message: 'Only buyers can make review review to product.' });
     }
 
     req.user = user.dataValues;
