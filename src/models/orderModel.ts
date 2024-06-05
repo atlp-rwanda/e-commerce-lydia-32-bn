@@ -5,6 +5,7 @@ import User from '../models/userModel.js';
 interface OrderAttributes {
   id: number;
   userId: number;
+  products: any[];
   totalAmount: number;
   status: string;
   payment: string;
@@ -19,7 +20,7 @@ class Order extends Model<OrderAttributes, OrderCreationAttributes> implements O
   public id!: number;
 
   public userId!: number;
-
+  public products!: any[];
   public totalAmount!: number;
 
   public status!: string;
@@ -47,6 +48,11 @@ Order.init(
         model: User,
         key: 'id',
       },
+    },
+    products: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      defaultValue: [],
     },
     totalAmount: {
       allowNull: false,

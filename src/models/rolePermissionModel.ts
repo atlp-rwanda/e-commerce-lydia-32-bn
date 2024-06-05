@@ -29,6 +29,7 @@ RolePermission.init(
         key: 'id',
       },
       primaryKey: true,
+      defaultValue: 4,
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },

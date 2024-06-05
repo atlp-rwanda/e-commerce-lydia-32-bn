@@ -5,14 +5,11 @@ import Role from '../../models/roleModel.js';
 import { UserService } from '../../services/registeruser.service.js';
 import RolePermission from '../../models/rolePermissionModel.js';
 import Permission from '../../models/permissionModel.js';
+import { validateRolePermissionCreation } from '../../validations/rolesPermissionsValidations.js';
 
 class roleController {
   async createRole(req: Request, res: Response) {
     const { name } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: 'Role name is required' });
-    }
 
     const role = await Role.findOne({
       where: { name },
@@ -23,7 +20,11 @@ class roleController {
     }
 
     try {
-      const role = await Role.create({ name });
+      const validationErrors = validateRolePermissionCreation(req.body);
+      if (validationErrors.length > 0) {
+        return res.status(400).json({ errors: validationErrors });
+      }
+      const role = await RoleService.createRole(name);
       return res.status(201).json({ message: 'Role created successfully', role });
     } catch (error: any) {
       return res.status(500).json({ message: `Error creating role: ${error.message}` });
@@ -73,11 +74,6 @@ class roleController {
 
   async createPermission(req: Request, res: Response) {
     const { name } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: 'Permission name is required' });
-    }
-
     const permission = await Permission.findOne({
       where: { name },
     });
@@ -87,12 +83,26 @@ class roleController {
     }
 
     try {
+      const validationErrors = validateRolePermissionCreation(req.body);
+      if (validationErrors.length > 0) {
+        return res.status(400).json({ errors: validationErrors });
+      }
+
       const permission = await RoleService.createPermission(name);
       return res.status(201).json({ message: 'Permission created successfully', permission });
     } catch (error: any) {
       return res.status(500).json({ message: `Error creating permission: ${error.message}` });
     }
   }
+
+  getAllPermissions = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const permissions = await RoleService.getAllPermissions();
+      return res.status(200).json({ message: 'Permissions Retrieved succesfully', permissions });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
 
   async addPermission(req: Request, res: Response) {
     const roleId = parseInt(req.params.id, 10);
@@ -170,10 +180,30 @@ class roleController {
     try {
       const userId = parseInt(req.params.id, 10);
       const deleted = await RoleService.deleteRole(userId);
+
       if (deleted) {
         return res.status(200).json({ message: 'Role deleted successfully' });
       }
       return res.status(404).json({ error: 'Role not found' });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  deletePermission = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const permissionId = parseInt(req.params.id, 10);
+
+      const defaultPermission = await Permission.findOne({ where: { name: 'read' } });
+      if (defaultPermission) {
+        return res.status(400).json({ error: ' Default permission can not be deleted' });
+      }
+      const deleted = await RoleService.deletePermission(permissionId);
+      if (deleted) {
+        return res.status(200).json({ message: 'Permission deleted successfully' });
+      } else {
+        return res.status(404).json({ error: 'Permission not found' });
+      }
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
