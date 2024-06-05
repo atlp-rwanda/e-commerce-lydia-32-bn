@@ -19,7 +19,7 @@ class reviewServices {
             const user= await User.findByPk(reviewDetail.userId)
             const product = await Product.findByPk(reviewDetail.productId as number)
             if(!user){
-                return ({status:401,message:"user not found",user:reviewDetail.userId})
+                return ({status:401,message:`user not found user:${reviewDetail.userId}`})
             }
             if(!product){
                 return ({status:401,message:"product not found"})
