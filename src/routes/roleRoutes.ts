@@ -1,7 +1,6 @@
 // import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { RoleController } from '../controllers/rolesController/roleController.js';
-import express from 'express';
 
 export const rolesRouter = express.Router();
 

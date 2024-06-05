@@ -44,5 +44,4 @@ workflows:
       - store_test_results:
           requires:
             - build
-      - deploy  
-             
+      - deploy

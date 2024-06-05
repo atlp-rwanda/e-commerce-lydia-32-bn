@@ -1,8 +1,8 @@
+import { Model } from 'sequelize';
 import CartItem, { CartItemAttributes } from '../models/cartItemModel.js';
 import Cart, { CartAttributes } from '../models/cartModel.js';
 import Product from '../models/productModel.js';
 import { UserAttributes } from '../models/userModel.js';
-import { Model } from 'sequelize';
 
 export const viewCart = async (user: UserAttributes) => {
   let userCart;
@@ -22,16 +22,36 @@ export const viewCart = async (user: UserAttributes) => {
         },
       ],
     });
-    if (!userCart) {
-      userCart = await Cart.create({ userId: user.id });
+
+    let totalPrice = 0;
+    if (userCart) {
+      const { items } = (userCart as any).dataValues;
+      if (items && Array.isArray(items)) {
+        if (items.length === 0) {
+          return { message: 'Your cart is empty' };
+        }
+
+        items.forEach((item: any) => {
+          const productPrice = Number(item.dataValues.product.dataValues.price);
+          const productQuantity = Number(item.dataValues.quantity);
+          const price = productPrice * productQuantity;
+          totalPrice += price;
+        });
+
+        await userCart.update({ total: totalPrice });
+      } else {
+        console.error('Items is undefined or not an array');
+      }
+    } else {
+      return { message: 'Your cart is empty' };
     }
 
     return userCart;
   } catch (error: any) {
-    throw new Error(error);
-    return;
+    throw new Error(error.message || error);
   }
 };
+
 export const addToCart = async (quantity: number, product: Product, user: UserAttributes) => {
   try {
     let cart = await Cart.findOne({ where: { userId: user.id } });
@@ -42,7 +62,7 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
     }
 
     let cartItem = await CartItem.findOne({
-      //@ts-ignore
+      // @ts-ignore
       where: { cartId: cart.dataValues.id, productId: product.dataValues.productId },
     });
 
@@ -57,7 +77,7 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
       }
     } else {
       cartItem = await CartItem.create({
-        //@ts-ignore
+        // @ts-ignore
         cartId: cart.dataValues.id,
         productId: product.dataValues.productId,
         quantity,
@@ -65,25 +85,24 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
     }
 
     const total = await CartItem.findAll({
-      //@ts-ignore
+      // @ts-ignore
       where: { cartId: cart.dataValues.id },
       include: [{ model: Product, as: 'product' }],
     })
-      .then((cartItems) => {
-        return cartItems.reduce((acc, item) => {
+      .then((cartItems) =>
+        cartItems.reduce((acc, item) => {
           if (item.dataValues.product) {
             return acc + item.dataValues.quantity * item.dataValues.product.price;
-          } else {
-            return acc;
           }
-        }, 0);
-      })
+          return acc;
+        }, 0),
+      )
       .catch((err) => {
         console.error('Error calculating total:', err);
         return 0;
       });
 
-    //@ts-ignore
+    // @ts-ignore
     await Cart.update({ total }, { where: { id: cart.dataValues.id } });
 
     return cart;
@@ -141,6 +160,16 @@ export const deleteCartItem = async (cartItemId: number) => {
     return cartItem;
   } catch (error: any) {
     console.error('Error deleting cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const deleteCart = async (user: UserAttributes) => {
+  try {
+    const userCart = await Cart.findOne({ where: { userId: user.id } });
+    await userCart?.destroy();
+  } catch (error: any) {
+    console.log('Error deleting cart', error.message);
     throw new Error(error.message);
   }
 };

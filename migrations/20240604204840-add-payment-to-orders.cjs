@@ -4,7 +4,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.addColumn('orders', 'payment', {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
     });
   },
 

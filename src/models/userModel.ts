@@ -9,7 +9,7 @@ export interface UserAttributes {
   email: string;
   phone: string;
   password: string;
-  street: string |  null;
+  street: string | null;
   city: string | null;
   state: string | null;
   postal_code: string | null;
@@ -17,18 +17,23 @@ export interface UserAttributes {
   roleId: number;
   isverified: boolean;
   isBlocked: boolean;
-  hasTwoFactor:boolean;
-  twoFactorSecret: string | null
+  hasTwoFactor: boolean;
+  twoFactorSecret: string | null;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
+
   public firstname!: string;
+
   public othername!: string;
+
   public email!: string;
+
   public phone!: string;
+
   public password!: string;
 
   public street!: string | null;
@@ -41,35 +46,35 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 
   public country!: string | null;
 
-  public  roleId!: number;
+  public roleId!: number;
 
   public isverified!: boolean;
 
   public isBlocked!: boolean;
 
-  public hasTwoFactor!:boolean;
+  public hasTwoFactor!: boolean;
 
   public twoFactorSecret!: string | null;
 
   // Timestamps
   public readonly createdAt!: Date;
+
   public readonly updatedAt!: Date;
 
-public static async getRoleName(userId: number): Promise<string> {
-  const user = await User.findByPk(userId);
-  if (!user) {
-    throw new Error('User not found');
-  }
-  
-  const role = await Role.findByPk(user.dataValues.roleId);
-  console.log(role);
-  if (!role) {
-    throw new Error('Role not found');
-  }
-  
-  return role.dataValues.name;
-}
+  public static async getRoleName(userId: number): Promise<string> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
 
+    const role = await Role.findByPk(user.dataValues.roleId);
+    console.log(role);
+    if (!role) {
+      throw new Error('Role not found');
+    }
+
+    return role.dataValues.name;
+  }
 }
 
 User.init(
@@ -143,7 +148,7 @@ User.init(
     twoFactorSecret: {
       type: DataTypes.STRING,
       allowNull: true,
-    }
+    },
   },
   {
     tableName: 'users',

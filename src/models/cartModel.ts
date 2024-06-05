@@ -1,7 +1,7 @@
-import { Model, DataTypes } from "sequelize";
-import sequelize from "../config/db.js";
-import User from "./userModel.js";
-import CartItem from "./cartItemModel.js";
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
+import User from './userModel.js';
+import CartItem from './cartItemModel.js';
 
 export interface CartAttributes {
   id?: number;
@@ -14,10 +14,15 @@ export interface CartAttributes {
 
 class Cart extends Model<CartAttributes | {}> implements CartAttributes {
   id!: number | undefined;
+
   userId!: number;
+
   items!: CartItem[];
+
   total!: number;
+
   createdAt!: Date | undefined;
+
   updatedAt!: Date | undefined;
 }
 
@@ -49,12 +54,12 @@ Cart.init(
   },
   {
     sequelize,
-    modelName: "carts",
+    modelName: 'carts',
   },
 );
 
-Cart.belongsTo(User, { foreignKey: "userId", as: "user" });
-User.hasOne(Cart, { foreignKey: "userId", as: "cart" });
-Cart.hasMany(CartItem, { foreignKey: "cartId", as: "items" });
+Cart.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasOne(Cart, { foreignKey: 'userId', as: 'cart' });
+Cart.hasMany(CartItem, { foreignKey: 'cartId', as: 'items' });
 
 export default Cart;

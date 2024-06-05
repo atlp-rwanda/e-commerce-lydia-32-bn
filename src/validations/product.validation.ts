@@ -33,15 +33,19 @@ export const productSchema = Joi.object({
     'string.empty': 'Images is required.',
     'any.required': 'Images is required.',
   }),
-  dimensions: Joi.string().regex(/^[\w\+\-\*\/\(\)]+$/).allow('').max(128).optional().messages({
-    'string.pattern.base': 'Dimensions must contain only letters, numbers, and arithmetic signs (+, -, *, /, (, )).',
-    'string.max': 'Dimensions must be less than or equal to 128 characters.',
-  }),
+  dimensions: Joi.string()
+    .regex(/^[\w\+\-\*\/\(\)]+$/)
+    .allow('')
+    .max(128)
+    .optional()
+    .messages({
+      'string.pattern.base': 'Dimensions must contain only letters, numbers, and arithmetic signs (+, -, *, /, (, )).',
+      'string.max': 'Dimensions must be less than or equal to 128 characters.',
+    }),
   isAvailable: Joi.boolean().optional().messages({
     'boolean.base': 'IsAvailable must be a boolean.',
   }),
 });
-
 
 export const updateProductSchema = Joi.object({
   productName: Joi.string().max(128).optional().messages({
@@ -68,11 +72,16 @@ export const updateProductSchema = Joi.object({
     'string.empty': 'Images is required.',
     'any.required': 'Images is required.',
   }),
-  dimensions: Joi.string().regex(/^[\w\+\-\*\/\(\)]+$/).allow('').max(128).optional().messages({
-    'string.pattern.base': 'Dimensions must contain only letters, numbers, and arithmetic signs (+, -, *, /, (, )).',
-    'string.max': 'Dimensions must be less than or equal to 128 characters.',
-  }),
+  dimensions: Joi.string()
+    .regex(/^[\w\+\-\*\/\(\)]+$/)
+    .allow('')
+    .max(128)
+    .optional()
+    .messages({
+      'string.pattern.base': 'Dimensions must contain only letters, numbers, and arithmetic signs (+, -, *, /, (, )).',
+      'string.max': 'Dimensions must be less than or equal to 128 characters.',
+    }),
   isAvailable: Joi.boolean().optional().messages({
     'boolean.base': 'IsAvailable must be a boolean.',
-  }),
+  }),
 });

@@ -15,13 +15,22 @@ interface WishListCreationAttributes extends Optional<WishListAttributes, 'id' |
 
 class WishList extends Model<WishListAttributes, WishListCreationAttributes> implements WishListAttributes {
   public id!: number;
+
   public userId!: number;
+
   public productId!: number;
+
   public createdAt!: Date;
+
   public updatedAt!: Date;
 
   static associate(models: any) {
-    WishList.belongsTo(User, { foreignKey: 'userId', as: 'buyer', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+    WishList.belongsTo(User, {
+      foreignKey: 'userId',
+      as: 'buyer',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
     WishList.hasMany(Product, { foreignKey: 'productId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
   }
 
@@ -58,7 +67,7 @@ class WishList extends Model<WishListAttributes, WishListCreationAttributes> imp
         sequelize,
         modelName: 'WishList',
         tableName: 'wishlists',
-      }
+      },
     );
   }
 }

@@ -13,7 +13,7 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
   try {
     console.log('my user id is', currentUser.id);
 
-    let cart: any = await Cart.findOne({
+    const cart: any = await Cart.findOne({
       where: { userId: currentUser.id },
       include: [
         {
@@ -29,14 +29,13 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
       ],
     });
 
-
     if (!cart) {
       throw new Error('Cart not found');
     }
 
     // Check if the cart has items
     const cartItems = await CartItem.findAll({
-      where: { cartId: cart.dataValues.id }
+      where: { cartId: cart.dataValues.id },
     });
 
     if (cartItems.length === 0) {
@@ -44,13 +43,11 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
     }
 
     console.log('my cart total is', cart.dataValues.total);
-    console.log('my cart is', cart)
+    console.log('my cart is', cart);
     let totalPrice = 0;
     if (cart) {
       const { items } = (cart as any).dataValues;
       if (items && Array.isArray(items)) {
-       
-
         items.forEach((item: any) => {
           const productPrice = Number(item.dataValues.product.dataValues.price);
           const productQuantity = Number(item.dataValues.quantity);
@@ -59,19 +56,19 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
         });
 
         await cart.update({ total: totalPrice });
-      } 
+      }
     }
     const order = await Order.create({
       userId: currentUser.id,
       products: cart.dataValues.items,
       totalAmount: cart.dataValues.total,
-      status: "pending",
-      payment: payment,
-      address: address
+      status: 'pending',
+      payment,
+      address,
     });
 
     await CartItem.destroy({
-      where: { cartId: cart.dataValues.id }
+      where: { cartId: cart.dataValues.id },
     });
 
     return order;
