@@ -52,7 +52,7 @@ import { BuyerMiddleware} from "../middleware/buyerMiddleware.js";
  *                 message:
  *                   type: string
  *       '401':
- *         description: Unauthorized
+ *         description: Bad request
  *         content:
  *           application/json:
  *             schema:

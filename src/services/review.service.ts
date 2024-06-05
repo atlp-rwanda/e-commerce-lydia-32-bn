@@ -1,6 +1,4 @@
 import Review, { ReviewAttributes } from "../models/review.js";
-import User from "../models/userModel.js";
-import Product from "../models/productModel.js";
 import Order from "../models/orderModel.js";
 
 
@@ -8,23 +6,23 @@ class reviewServices {
      async addReview(reviewDetail:ReviewAttributes,userId:number){
         try{
             if(!userId ){
-              return ({status:401,message:`invalid user id ${userId}`})
+              return ({status:400,message:`invalid user id ${userId}`})
             }
             
             if(!reviewDetail.productId){
-                return ({status:401,message:"invalid product id"})
+                return ({status:400,message:"invalid product id"})
             }
             if(!reviewDetail.RatingValue  && reviewDetail.review =='' || reviewDetail.review == '' ){
-                return ({status:401,message:"enter Rating Value and Review MEssage"})
+                return ({status:400,message:"enter Rating Value and Review MEssage"})
             }
             if(reviewDetail.RatingValue < 0 || reviewDetail.RatingValue >10){
        
-              return ({status:401,message:"Enter Rating Value between 0-10"})
+              return ({status:400,message:"Enter Rating Value between 0-10"})
 
             }
              const purchasedProduct = await Order.findAll({where:{userId:userId}})
              if(purchasedProduct.length==0){
-                return ({status:401,message:"you are not in order list"})
+                return ({status:400,message:"you are not in order list"})
              }
         //    if(!purchasedProduct.includes(reviewDetail.productId)){}
             const reviews = await Review.create({
