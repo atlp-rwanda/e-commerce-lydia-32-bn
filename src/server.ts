@@ -11,6 +11,7 @@ import { wishListRouter } from './routes/wishListRoutes.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
 
 import cartRoutes from './routes/cartRoutes.js';
+import orderRoutes from './routes/checkoutRoute.js'
 
 
 dotenv.config();
@@ -31,6 +32,11 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
+app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
+app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
+
+app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes, orderRoutes);
+
 app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter, wishListRouter, cartRoutes, paymentRouter);
 
 swaggerDocs(app, port);
