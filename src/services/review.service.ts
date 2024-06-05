@@ -1,13 +1,14 @@
 import Review, { ReviewAttributes } from "../models/review.js";
 import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
+import Order from "../models/orderModel.js";
 
 
 class reviewServices {
-     async addReview(reviewDetail:ReviewAttributes){
+     async addReview(reviewDetail:ReviewAttributes,userId:number){
         try{
-            if(!reviewDetail.userId ){
-              return ({status:401,message:"invalid user id"})
+            if(!userId ){
+              return ({status:401,message:`invalid user id ${userId}`})
             }
             
             if(!reviewDetail.productId){
@@ -16,18 +17,13 @@ class reviewServices {
             if(!reviewDetail.RatingValue  && reviewDetail.review =='' || reviewDetail.review == '' ){
                 return ({status:401,message:"enter Rating Value and Review MEssage"})
             }
-            const user= await User.findByPk(reviewDetail.userId)
-            const product = await Product.findByPk(reviewDetail.productId as number)
-            if(!user){
-                return ({status:401,message:`user not found user:${reviewDetail.userId}`})
-            }
-            if(!product){
-                return ({status:401,message:"product not found"})
-            }
-        
-        
+             const purchasedProduct = await Order.findAll({where:{userId:userId}})
+        //    if(!purchasedProduct.includes(reviewDetail.productId)){}
+         if(!purchasedProduct){
+            return ({status:401,message:"you are not in order list"})
+         }
             const reviews = await Review.create({
-                userId:reviewDetail.userId,
+                userId:userId,
                 productId:reviewDetail.productId,
                 RatingValue:reviewDetail.RatingValue,
                 review:reviewDetail.review
@@ -39,7 +35,7 @@ class reviewServices {
             
             catch(error:any) {
                     return({status:500,
-                    message:`Eroor ${error.message} occured while sending review`
+                    message:`Eroor ${error.message} occured while sending review ${userId}`
                     })
                   }
     }

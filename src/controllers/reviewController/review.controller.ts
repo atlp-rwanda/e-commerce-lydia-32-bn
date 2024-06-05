@@ -7,9 +7,11 @@ class reviewController{
     async addReview(req:Request,res:Response){
       // const {userId,productId,review,RatingValue} = req.body
     const reviewDetail = req.body
+    const userId = parseInt(req.userId as string) 
+    
      try{
 
-       const review = await reviewService.addReview(reviewDetail)
+       const review = await reviewService.addReview(reviewDetail,userId)
        if(review){
          res.status(review.status).json({message:review.message})
         }
