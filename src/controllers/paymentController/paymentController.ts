@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import stripe from '../../config/stripe.js';
 import Payment, { PaymentCreationAttributes } from '../../models/paymentModel.js';
 import Order from '../../models/orderModel.js';
-import { or } from 'sequelize';
 
 interface PaymentRequestBody {
   amount: number;
@@ -15,7 +14,6 @@ class PaymentController {
   public async createPaymentIntent(req: Request, res: Response): Promise<void> {
 
     const { amount, currency, orderId, userId }: PaymentRequestBody = req.body;
-    //const userId = Number(req.body.userId);
 
     if (!userId) {
         res.status(400).send({ error: 'User ID is missing' });
@@ -26,8 +24,16 @@ class PaymentController {
       res.status(400).send({ error: 'We con not find order with ID: '+orderId });
       return;
     }
+    if (amount > order.totalAmount) { 
+      res.status(400).send({ error: 'Payment amount exceeds order total amount' });
+      return;
+    }
+    // const remainingBalance = order.totalAmount - order.totalPaid;
+    // if (amount > remainingBalance) {
+    //   res.status(400).send({ error: `Payment amount exceeds remaining balance. Remaining balance: ${remainingBalance}` });
+    //   return;
+    // }
       console.log('In CREATING PAYMENT INTENT')
-      console.log('Order ',order);
     try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
@@ -99,44 +105,30 @@ class PaymentController {
       res.status(400).send(`Webhook Error: ${errorMessage}`);
       return;
     }
-
-    // if (event.type === 'payment_intent.succeeded') {
-    //   const paymentIntent = event.data.object;
-    //   // Update order status in your database
-    //  // await this.updateOrderStatus(paymentIntent.metadata.orderId, 'Paid');
-    // }
     switch(event.type){
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-      //Update order status in your database
+      //Update order status in database
      // await this.updateOrderStatus(paymentIntent.metadata.orderId, 'Paid');
         break;
       case 'payment_intent.payment_failed':
           const paymentIntentFailed = event.data.object;
           console.log('PaymentIntent failed!', paymentIntentFailed);
-          // Update order status in your database
-         // await this.updateOrderStatus(paymentIntentFailed.metadata.orderId, 'Payment Failed');
           break;
           
       case 'payment_intent.canceled':
           const paymentIntentCanceled = event.data.object;
           console.log('PaymentIntent was canceled!', paymentIntentCanceled);
-          // Update order status in your database
-          //await this.updateOrderStatus(paymentIntentCanceled.metadata.orderId, 'Canceled');
           break;
           
       case 'payment_intent.processing':
           const paymentIntentProcessing = event.data.object;
           console.log('PaymentIntent is processing!', paymentIntentProcessing);
-          // Optionally, update order status in your database
-          //await this.updateOrderStatus(paymentIntentProcessing.metadata.orderId, 'Processing');
           break;
           
       case 'payment_intent.requires_action':
           const paymentIntentRequiresAction = event.data.object;
           console.log('PaymentIntent requires action!', paymentIntentRequiresAction);
-          // Optionally, update order status in your database
-          //await this.updateOrderStatus(paymentIntentRequiresAction.metadata.orderId, 'Requires Action');
           break;  
       default:
         res.status(400).send(`Unhandled event type ${event.type}`);

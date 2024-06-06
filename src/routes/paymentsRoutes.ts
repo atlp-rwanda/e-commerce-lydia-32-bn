@@ -71,5 +71,5 @@ paymentRouter.post('/payment/pay', checkToken, isBuyer, PaymentController.create
  *       '500':
  *         description: Internal server error
  */
-//paymentRouter.post('/webhook', express.raw({ type: 'application/json' }), PaymentController.handleWebhook.bind(PaymentController));
+paymentRouter.post('/webhook', express.raw({ type: 'application/json' }), PaymentController.handleWebhook.bind(PaymentController));
 
