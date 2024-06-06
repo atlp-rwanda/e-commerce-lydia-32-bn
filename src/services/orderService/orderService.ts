@@ -65,6 +65,7 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
       userId: currentUser.id,
       products: cart.dataValues.items,
       totalAmount: cart.dataValues.total,
+      totalPaid: 0,
       status: "pending",
       payment: payment,
       address: address

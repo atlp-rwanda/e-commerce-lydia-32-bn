@@ -7,6 +7,7 @@ interface OrderAttributes {
   userId: number;
   products: any[];
   totalAmount: number;
+  totalPaid: number;
   status: string;
   payment: string;
   address: any[];
@@ -21,6 +22,7 @@ class Order extends Model<OrderAttributes, OrderCreationAttributes> implements O
   public userId!: number;
   public products!: any[];
   public totalAmount!: number;
+  public totalPaid!: number;
   public status!: string;
   public payment!: string;
   public address!: any[];
@@ -49,6 +51,11 @@ Order.init(
       defaultValue: [],
     },
     totalAmount: {
+      allowNull: false,
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    totalPaid: {
       allowNull: false,
       type: DataTypes.FLOAT,
       defaultValue: 0,
