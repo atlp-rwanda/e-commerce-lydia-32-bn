@@ -2,13 +2,10 @@ import { Response, Request } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
-<<<<<<< HEAD
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import {generateToken} from '../../utilis/generateToken.js';
-=======
+import { generateToken } from '../../utilis/generateToken.js';
 import sendEmailMessage from '../../helpers/sendEmail.js';
 import generateVerificationToken from '../../utilis/generateToken.js';
->>>>>>> a57e294 (Notification system for product evolution)
 
 export const loginByGoogle = async (req: Request, res: Response) => {
   const { accessToken } = req.body;

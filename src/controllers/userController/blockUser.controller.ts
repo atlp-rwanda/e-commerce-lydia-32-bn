@@ -1,18 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../../models/userModel.js';
-<<<<<<< HEAD
-import sendVerificationToken from '../../helpers/sendEmail.js';
 import { UserService } from '../../services/registeruser.service.js';
-=======
 import sendEmailMessage from '../../helpers/sendEmail.js';
->>>>>>> a57e294 (Notification system for product evolution)
 
 export const blockUser = async (req: Request, res: Response) => {
   try {
-    const { email }  = req.body
+    const { email } = req.body;
     const user = await UserService.getUserByFields({ email });
 
-    if(user) {
+    if (user) {
       const [updatedRows, [updatedUser]] = await User.update(
         {
           isBlocked: true,
