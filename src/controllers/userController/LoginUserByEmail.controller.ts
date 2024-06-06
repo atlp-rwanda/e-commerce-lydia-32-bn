@@ -2,8 +2,13 @@ import { Response, Request } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
+<<<<<<< HEAD
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import {generateToken} from '../../utilis/generateToken.js';
+=======
+import sendEmailMessage from '../../helpers/sendEmail.js';
+import generateVerificationToken from '../../utilis/generateToken.js';
+>>>>>>> a57e294 (Notification system for product evolution)
 
 export const loginByGoogle = async (req: Request, res: Response) => {
   const { accessToken } = req.body;
@@ -55,7 +60,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         <p><strong>Important:</strong> For your security, please do not share this link with anyone.</p>
         <p>Best regards,</p>
       `;
-      sendVerificationToken(NewUser.dataValues.email, subject, content);
+      sendEmailMessage(NewUser.dataValues.email, subject, content);
 
       return res.status(201).json({
         message: 'User created successfully. Please check your email to verify your account.',

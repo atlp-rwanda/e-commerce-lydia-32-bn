@@ -1,3 +1,4 @@
+import notificationEmitter from '../../utilis/eventEmitter.js';
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import jwt, { JwtPayload } from 'jsonwebtoken';

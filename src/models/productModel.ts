@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import sequelize from '../config/db.js';
 import User from '../models/userModel.js';
+import notificationEmitter from '../utilis/eventEmitter.js';
 
 interface ProductAttributes {
   productId: number;
@@ -124,6 +125,22 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
         sequelize,
         modelName: 'Product',
         tableName: 'products',
+        hooks: {
+          afterCreate: (product: Product) => {
+            console.log('Product created:', product);
+            notificationEmitter.emit('productAdded', product);
+          },
+          afterUpdate: (product: Product) => {
+            if (!product.isAvailable) {
+              console.log('Product created:', product);
+              notificationEmitter.emit('productExpired', product);
+            }
+          },
+          afterDestroy: (product: Product) => {
+            console.log('Product created:', product);
+            notificationEmitter.emit('productDeleted', product);
+          },
+        },
       },
     );
   }

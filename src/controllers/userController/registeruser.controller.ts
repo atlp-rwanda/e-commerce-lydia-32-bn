@@ -2,8 +2,13 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
+<<<<<<< HEAD
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import {generateToken, verifyToken} from '../../utilis/generateToken.js';
+=======
+import sendEmailMessage from '../../helpers/sendEmail.js';
+import generateToken from '../../utilis/generateToken.js';
+>>>>>>> a57e294 (Notification system for product evolution)
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
 
 class userController {
@@ -45,7 +50,7 @@ class userController {
           <div><strong>Important:</strong> For your security, please do not share this link with anyone.</div>
           <div>Best regards,</div>
         `;
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       return res.status(201).json({ message: 'Signup was successfull, Verification Email sent', token });
     } catch (error: any) {
@@ -91,7 +96,7 @@ class userController {
             <div>The E-Commerce Lydia Team</div>
           `;
 
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       return res;
     } catch (error: any) {
@@ -203,7 +208,7 @@ class userController {
             <p>Best regards,</p>
             `;
 
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       res.status(200).json({
         message: 'the password reset process has been started, check your email to confirm and reset your password',
@@ -264,7 +269,7 @@ class userController {
             <p>Best regards,</p>
             `;
 
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       res.status(200).json({ message: 'Password updated successfully' });
     } catch (error: any) {

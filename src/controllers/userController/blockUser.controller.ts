@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../../models/userModel.js';
+<<<<<<< HEAD
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import { UserService } from '../../services/registeruser.service.js';
+=======
+import sendEmailMessage from '../../helpers/sendEmail.js';
+>>>>>>> a57e294 (Notification system for product evolution)
 
 export const blockUser = async (req: Request, res: Response) => {
   try {
@@ -45,7 +49,7 @@ export const blockUser = async (req: Request, res: Response) => {
     </div>
   </div>
 `;
-        sendVerificationToken(user.dataValues.email, subject, content);
+        sendEmailMessage(user.dataValues.email, subject, content);
         return res.status(200).json({ message: 'user is blocked' });
       }
     }
