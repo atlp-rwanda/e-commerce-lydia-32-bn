@@ -62,9 +62,10 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
       userId: currentUser.id,
       products: cart.dataValues.items,
       totalAmount: cart.dataValues.total,
-      status: 'pending',
-      payment,
-      address,
+      totalPaid: 0,
+      status: "pending",
+      payment: payment,
+      address: address
     });
 
     await CartItem.destroy({
