@@ -1,12 +1,12 @@
+import { Op } from 'sequelize'; // Import Op from sequelize
+import bcrypt, { genSalt } from 'bcrypt';
+import Role from 'models/roleModel.js';
 import { validateUserCreation } from '../validations/registeruser.validation.js';
 import User from '../models/userModel.js';
 import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
-import { Op } from 'sequelize'; // Import Op from sequelize
 import { validateUserupdates, passwordValidation } from '../validations/updatesValidation.js';
-import bcrypt, { genSalt } from 'bcrypt';
 import sendVerificationToken from '../helpers/sendEmail.js';
-import Role from 'models/roleModel.js';
 
 export class userService {
   async createUser(userDetails: UserCreationAttributes): Promise<UserAttributes> {
@@ -56,6 +56,7 @@ export class userService {
       throw new Error(`Error updating user: ${error.message}`);
     }
   }
+
   async updateUserInfo(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
       const validateUpdates = validateUserupdates(updates);
@@ -64,7 +65,7 @@ export class userService {
       if (user) {
         const userData = user.toJSON() as UserAttributes;
         if (!userData.isverified) {
-          throw new Error(`Error updating user: user not verified`);
+          throw new Error('Error updating user: user not verified');
         }
         if (validateUpdates.length > 0) {
           // throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
@@ -115,6 +116,7 @@ export class userService {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
+
   async changePassword(userId: number, oldPassword: string, newPassword: string) {
     try {
       const salt = await genSalt(10);

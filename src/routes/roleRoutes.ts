@@ -1,6 +1,6 @@
+// import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { RoleController } from '../controllers/rolesController/roleController.js';
-import express from 'express';
 
 export const rolesRouter = express.Router();
 
@@ -10,7 +10,7 @@ export const rolesRouter = express.Router();
  *   post:
  *     summary: Create user role
  *     description: Create a new role
- *     tags: [Roles]
+ *     tags: [Role]
  *     requestBody:
  *       required: true
  *       content:
@@ -29,7 +29,7 @@ export const rolesRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/create', isRoleAdmin, RoleController.createRole);
+rolesRouter.post('/roles/create', RoleController.createRole);
 
 /**
  * @swagger
@@ -37,7 +37,7 @@ rolesRouter.post('/roles/create', isRoleAdmin, RoleController.createRole);
  *   get:
  *     summary: Get all roles
  *     description: Retrieve a list of all roles
- *     tags: [Roles]
+ *     tags: [Role]
  *     responses:
  *       '200':
  *         description: List of roles
@@ -58,7 +58,7 @@ rolesRouter.get('/roles', isRoleAdmin, RoleController.getAllRoles);
  *   get:
  *     summary: Get all roles
  *     description: Retrieve a list of all roles
- *     tags: [Roles]
+ *     tags: [Role]
  *     security:
  *       - BearerAuth: []
  *     responses:
@@ -81,7 +81,7 @@ rolesRouter.get('/roles/:id', isRoleAdmin, RoleController.getRoleById);
  *   put:
  *     summary: Update role by ID
  *     description: Update an existing role by its ID
- *     tags: [Roles]
+ *     tags: [Role]
  *     parameters:
  *       - in: path
  *         name: id
@@ -117,7 +117,7 @@ rolesRouter.put('/roles/update/:id', isRoleAdmin, RoleController.updateRole);
  *   delete:
  *     summary: Delete role by ID
  *     description: Delete a role by its ID
- *     tags: [Roles]
+ *     tags: [Role]
  *     parameters:
  *       - in: path
  *         name: id
@@ -141,7 +141,7 @@ rolesRouter.delete('/roles/delete/:id', isRoleAdmin, RoleController.deleteRole);
  *   post:
  *     summary: Create a new permission
  *     description: Create a new permission
- *     tags: [Permissions]
+ *     tags: [Permission]
  *     requestBody:
  *       required: true
  *       content:
@@ -164,11 +164,34 @@ rolesRouter.post('/roles/permissions/create', isRoleAdmin, RoleController.create
 
 /**
  * @swagger
+ * /api/permissions:
+ *   get:
+ *     summary: Get all permissions
+ *     description: Retrieve a list of all permissions
+ *     tags: [Permission]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: List of permissions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Permission'
+ *       '500':
+ *         description: Internal server error
+ */
+rolesRouter.get('/permissions', isRoleAdmin, RoleController.getAllPermissions);
+
+/**
+ * @swagger
  * /api/roles/permissions/add/{id}:
  *   post:
  *     summary: Add a permission to a role
  *     description: Add a permission to a role by role ID
- *     tags: [Permissions]
+ *     tags: [Permission]
  *     parameters:
  *       - in: path
  *         name: id
@@ -205,7 +228,7 @@ rolesRouter.post('/roles/permissions/add/:id', isRoleAdmin, RoleController.addPe
  *   delete:
  *     summary: Remove a permission from a role
  *     description: Remove a permission from a role by role ID
- *     tags: [Permissions]
+ *     tags: [Permission]
  *     parameters:
  *       - in: path
  *         name: id
@@ -241,7 +264,7 @@ rolesRouter.delete('/roles/permissions/remove/:id', isRoleAdmin, RoleController.
  *   post:
  *     summary: Assign a role to a user
  *     description: Assign a role to a user by user ID
- *     tags: [Permissions]
+ *     tags: [Permission]
  *     parameters:
  *       - in: path
  *         name: id
@@ -270,3 +293,51 @@ rolesRouter.delete('/roles/permissions/remove/:id', isRoleAdmin, RoleController.
  *         description: Internal server error
  */
 rolesRouter.post('/roles/assign/:id', isRoleAdmin, RoleController.assignRoleToUser);
+
+/**
+ * @swagger
+ * /api/roles/delete/{roleId}:
+ *   delete:
+ *     summary: Delete a role
+ *     description: Endpoint to delete a role.
+ *     tags: [Role]
+ *     parameters:
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of role to be deleted
+ *     responses:
+ *       '200':
+ *         description: Role deleted successfully
+ *       '404':
+ *         description: Role not found
+ *       '500':
+ *         description: Internal server error
+ */
+rolesRouter.delete('/roles/delete/:id', isRoleAdmin, RoleController.deleteRole);
+
+/**
+ * @swagger
+ * /api/permissions/delete/{permissionId}:
+ *   delete:
+ *     summary: Delete a permission
+ *     description: Endpoint to delete a permission.
+ *     tags: [Permission]
+ *     parameters:
+ *       - in: path
+ *         name: permissionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of permission to be deleted
+ *     responses:
+ *       '200':
+ *         description: Permission deleted successfully
+ *       '404':
+ *         description: Permission not found
+ *       '500':
+ *         description: Internal server error
+ */
+rolesRouter.delete('/permissions/delete/:id', RoleController.deletePermission);
