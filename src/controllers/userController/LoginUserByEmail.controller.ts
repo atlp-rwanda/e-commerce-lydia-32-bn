@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import generateVerificationToken from '../../utilis/generateToken.js';
+import {generateToken} from '../../utilis/generateToken.js';
 
 export const loginByGoogle = async (req: Request, res: Response) => {
   const { accessToken } = req.body;
@@ -39,7 +39,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         roleId: 1,
       });
 
-      const verificationToken = generateVerificationToken(
+      const verificationToken = generateToken(
         res,
         NewUser.dataValues.id,
         NewUser.dataValues.email,
@@ -75,7 +75,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
       });
     }
 
-    generateVerificationToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
+    generateToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
 
     return res.status(200).json({ message: 'login successfully' });
   } catch (error) {

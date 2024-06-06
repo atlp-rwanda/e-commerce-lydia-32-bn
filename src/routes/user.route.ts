@@ -4,7 +4,7 @@ import { loginController } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
-import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middleware/verfication.middleware.js';
+import { userAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js';
 import { authenticateAndAuthorizeUserController } from '../middleware/authenticateAndAuthorizeUser.js';
@@ -66,7 +66,7 @@ usersRouter.post('/register', UserController.createUser);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.post('/verify', verifyToken, UserController.verifyUser);
+usersRouter.get('/verify', UserController.verifyUser);
 
 /**
  * @swagger
@@ -242,25 +242,21 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
  *     summary: Logout user
  *     tags:
  *       - Users
+ *     security:
+ *       - bearerAuth: []
  *     description: Logout the currently authenticated user by clearing the JWT cookie and setting a loggedOut cookie.
  *     responses:
  *       '200':
  *         description: Logout successful
  *       '400':
  *         description: Bad Request (e.g., already logged out or not logged in)
+ *       '401':
+ *         description: Unauthorized - User is not authenticated
  *       '500':
  *         description: Internal Server Error
  */
 
-/**
- * Logout the currently authenticated user.
- *
- * @param {import('express').Request} req - The Express request object.
- * @param {import('express').Response} res - The Express response object.
- * @returns {Promise<void>} A Promise that resolves when the logout operation is complete.
- */
-
-usersRouter.post('/users/logout', UserController.logout);
+usersRouter.post('/users/logout', userAuthJWT, UserController.logout);
 /**
  * @swagger
  * /api/factor:
