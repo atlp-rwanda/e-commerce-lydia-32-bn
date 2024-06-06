@@ -1,16 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import User from '../../models/userModel.js'
+import User from '../../models/userModel.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import { UserService } from '../../services/registeruser.service.js';
 
-export const blockUser = async(req: Request, res: Response) => {
-try {
-
+export const blockUser = async (req: Request, res: Response) => {
+  try {
     const { email }  = req.body
     const user = await UserService.getUserByFields({ email });
 
     if(user) {
-      const id = user.id;
       const [updatedRows, [updatedUser]] = await User.update(
         {
           isBlocked: true,
@@ -18,9 +16,9 @@ try {
         {
           where: { id },
           returning: true,
-        }
+        },
       );
-      if(updatedRows > 0) {
+      if (updatedRows > 0) {
         const subject = 'Important: Your Account Has Been Blocked';
         const content = `
   <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
@@ -46,13 +44,13 @@ try {
       </div>
     </div>
   </div>
-`
+`;
         sendVerificationToken(user.dataValues.email, subject, content);
-        return res.status(200).json({message: "user is blocked"})
+        return res.status(200).json({ message: 'user is blocked' });
       }
     }
-} catch (error) {
-  res.status(500).json("server error")
-  console.log(error)   
-}
-}
+  } catch (error) {
+    res.status(500).json('server error');
+    console.log(error);
+  }
+};

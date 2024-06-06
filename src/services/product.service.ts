@@ -1,7 +1,6 @@
+import { Op } from 'sequelize'; // Import Op from sequelize
 import Product from '../models/productModel.js';
 import ProductAttributes from '../models/productModel.js';
-import { Op } from 'sequelize'; // Import Op from sequelize
-
 
 export class ProductService {
   async createProduct(productDetails: Product): Promise<Product> {
@@ -22,8 +21,8 @@ export class ProductService {
       const product = await Product.findOne({
         where: {
           productName: name,
-          userId: seller_id
-        }
+          userId: seller_id,
+        },
       });
       return product;
     } catch (error) {
@@ -35,13 +34,30 @@ export class ProductService {
     }
   }
 
-  async getProductByIdAndUserId(productid: number,userId:number): Promise<Product | null> {
+  async getProductById(productId: number): Promise<Product | null> {
+    try {
+      const product = await Product.findOne({
+        where: {
+          productId,
+        },
+      });
+      return product;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error retrieving product: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while retrieving product.');
+      }
+    }
+  }
+
+  async getProductByIdAndUserId(productid: number, userId: number): Promise<Product | null> {
     try {
       const product = await Product.findOne({
         where: {
           productId: productid,
-          userId:userId
-        }
+          userId,
+        },
       });
       console.log(product);
       return product ? (product.toJSON() as Product) : null;
@@ -87,19 +103,27 @@ export class ProductService {
     }
   }
 
+  // get only available products in the store
+  async getAvailableProducts(): Promise<Product[]> {
+    try {
+      const products = await Product.findAll({ where: { isAvailable: true } });
+      return products;
+    } catch (error) {
+      throw new Error('Failed to fetch available products');
+    }
+  }
 
   async getProductByFields(fields: Partial<ProductAttributes>): Promise<ProductAttributes | null> {
     try {
       const product = await Product.findOne({
         where: {
-          [Op.and]: fields
+          [Op.and]: fields,
         },
-        attributes: { exclude: ['password'] }
       });
       return product ? (product.toJSON() as ProductAttributes) : null;
     } catch (error: any) {
       throw new Error(`Error fetching product by fields: ${error.message}`);
     }
- }
+  }
 }
 export const productService = new ProductService();

@@ -1,8 +1,8 @@
 import express from 'express';
-import checkToken from '../middleware/checkToken.js';
 import { wishListController } from '../controllers/wishListController/wishlistsController.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import {isBuyer} from '../middleware/isBuyerMiddleware.js'
+import { isBuyer } from '../middleware/isBuyerMiddleware.js';
+import { userAuthJWT } from '../middleware/verfication.middleware.js';
 
 export const wishListRouter = express.Router();
 
@@ -36,22 +36,22 @@ export const wishListRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.post('/wishlist/addItem/:productId', checkToken, wishListController.addItemToWishList);
+wishListRouter.post('/wishlist/addItem/:productId', userAuthJWT, isBuyer, wishListController.addItemToWishList);
 
 /**
  * @swagger
- * /api/wishlist/removeItem/{productId}:
+ * /api/wishlist/removeItem/{itemId}:
  *   delete:
  *     summary: Remove Item from your Wishlist
  *     description: Endpoint to remove item from wishlist.
  *     tags: [WishLists]
  *     parameters:
  *       - in: path
- *         name: productId
+ *         name: itemId
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID of product to be removed from your wishlist
+ *         description: ID of item to be removed from your wishlist
  *     responses:
  *       '201':
  *         description: Item removed from wishlist successfully
@@ -60,15 +60,15 @@ wishListRouter.post('/wishlist/addItem/:productId', checkToken, wishListControll
  *             schema:
  *               $ref: '#/components/schemas/WishList'
  *       '400':
- *         description: Bad request - Product is not found in Your WishList
+ *         description: Bad request - Item is not found in Your WishList
  *       '401':
  *         description: Unauthorized - You are not authenticated
  *       '404':
- *         description: Product not found
+ *         description: Item not found
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.delete('/wishlist/removeItem/:productId', checkToken, wishListController.removeItemFromWishList);
+wishListRouter.delete('/wishlist/removeItem/:itemId', userAuthJWT, isBuyer, wishListController.removeItemFromWishList);
 
 /**
  * @swagger
@@ -85,7 +85,7 @@ wishListRouter.delete('/wishlist/removeItem/:productId', checkToken, wishListCon
  *             schema:
  *               $ref: '#/components/schemas/WishList'
  *       '400':
- *         description: Bad request - No Products found in Your WishList
+ *         description: Bad request - No Items found in Your WishList
  *       '401':
  *         description: Unauthorized - You are not authenticated
  *       '404':
@@ -93,7 +93,7 @@ wishListRouter.delete('/wishlist/removeItem/:productId', checkToken, wishListCon
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.get('/wishlist/getUserWishlists', checkToken, wishListController.getWishListItemsByUser);
+wishListRouter.get('/wishlist/getUserWishlists', userAuthJWT, isBuyer, wishListController.getWishListItemsByUser);
 
 /**
  * @swagger
@@ -119,4 +119,3 @@ wishListRouter.get('/wishlist/getUserWishlists', checkToken, wishListController.
  *         description: Internal server error
  */
 wishListRouter.get('/wishlist/getAllWishlists', isRoleAdmin, wishListController.getAllWishListItems);
-

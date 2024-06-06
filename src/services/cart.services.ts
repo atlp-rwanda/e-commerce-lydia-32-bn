@@ -1,9 +1,8 @@
-
-import CartItem, { CartItemAttributes } from "../models/cartItemModel.js";
-import Cart, { CartAttributes } from "../models/cartModel.js";
-import Product from "../models/productModel.js";
-import { UserAttributes } from "../models/userModel.js";
-import { Model } from "sequelize";
+import { Model } from 'sequelize';
+import CartItem, { CartItemAttributes } from '../models/cartItemModel.js';
+import Cart, { CartAttributes } from '../models/cartModel.js';
+import Product from '../models/productModel.js';
+import { UserAttributes } from '../models/userModel.js';
 
 export const viewCart = async (user: UserAttributes) => {
   let userCart;
@@ -13,38 +12,59 @@ export const viewCart = async (user: UserAttributes) => {
       include: [
         {
           model: CartItem,
-          as: "items",
+          as: 'items',
           include: [
             {
               model: Product,
-              as: "product",
+              as: 'product',
             },
           ],
         },
       ],
     });
-    if (!userCart) {
-      userCart = await Cart.create({ userId: user.id });
+
+    let totalPrice = 0;
+    if (userCart) {
+      const { items } = (userCart as any).dataValues;
+      if (items && Array.isArray(items)) {
+        if (items.length === 0) {
+          return { message: 'Your cart is empty' };
+        }
+
+        items.forEach((item: any) => {
+          const productPrice = Number(item.dataValues.product.dataValues.price);
+          const productQuantity = Number(item.dataValues.quantity);
+          const price = productPrice * productQuantity;
+          totalPrice += price;
+        });
+
+        await userCart.update({ total: totalPrice });
+      } else {
+        console.error('Items is undefined or not an array');
+      }
+    } else {
+      return { message: 'Your cart is empty' };
     }
 
-    return userCart
+    return userCart;
   } catch (error: any) {
-  
-    throw new Error(error);
-    return
+    throw new Error(error.message || error);
   }
 };
+
 export const addToCart = async (quantity: number, product: Product, user: UserAttributes) => {
   try {
     let cart = await Cart.findOne({ where: { userId: user.id } });
 
     if (!cart) {
       cart = await Cart.create({ userId: user.id });
-      console.log(cart)
+      console.log(cart);
     }
 
-    //@ts-ignore
-    let cartItem = await CartItem.findOne({ where: { cartId: cart.dataValues.id, productId: product.dataValues.productId } });
+    let cartItem = await CartItem.findOne({
+      // @ts-ignore
+      where: { cartId: cart.dataValues.id, productId: product.dataValues.productId },
+    });
 
     if (cartItem) {
       if (cartItem.dataValues.quantity + quantity > product.dataValues.quantity) {
@@ -56,31 +76,33 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
         );
       }
     } else {
-      //@ts-ignore
-      cartItem = await CartItem.create({ cartId: cart.dataValues.id, productId: product.dataValues.productId, quantity });
+      cartItem = await CartItem.create({
+        // @ts-ignore
+        cartId: cart.dataValues.id,
+        productId: product.dataValues.productId,
+        quantity,
+      });
     }
 
     const total = await CartItem.findAll({
-      //@ts-ignore
+      // @ts-ignore
       where: { cartId: cart.dataValues.id },
       include: [{ model: Product, as: 'product' }],
     })
-      .then((cartItems) => {
-        return cartItems.reduce((acc, item) => {
+      .then((cartItems) =>
+        cartItems.reduce((acc, item) => {
           if (item.dataValues.product) {
-            //@ts-ignore
             return acc + item.dataValues.quantity * item.dataValues.product.price;
-          } else {
-            return acc;
           }
-        }, 0);
-      })
+          return acc;
+        }, 0),
+      )
       .catch((err) => {
         console.error('Error calculating total:', err);
         return 0;
       });
 
-    //@ts-ignore
+    // @ts-ignore
     await Cart.update({ total }, { where: { id: cart.dataValues.id } });
 
     return cart;
@@ -90,3 +112,64 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
   }
 };
 
+export const updateCartItem = async (cartItemId: number, quantity: number) => {
+  console.log(`updateCartItem called with cartItemId: ${cartItemId}, quantity: ${quantity}`);
+
+  if (isNaN(quantity) || quantity <= 0) {
+    throw new Error('Invalid quantity');
+  }
+
+  try {
+    const cartItem = await CartItem.findByPk(cartItemId);
+    if (!cartItem) {
+      throw new Error('Cart item not found');
+    }
+
+    const product = await Product.findByPk(cartItem.dataValues.productId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    if (quantity > product.dataValues.quantity) {
+      throw new Error("Quantity can't exceed product stock");
+    }
+
+    await cartItem.update({ quantity });
+
+    // Return the updated cartItem
+    return await CartItem.findByPk(cartItemId, {
+      include: [{ model: Product, as: 'product' }],
+    });
+  } catch (error: any) {
+    console.error('Error updating cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const deleteCartItem = async (cartItemId: number) => {
+  console.log(`deleteCartItem called with cartItemId: ${cartItemId}`);
+
+  try {
+    const cartItem = await CartItem.findByPk(cartItemId);
+    if (!cartItem) {
+      throw new Error('Cart item not found');
+    }
+
+    await CartItem.destroy({ where: { id: cartItemId } });
+
+    return cartItem;
+  } catch (error: any) {
+    console.error('Error deleting cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const deleteCart = async (user: UserAttributes) => {
+  try {
+    const userCart = await Cart.findOne({ where: { userId: user.id } });
+    await userCart?.destroy();
+  } catch (error: any) {
+    console.log('Error deleting cart', error.message);
+    throw new Error(error.message);
+  }
+};

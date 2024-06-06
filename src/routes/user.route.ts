@@ -1,12 +1,15 @@
 import express from 'express';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
-import { login } from '../controllers/userController/loginUser.js';
+import { loginController } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import { userAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
+import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js';
+import { authenticateAndAuthorizeUserController } from '../middleware/authenticateAndAuthorizeUser.js';
+import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
+import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
 
 export const usersRouter = express.Router();
 
@@ -108,11 +111,15 @@ usersRouter.get('/verify', UserController.verifyUser);
  * @param {import('express').Response} res - The Express response object.
  * @returns {Promise<void>} A Promise that resolves when the login operation is complete.
  */
-usersRouter.post('/login/user', isBlocked, login);
+usersRouter.post(
+  '/login/user',
+  isBlocked,
+  authenticateAndAuthorizeUserController.authenticateAndAuthorizeUser,
+  loginController.login,
+);
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users',isRoleAdmin, UserController.getAllUsers);
+usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
-
 
 /**
  * @swagger
@@ -187,7 +194,7 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
  * @returns {Promise<Response>} - Promise resolving with the response object
  */
 
-usersRouter.put('/block/:id',isRoleAdmin, blockUser)
+usersRouter.put('/block/:id', isRoleAdmin, blockUser);
 usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 
@@ -292,4 +299,56 @@ usersRouter.post('/users/logout', userAuthJWT, UserController.logout);
  * @param {import('express').Response} res - The Express response object.
  * @returns {Promise<void>} A Promise that resolves when the 2FA verification operation is complete.
  */
-usersRouter.post('/factor', verifyTwoFactor)
+
+usersRouter.post('/factor', verifyTwoFactor);
+
+/**
+ * @swagger
+ * /api/users/products/{productId}:
+ *   get:
+ *     summary: Get a specific product for a buyer
+ *     description: Retrieves details of a specific available product
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product available in store
+ *                 product:
+ *                   $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *               example:
+ *                 message: Oops!!! There is no match for this product in available products
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+usersRouter.get('/users/products/:productId', validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);

@@ -9,8 +9,8 @@ export interface AuthenticatedRequest extends Request {
 export const isLoggedIn = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   let token: string | undefined;
   try {
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-      token = req.headers.authorization.split(' ')[1];
+    if (req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
 
     if (!token) {
@@ -30,14 +30,12 @@ export const isLoggedIn = async (req: AuthenticatedRequest, res: Response, next:
       });
     }
 
-    console.log('Logged User:', loggedUser); // Debug statement
-
     req.user = loggedUser.dataValues;
     next();
   } catch (error: any) {
     return res.status(401).json({
       status: 'failed',
-      error: error.message + ' Token has expired. Please login again.',
+      error: `${error.message} Token has expired. Please login again.`,
     });
   }
 };

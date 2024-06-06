@@ -1,9 +1,14 @@
-import express from "express";
-import { ProductControllerInstance } from "../controllers/productController/productController.js";
-import checkToken from "../middleware/checkToken.js";
-import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from "../middleware/verfication.middleware.js"
-import { validateSearchProduct } from "../middleware/validateSearch.js"
+import express from 'express';
+import { ProductControllerInstance } from '../controllers/productController/productController.js';
+import checkToken from '../middleware/checkToken.js';
+import { userAuthJWT, sellerAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
+import {
+  validateSearchProduct,
+  validateCreateProductRequest,
+  validateUpdateProductRequest,
+} from '../middleware/validateSearch.js';
 
+import { authSellerRole } from '../middleware/checkSellerRole.js';
 
 export const productRouter = express.Router();
 
@@ -16,6 +21,40 @@ export const productRouter = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     ProductDetails:
+ *       type: object
+ *       required:
+ *         - productName
+ *         - description
+ *         - productCategory
+ *         - price
+ *         - quantity
+ *         - images
+ *       properties:
+ *         productName:
+ *           type: string
+ *           description: The name of the product
+ *         description:
+ *           type: string
+ *           description: The description of the product
+ *         productCategory:
+ *           type: string
+ *           description: The category of the product
+ *         price:
+ *           type: number
+ *           description: The price of the product
+ *         quantity:
+ *           type: integer
+ *           description: The quantity of the product
+ *         images:
+ *           type: string
+ *           description: The comma-separated list of image URLs for the product
+ *         dimensions:
+ *           type: string
+ *           description: The dimensions of the product
+ *
  * /api/product/create:
  *   post:
  *     summary: Create a new product
@@ -42,7 +81,13 @@ export const productRouter = express.Router();
  *         description: Internal server error
  */
 
-productRouter.post('/product/create', sellerAuthJWT, ProductControllerInstance.createProduct);
+productRouter.post(
+  '/product/create',
+  sellerAuthJWT,
+  validateCreateProductRequest,
+  authSellerRole,
+  ProductControllerInstance.createProduct,
+);
 
 /**
  * @swagger
@@ -81,7 +126,12 @@ productRouter.post('/product/create', sellerAuthJWT, ProductControllerInstance.c
  *         description: Internal server error
  */
 
-productRouter.put('/product/update/:productId', sellerAuthJWT, ProductControllerInstance.updateProduct);
+productRouter.put(
+  '/product/update/:productId',
+  validateUpdateProductRequest,
+  authSellerRole,
+  ProductControllerInstance.updateProduct,
+);
 
 /**
  * @swagger
