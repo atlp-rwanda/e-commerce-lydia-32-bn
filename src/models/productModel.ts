@@ -17,25 +17,46 @@ interface ProductAttributes {
   updatedAt?: Date;
 }
 
-export interface ProductCreationAttributes extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt'> {}
+export interface ProductCreationAttributes
+  extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt'> {}
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
   public productId!: number;
+
   public userId!: number;
+
   public productName!: string;
+
   public description!: string;
+
   public productCategory!: string;
+
   public price!: number;
+
   public quantity!: number;
+
   public images!: string;
+
   public dimensions?: string;
+
   public isAvailable?: boolean;
+
   public createdAt!: Date;
+
   public updatedAt!: Date;
 
   static associate(models: any) {
-    Product.belongsTo(User, { foreignKey: 'userId', as: 'seller', onDelete: 'SET NULL', onUpdate: 'SET NULL' });
-    Product.belongsToMany(models.WishList, { through: models.WishListProduct, foreignKey: 'productId', as: 'wishLists' });
+    Product.belongsTo(User, {
+      foreignKey: 'userId',
+      as: 'seller',
+      onDelete: 'SET NULL',
+      onUpdate: 'SET NULL',
+    });
+    Product.belongsToMany(models.WishList, {
+      through: models.WishListProduct,
+      foreignKey: 'productId',
+      as: 'wishLists',
+    });
   }
 
   static initialize(sequelize: Sequelize) {
@@ -47,7 +68,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
           primaryKey: true,
         },
         userId: {
-          type: new DataTypes.INTEGER,
+          type: new DataTypes.INTEGER(),
           allowNull: false,
           references: {
             model: 'users',
@@ -61,7 +82,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
           allowNull: false,
         },
         description: {
-          type: new DataTypes.TEXT,
+          type: new DataTypes.TEXT(),
           allowNull: false,
         },
         productCategory: {
@@ -69,15 +90,15 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
           allowNull: false,
         },
         price: {
-          type: new DataTypes.FLOAT,
+          type: new DataTypes.FLOAT(),
           allowNull: false,
         },
         quantity: {
-          type: new DataTypes.INTEGER,
+          type: new DataTypes.INTEGER(),
           allowNull: false,
         },
         images: {
-          type: new DataTypes.STRING,
+          type: new DataTypes.STRING(),
           allowNull: false,
           get() {
             const value = this.getDataValue('images');
@@ -95,7 +116,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
           type: new DataTypes.STRING(128),
         },
         isAvailable: {
-          type: new DataTypes.BOOLEAN,
+          type: new DataTypes.BOOLEAN(),
           defaultValue: true,
         },
       },
@@ -103,7 +124,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
         sequelize,
         modelName: 'Product',
         tableName: 'products',
-      }
+      },
     );
   }
 }

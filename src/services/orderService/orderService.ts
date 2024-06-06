@@ -1,7 +1,9 @@
 import Order from '../../models/orderModel.js';
 import Cart from '../../models/cartModel.js';
-import CartItem from '../../models/cartItemModel.js'; // Import CartItem model
-import { ORDER_STATUS } from '../../utilis/orderStatusConstants.js';
+import CartItem from '../../models/cartItemModel.js'; // Import CartItem model  
+import Product from '../../models/productModel.js';
+import {OrderStatus} from '../../utilis/orderStatusConstants.js'
+
 
 interface AddressData {
   country: string;
@@ -13,8 +15,20 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
   try {
     console.log('my user id is', currentUser.id);
 
-    let cart: any = await Cart.findOne({
+    const cart: any = await Cart.findOne({
       where: { userId: currentUser.id },
+      include: [
+        {
+          model: CartItem,
+          as: 'items',
+          include: [
+            {
+              model: Product,
+              as: 'product',
+            },
+          ],
+        },
+      ],
     });
 
     if (!cart) {
@@ -23,7 +37,7 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
 
     // Check if the cart has items
     const cartItems = await CartItem.findAll({
-      where: { cartId: cart.dataValues.id }
+      where: { cartId: cart.dataValues.id },
     });
 
     if (cartItems.length === 0) {
@@ -31,16 +45,32 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
     }
 
     console.log('my cart total is', cart.dataValues.total);
+    console.log('my cart is', cart);
+    let totalPrice = 0;
+    if (cart) {
+      const { items } = (cart as any).dataValues;
+      if (items && Array.isArray(items)) {
+        items.forEach((item: any) => {
+          const productPrice = Number(item.dataValues.product.dataValues.price);
+          const productQuantity = Number(item.dataValues.quantity);
+          const price = productPrice * productQuantity;
+          totalPrice += price;
+        });
+
+        await cart.update({ total: totalPrice });
+      }
+    }
     const order = await Order.create({
       userId: currentUser.id,
+      products: cart.dataValues.items,
       totalAmount: cart.dataValues.total,
-      status: "pending",
-      payment: payment,
-      address: address
+      status: 'pending',
+      payment,
+      address,
     });
 
     await CartItem.destroy({
-      where: { cartId: cart.dataValues.id }
+      where: { cartId: cart.dataValues.id },
     });
 
     return order;
@@ -61,21 +91,29 @@ export const getOrderByIdAndBuyerId = async (orderId: string, buyerId: number) =
   });
 };
 
-export const updateOrderStatus = async (orderId: string, orderStatus: string) => {
-  
-  if (!Object.values(ORDER_STATUS).includes(orderStatus)) {
-    throw new Error('Invalid order status');
-  }
-
-  const [, updatedOrders] = await Order.update(
-    { status: orderStatus }, 
-    {
-      where: {
-        id: orderId, 
-      },
-      returning: true, 
+export const updateOrderStatus = async (orderId: string, inputStatus: OrderStatus) => {
+  try {
+    const orderStatus = inputStatus as OrderStatus;
+    
+    if (!Object.values(OrderStatus).includes(orderStatus)) {
+      throw new Error(`Invalid order status: ${orderStatus}`);
     }
-  );
 
-  return updatedOrders[0]; 
+    const [affectedRows, updatedOrders] = await Order.update(
+      { status: orderStatus },
+      {
+        where: { id: orderId },
+        returning: true,
+      }
+    );
+
+    if (affectedRows > 0 && updatedOrders.length > 0) {
+      return updatedOrders[0].get({ plain: true });
+    }  else {
+      throw new Error(`Order with ID ${orderId} not found or update failed`);
+    }
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
 };

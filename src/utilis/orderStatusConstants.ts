@@ -1,16 +1,18 @@
-export const ORDER_STATUS = {
-    PENDING: 'pending',
-    AWAITING_PAYMENT: 'Awaiting Payment',
-    AWAITING_FULLFILLMENT: 'Awaiting Fullfillment',
-    AWAITING_SHIPMENT: 'Awaiting Shipment',
-    AWAITING_PICKUP: 'Awaiting Pickup',
-    PARTIALLY_SHIPPED: 'Partially Shipped',
-    COMPLETED: 'Complited', 
-    SHIPPED: 'shipped',
-    CANCELED: 'canceled',
-    DECLINED: 'Declined',
-    REFUNDED: 'Refunded',
-    DISPUTED: 'Disputed',
-    MANUAL_VERIFICATION_REQUIRED: 'Manual Verification Required',
-    PARTIALLY_REFUNDED: 'Partially Refunded'
-  };
+export enum OrderStatus {
+  Pending= 'Pending',
+    Awaiting_Payment= 'Awaiting Payment',
+    Awaiting_Fullfillment= 'Awaiting Fullfillment',
+    Paid= 'Paid',
+    Awaiting_Shipment= 'Awaiting Shipment',
+    Awaiting_Pickup= 'Awaiting Pickup',
+    Partially_Shipped= 'Partially Shipped',
+    Completed= 'Completed', 
+    Shipped= 'shipped',
+    Canceled= 'canceled',
+    Declined= 'Declined',
+    Refunded= 'Refunded',
+    Disputed= 'Disputed',
+    Manual_Verification_Required= 'Manual Verification Required',
+    Partially_Refunded= 'Partially Refunded'
+}
+

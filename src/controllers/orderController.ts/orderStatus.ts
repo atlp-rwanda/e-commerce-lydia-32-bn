@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { ORDER_STATUS } from '../../utilis/orderStatusConstants.js'
 import { getOrderByIdAndBuyerId, updateOrderStatus } from '../../services/orderService/orderService.js'
 import { io } from '../../server.js';
 import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
@@ -13,15 +12,18 @@ class OrderStatusController{
       
         try {
           const order = await getOrderByIdAndBuyerId(orderId, buyerId);
+          
       
           if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
+            res.status(404).json({ message: 'Order not found' });
+            return;
           }
       
-          return res.status(200).json({
-            orderId: order.id,
-            orderStatus: order.status,
+          res.status(200).json({
+            message: "Your order and its status was found",
+            orderStatus: order.dataValues.status,
           });
+
         } catch (error) {
           return res.status(500).json({ message: 'Internal server error' });
         }
@@ -29,39 +31,32 @@ class OrderStatusController{
       
       
       
-      
-     async updateOrderStatus(req: Request, res: Response){
+      async updateOrderStatus(req: Request, res: Response) {
         const { orderId } = req.params;
-        const { orderStatus } = req.body;
-      
-      
-       
-        if (!Object.values(ORDER_STATUS).includes(orderStatus)) {
-          return res.status(400).json({ message: 'Invalid order status' });
-        }
-      
+        const { status } = req.body;
+
+    
         try {
-          
-          const updatedOrder = await updateOrderStatus(orderId, orderStatus);
-      
+          const updatedOrder = await updateOrderStatus(orderId, status);
+    
           if (!updatedOrder) {
             return res.status(404).json({ message: 'Order not found' });
           }
-      
-          
+    
           io.emit('orderStatusUpdate', {
             orderId: updatedOrder.id,
             orderStatus: updatedOrder.status,
           });
-      
+    
           return res.status(200).json({
-            orderId: updatedOrder.id,
-            orderStatus: updatedOrder.status,
+            message: 'Order status updated successfully',
+            status: updatedOrder.status,
           });
         } catch (error) {
+          console.error('Error updating order status:', error);
           return res.status(500).json({ message: 'Internal server error' });
         }
-      };
+      }
 }
 
 export const OrderStatusControllerInstance = new OrderStatusController;

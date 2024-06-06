@@ -27,7 +27,7 @@ app.use(cookieParser());
 
 const server = http.createServer(app);
 export const io = new Server(server);
-
+export const socket = new Server(server);
 
 
 
@@ -38,6 +38,15 @@ io.on('connection', (socket) => {
     console.log('A user disconnected');
   });
 });
+
+setTimeout(() => {
+  console.log('Emitting order status update');
+  socket.emit('orderStatusUpdate', {
+    orderId: '12345',
+    orderStatus: 'Awaiting Payment'
+  });
+}, 5000);
+;
 
 app.use(express.json());
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -50,11 +59,9 @@ app.get('/', (req, res) => {
 app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
 app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
 
-app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes, orderRoutes);
-
+app.use('/api', usersRouter, productRouter, sellerRouter, cartRoutes, orderRoutes);
 
 swaggerDocs(app, port);
 app.listen(port, () => {
   console.log(`app is running on http://localhost:${port}`);
 });
-

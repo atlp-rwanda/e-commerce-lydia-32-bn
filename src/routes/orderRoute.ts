@@ -1,6 +1,8 @@
-import { checkout } from '../controllers/orderController.ts/checkoutController.js';
 import { Router } from 'express';
+import { checkout } from '../controllers/orderController.ts/checkoutController.js';
+import {isRoleAdmin} from '../middleware/checkAdminRoleMiddleware.js'
 import {buyerCheckout} from '../middleware/buyerCheckout.js'
+import {validateOrderStatusRequest} from '../middleware/validateSearch.js'
 import {OrderStatusControllerInstance} from '../controllers/orderController.ts/orderStatus.js'
 
 
@@ -151,6 +153,6 @@ orderRoutes.get('/order/status/:orderId', buyerCheckout, OrderStatusControllerIn
  *                   type: string
  */
 
-orderRoutes.put('/order/status/update/:orderId', buyerCheckout, OrderStatusControllerInstance.updateOrderStatus)
+orderRoutes.put('/order/status/update/:orderId', isRoleAdmin,validateOrderStatusRequest, OrderStatusControllerInstance.updateOrderStatus)
 
 export default orderRoutes;

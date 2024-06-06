@@ -1,6 +1,6 @@
 'use strict';
 
-const { type } = require("os");
+const { type } = require('os');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -60,7 +60,7 @@ module.exports = {
       },
       isBlocked: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
       },
       createdAt: {
         type: Sequelize.DATE,
