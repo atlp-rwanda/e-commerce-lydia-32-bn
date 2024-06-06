@@ -4,8 +4,6 @@ import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
 import {generateToken} from '../../utilis/generateToken.js';
-import jwt from 'jsonwebtoken';
-import generateVerificationToken from '../../utilis/generateToken.js';
 
 export const loginByGoogle = async (req: Request, res: Response) => {
   const { accessToken } = req.body;
@@ -38,14 +36,10 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         isverified: false,
         isBlocked: false,
         hasTwoFactor: false,
-        roleId: 1
-    });
-    
-      const verificationToken = generateToken(res, NewUser.dataValues.id, NewUser.dataValues.email, NewUser.dataValues.firstname);
         roleId: 1,
       });
 
-      const verificationToken = generateVerificationToken(
+      const verificationToken = generateToken(
         res,
         NewUser.dataValues.id,
         NewUser.dataValues.email,

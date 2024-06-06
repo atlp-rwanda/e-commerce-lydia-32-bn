@@ -14,7 +14,7 @@ export const blockUser = async (req: Request, res: Response) => {
           isBlocked: true,
         },
         {
-          where: { id },
+          where: { email },
           returning: true,
         },
       );
