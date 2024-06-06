@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A platform that provides a marketplace for buyers and sellers to meet",
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "migrate": "sequelize-cli db:migrate --config=config/config.mjs",
     "undo:migrations": "sequelize-cli db:migrate:undo:all --config=config/config.mjs",

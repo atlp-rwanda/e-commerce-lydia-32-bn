@@ -5,7 +5,7 @@ import { ReviewAttributes } from "models/review.js";
 class reviewController{
 
     async addReview(req:Request,res:Response){
-      // const {userId,productId,review,RatingValue} = req.body
+      
     const reviewDetail = req.body
     const userId = parseInt(req.userId as string) 
     
