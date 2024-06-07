@@ -6,6 +6,7 @@ import Permission from './permissionModel.js';
 
 class RolePermission extends Model {
   public roleId!: number;
+
   public permissionId!: number;
 }
 
@@ -28,6 +29,7 @@ RolePermission.init(
         key: 'id',
       },
       primaryKey: true,
+      defaultValue: 4,
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },

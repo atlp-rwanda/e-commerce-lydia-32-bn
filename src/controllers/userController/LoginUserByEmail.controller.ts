@@ -1,9 +1,9 @@
 import { Response, Request } from 'express';
-import User from '../../models/userModel.js';
 import bcrypt from 'bcrypt';
-import sendVerificationToken from '../../helpers/sendEmail.js';
-import generateVerificationToken from '../../utilis/generateToken.js';
 import jwt from 'jsonwebtoken';
+import User from '../../models/userModel.js';
+import sendVerificationToken from '../../helpers/sendEmail.js';
+import {generateToken} from '../../utilis/generateToken.js';
 
 export const loginByGoogle = async (req: Request, res: Response) => {
   const { accessToken } = req.body;
@@ -13,7 +13,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
 
     const getPayLoad = await response.json();
 
-    let user = await User.findOne({ where: { email: getPayLoad?.email } });
+    const user = await User.findOne({ where: { email: getPayLoad?.email } });
 
     if (!user) {
       const userNameRes = await fetch('https://people.googleapis.com/v1/people/me?personFields=names', {
@@ -34,12 +34,17 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         phone: '',
         password: await bcrypt.hash(defaultPassword, 10),
         isverified: false,
-        isBlocked:false,
+        isBlocked: false,
         hasTwoFactor: false,
-        roleId: 1
-    });
-    
-      const verificationToken = generateVerificationToken(res, NewUser.dataValues.id, NewUser.dataValues.email, NewUser.dataValues.firstname);
+        roleId: 1,
+      });
+
+      const verificationToken = generateToken(
+        res,
+        NewUser.dataValues.id,
+        NewUser.dataValues.email,
+        NewUser.dataValues.firstname,
+      );
       const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`;
       const subject = 'Email Verification';
       const content = `
@@ -70,7 +75,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
       });
     }
 
-    generateVerificationToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
+    generateToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
 
     return res.status(200).json({ message: 'login successfully' });
   } catch (error) {

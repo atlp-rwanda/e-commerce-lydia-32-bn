@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../../models/userModel.js';
 import dotenv from 'dotenv';
+import User from '../../models/userModel.js';
 
 dotenv.config();
 
@@ -13,9 +13,9 @@ const JWT_SECRET: string = process.env.VERIFICATION_JWT_SECRET;
 
 export const verifyTwoFactor = async (req: Request, res: Response): Promise<void> => {
   try {
-    const {twoFactorCode} = req.body;
+    const { twoFactorCode } = req.body;
 
-    const user = await User.findOne({where: {twoFactorSecret:twoFactorCode}});
+    const user = await User.findOne({ where: { twoFactorSecret: twoFactorCode } });
 
     if (!user || !user.dataValues.twoFactorSecret) {
       res.status(400).json({ error: 'Invalid user or 2FA not enabled' });
@@ -24,7 +24,6 @@ export const verifyTwoFactor = async (req: Request, res: Response): Promise<void
 
     const storedTwoFactorCode = user.dataValues.twoFactorSecret;
     const verified = twoFactorCode === storedTwoFactorCode;
-
 
     if (verified) {
       await user.update({ twoFactorSecret: null });
@@ -37,7 +36,7 @@ export const verifyTwoFactor = async (req: Request, res: Response): Promise<void
           isBlocked: user.dataValues.isBlocked,
         },
         JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' }
+        { expiresIn: process.env.JWT_EXPIRATION_TIME || '1h' },
       );
 
       const expiryDate = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
@@ -50,6 +49,6 @@ export const verifyTwoFactor = async (req: Request, res: Response): Promise<void
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
-    console.log(error)
+    console.log(error);
   }
 };

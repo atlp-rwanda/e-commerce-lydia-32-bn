@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import generateToken from '../../utilis/generateToken.js';
+import {generateToken, verifyToken} from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
 
 class userController {
@@ -35,9 +35,7 @@ class userController {
 
       const token = generateToken(res, user.id, email, firstname);
 
-      // Send verification email
-      // edit the front end url section
-      const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>
@@ -57,8 +55,19 @@ class userController {
 
   verifyUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-      // get the token instead of the userid in body
-      const { userId } = req.body;
+      const token = req.query.token as string;
+
+      if (!token) {
+        return res.status(400).json({error: "No token provided"})
+      }
+
+      const decodedToken = verifyToken(token);
+      
+      if(!decodedToken) {
+        return res.status(400).json({error: "Invalid token or expired."})
+      }
+
+      const userId = decodedToken.userId;
       const user = await UserService.getUserById(userId);
 
       if (!user) {
@@ -105,15 +114,15 @@ class userController {
       res.status(500).json({ error: error.message });
     }
   };
+
   getUserById = async (req: Request, res: Response): Promise<Response> => {
     try {
       const userId = parseInt(req.params.id, 10);
       const user = await UserService.getUserById(userId);
       if (user) {
         return res.status(200).json({ message: 'User Retrieved succesfully', user });
-      } else {
-        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(404).json({ error: 'User not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -131,16 +140,15 @@ class userController {
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const updates = req.body;
-      const userId = req.body.userId;
+      const { userId } = req.body;
       const { userId: _, email, password, ...validUpdates } = updates;
 
       const user = await UserService.updateUserInfo(userId, validUpdates);
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
         res.status(200).json({ message: 'User updated successfully:', user });
-      } else {
-        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(404).json({ error: 'User not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -152,9 +160,8 @@ class userController {
       const deleted = await UserService.deleteUser(userId);
       if (deleted) {
         return res.status(200).json({ message: 'User deleted successfully' });
-      } else {
-        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(404).json({ error: 'User not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -167,12 +174,10 @@ class userController {
       const user = await UserService.getUserByFields({ email });
 
       if (!user) {
-        res
-          .status(401)
-          .json({
-            error:
-              'the details you submitted do not match any user, please correct them or if you do not have an account, create a new one',
-          });
+        res.status(401).json({
+          error:
+            'the details you submitted do not match any user, please correct them or if you do not have an account, create a new one',
+        });
         return;
       }
 
@@ -200,12 +205,10 @@ class userController {
 
       sendVerificationToken(user.email, subject, content);
 
-      res
-        .status(200)
-        .json({
-          message: 'the password reset process has been started, check your email to confirm and reset your password',
-          resetPasswordUrl,
-        });
+      res.status(200).json({
+        message: 'the password reset process has been started, check your email to confirm and reset your password',
+        resetPasswordUrl,
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -233,11 +236,9 @@ class userController {
       const user = await UserService.getUserByFields({ id: userId, email });
 
       if (!user) {
-        res
-          .status(400)
-          .json({
-            error: "That user doesn't exist, there was a problem with your password setting, please contact the admin",
-          });
+        res.status(400).json({
+          error: "That user doesn't exist, there was a problem with your password setting, please contact the admin",
+        });
 
         return;
       }
@@ -270,22 +271,17 @@ class userController {
       res.status(500).json({ error: error.message });
     }
   };
+
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
-      const token = req.cookies.jwt;
-      const loggedOutCookie = req.cookies.loggedOut;
-      console.log(loggedOutCookie);
-      if (loggedOutCookie) {
-        res.status(400).json({ error: 'You are already logged out' });
-      } else {
-        if (token) {
-          res.clearCookie('jwt');
-          res.cookie('loggedOut', token, { httpOnly: true });
-          res.status(200).json({ message: 'Logout successful' });
-        } else {
-          res.status(400).json({ error: "You're not yet logged In !" });
-        }
+      if (!req.userId) {
+        res.status(401).json({ error: 'User is not logged in' });
+        return;
       }
+      
+      res.clearCookie('jwt', { path: '/' });
+    
+      res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });

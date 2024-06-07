@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/node:21.7.2-browsers
+      - image: cimg/node:21.7.1-browsers
 
     steps:
       - checkout
@@ -18,7 +18,7 @@ jobs:
 
   store_test_results:
     docker:
-      - image: cimg/node:21.7.2-browsers
+      - image: cimg/node:21.7.1-browsers
 
     steps:
       - checkout
@@ -30,7 +30,7 @@ jobs:
           destination: test-results
   deploy:
     docker:
-      - image: cimg/node:21.7.1
+      - image: cimg/node:21.7.1-browsers
     steps:
       - checkout
       - run:
@@ -44,5 +44,4 @@ workflows:
       - store_test_results:
           requires:
             - build
-      - deploy  
-             
+      - deploy

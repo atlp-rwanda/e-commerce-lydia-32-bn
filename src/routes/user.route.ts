@@ -4,12 +4,12 @@ import { loginController } from '../controllers/userController/loginUser.js';
 import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
-import { userAuthJWT, sellerAuthJWT, adminAuthJWT, verifyToken } from '../middleware/verfication.middleware.js';
+import { userAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js'
-import { authenticateAndAuthorizeUserController }from '../middleware/authenticateAndAuthorizeUser.js'
-import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js'
-import { validateBuyerProductRequest} from '../middleware/validateSearch.js';
+import { verifyTwoFactor } from '../controllers/userController/2Factor.controller.js';
+import { authenticateAndAuthorizeUserController } from '../middleware/authenticateAndAuthorizeUser.js';
+import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
+import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
 
 export const usersRouter = express.Router();
 
@@ -66,7 +66,7 @@ usersRouter.post('/register', UserController.createUser);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.post('/verify', verifyToken, UserController.verifyUser);
+usersRouter.get('/verify', UserController.verifyUser);
 
 /**
  * @swagger
@@ -111,11 +111,15 @@ usersRouter.post('/verify', verifyToken, UserController.verifyUser);
  * @param {import('express').Response} res - The Express response object.
  * @returns {Promise<void>} A Promise that resolves when the login operation is complete.
  */
-usersRouter.post('/login/user', isBlocked, authenticateAndAuthorizeUserController.authenticateAndAuthorizeUser, loginController.login);
+usersRouter.post(
+  '/login/user',
+  isBlocked,
+  authenticateAndAuthorizeUserController.authenticateAndAuthorizeUser,
+  loginController.login,
+);
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users',isRoleAdmin, UserController.getAllUsers);
+usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 usersRouter.put('/users/update//:id', UserController.updateUser);
-
 
 /**
  * @swagger
@@ -190,7 +194,7 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
  * @returns {Promise<Response>} - Promise resolving with the response object
  */
 
-usersRouter.put('/block/:id',isRoleAdmin, blockUser)
+usersRouter.put('/block/:id', isRoleAdmin, blockUser);
 usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 usersRouter.put('/users/update/:id', UserController.updateUser);
 
@@ -238,25 +242,21 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
  *     summary: Logout user
  *     tags:
  *       - Users
+ *     security:
+ *       - bearerAuth: []
  *     description: Logout the currently authenticated user by clearing the JWT cookie and setting a loggedOut cookie.
  *     responses:
  *       '200':
  *         description: Logout successful
  *       '400':
  *         description: Bad Request (e.g., already logged out or not logged in)
+ *       '401':
+ *         description: Unauthorized - User is not authenticated
  *       '500':
  *         description: Internal Server Error
  */
 
-/**
- * Logout the currently authenticated user.
- *
- * @param {import('express').Request} req - The Express request object.
- * @param {import('express').Response} res - The Express response object.
- * @returns {Promise<void>} A Promise that resolves when the logout operation is complete.
- */
-
-usersRouter.post('/users/logout', UserController.logout);
+usersRouter.post('/users/logout', userAuthJWT, UserController.logout);
 /**
  * @swagger
  * /api/factor:
@@ -299,7 +299,8 @@ usersRouter.post('/users/logout', UserController.logout);
  * @param {import('express').Response} res - The Express response object.
  * @returns {Promise<void>} A Promise that resolves when the 2FA verification operation is complete.
  */
-usersRouter.post('/factor', verifyTwoFactor)
+
+usersRouter.post('/factor', verifyTwoFactor);
 
 /**
  * @swagger
@@ -350,5 +351,4 @@ usersRouter.post('/factor', verifyTwoFactor)
  *               $ref: '#/components/schemas/Error'
  */
 
-usersRouter.get('/users/products/:productId',validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
-
+usersRouter.get('/users/products/:productId', validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
