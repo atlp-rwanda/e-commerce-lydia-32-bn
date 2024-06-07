@@ -7,7 +7,6 @@ import Order from '../../models/orderModel.js';
 import User from '../../models/userModel.js';
 import { OrderStatusControllerInstance } from '../orderController.ts/orderStatus.js';
 dotenv.config();
-
 class PaymentController {
   async makePaymentSession(req: Request, res: Response) {
     let { userId, orderId, amount, currency } = req.body;
