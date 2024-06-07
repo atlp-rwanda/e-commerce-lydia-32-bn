@@ -6,7 +6,7 @@ import User from '../models/userModel.js';
 import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
 import { validateUserupdates, passwordValidation } from '../validations/updatesValidation.js';
-import sendVerificationToken from '../helpers/sendEmail.js';
+import sendEmailMessage from '../helpers/sendEmail.js';
 
 export class userService {
   async createUser(userDetails: UserCreationAttributes): Promise<UserAttributes> {
@@ -145,7 +145,7 @@ export class userService {
           }
           await user.update({ password: hashedPassword });
 
-          sendVerificationToken(userData.email, 'password changed ', content);
+          sendEmailMessage(userData.email, 'password changed ', content);
           console.log('email sent');
           return { code: 200, message: 'password changed successfully' };
         }

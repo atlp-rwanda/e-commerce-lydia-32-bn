@@ -1,9 +1,8 @@
 import Order from '../../models/orderModel.js';
 import Cart from '../../models/cartModel.js';
-import CartItem from '../../models/cartItemModel.js'; // Import CartItem model  
+import CartItem from '../../models/cartItemModel.js'; // Import CartItem model
 import Product from '../../models/productModel.js';
-import {OrderStatus} from '../../utilis/orderStatusConstants.js'
-
+import { OrderStatus } from '../../utilis/orderStatusConstants.js';
 
 interface AddressData {
   country: string;
@@ -65,9 +64,9 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
       products: cart.dataValues.items,
       totalAmount: cart.dataValues.total,
       totalPaid: 0,
-      status: "pending",
+      status: 'pending',
       payment: payment,
-      address: address
+      address: address,
     });
 
     await CartItem.destroy({
@@ -81,8 +80,6 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
   }
 };
 
-
-
 export const getOrderByIdAndBuyerId = async (orderId: string, buyerId: number) => {
   return await Order.findOne({
     where: {
@@ -95,7 +92,7 @@ export const getOrderByIdAndBuyerId = async (orderId: string, buyerId: number) =
 export const updateOrderStatus = async (orderId: string, inputStatus: OrderStatus) => {
   try {
     const orderStatus = inputStatus as OrderStatus;
-    
+
     if (!Object.values(OrderStatus).includes(orderStatus)) {
       throw new Error(`Invalid order status: ${orderStatus}`);
     }
@@ -105,12 +102,12 @@ export const updateOrderStatus = async (orderId: string, inputStatus: OrderStatu
       {
         where: { id: orderId },
         returning: true,
-      }
+      },
     );
 
     if (affectedRows > 0 && updatedOrders.length > 0) {
       return updatedOrders[0].get({ plain: true });
-    }  else {
+    } else {
       throw new Error(`Order with ID ${orderId} not found or update failed`);
     }
   } catch (error) {

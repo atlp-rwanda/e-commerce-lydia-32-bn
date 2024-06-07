@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
-import sendVerificationToken from '../../helpers/sendEmail.js';
-import {generateToken, verifyToken} from '../../utilis/generateToken.js';
+import sendEmailMessage from '../../helpers/sendEmail.js';
+import { generateToken, verifyToken } from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
 
 class userController {
@@ -45,7 +45,7 @@ class userController {
           <div><strong>Important:</strong> For your security, please do not share this link with anyone.</div>
           <div>Best regards,</div>
         `;
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       return res.status(201).json({ message: 'Signup was successfull, Verification Email sent', token });
     } catch (error: any) {
@@ -58,13 +58,13 @@ class userController {
       const token = req.query.token as string;
 
       if (!token) {
-        return res.status(400).json({error: "No token provided"})
+        return res.status(400).json({ error: 'No token provided' });
       }
 
       const decodedToken = verifyToken(token);
-      
-      if(!decodedToken) {
-        return res.status(400).json({error: "Invalid token or expired."})
+
+      if (!decodedToken) {
+        return res.status(400).json({ error: 'Invalid token or expired.' });
       }
 
       const userId = decodedToken.userId;
@@ -91,7 +91,7 @@ class userController {
             <div>The E-Commerce Lydia Team</div>
           `;
 
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       return res;
     } catch (error: any) {
@@ -203,7 +203,7 @@ class userController {
             <p>Best regards,</p>
             `;
 
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       res.status(200).json({
         message: 'the password reset process has been started, check your email to confirm and reset your password',
@@ -264,7 +264,7 @@ class userController {
             <p>Best regards,</p>
             `;
 
-      sendVerificationToken(user.email, subject, content);
+      sendEmailMessage(user.email, subject, content);
 
       res.status(200).json({ message: 'Password updated successfully' });
     } catch (error: any) {
@@ -278,9 +278,9 @@ class userController {
         res.status(401).json({ error: 'User is not logged in' });
         return;
       }
-      
+
       res.clearCookie('jwt', { path: '/' });
-    
+
       res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
       console.error(error);

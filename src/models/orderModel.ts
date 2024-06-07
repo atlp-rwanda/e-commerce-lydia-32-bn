@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/db.js';
 import User from '../models/userModel.js';
+import notificationEmitter from '../utilis/eventEmitter.js';
 
 interface OrderAttributes {
   id: number;
@@ -25,7 +26,7 @@ class Order extends Model<OrderAttributes, OrderCreationAttributes> implements O
   public products!: any[];
 
   public totalAmount!: number;
-  
+
   public totalPaid!: number;
 
   public status!: string;
