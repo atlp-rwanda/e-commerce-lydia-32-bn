@@ -90,14 +90,13 @@ class PaymentController {
       }
 
       const session = await StripeConfig.checkPaymentStatus(sessionId);
-     // console.log(session);
+   
       if (session.payment_status === 'unpaid') {
         await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), payment.dataValues.stripeId, PaymentStatus.Completed);
         await OrderStatusControllerInstance.updateOrderStatus(
           { params: { orderId: String(orderId) }, body: { status: 'Paid' } } as unknown as Request,
           res,
         );
-        //return res.status(200).json({ message: 'Payment successful' });
       } else {
         return res.status(400).json({ message: 'Payment not successful' });
       }
