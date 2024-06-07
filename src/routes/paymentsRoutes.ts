@@ -50,12 +50,18 @@ paymentRouter.post('/payment/pay', checkToken, isBuyer, PaymentController.makePa
  *     description: Endpoint to handle successful payment.
  *     tags: [Payments]
  *     parameters:
- *       - in: query
- *         name: session_id
+*       - in: query
+ *         name: sessionId
  *         schema:
  *           type: string
  *         required: true
- *         description: The ID of the payment session
+ *         description: The Session Id for the payment.
+ *       - in: query
+ *         name: orderId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the order for which the payment was successful.
  *     responses:
  *       '200':
  *         description: Payment successful
@@ -68,7 +74,7 @@ paymentRouter.post('/payment/pay', checkToken, isBuyer, PaymentController.makePa
  *                   type: string
  *                   description: Success message
  *       '400':
- *         description: Bad request - Missing or invalid session_id
+ *         description: Bad request - Missing or invalid orderID
  *       '404':
  *         description: Payment not found
  *       '500':
@@ -84,12 +90,18 @@ paymentRouter.get('/payment/success', checkToken, isBuyer, PaymentController.pay
  *     description: Endpoint to handle payment cancellation.
  *     tags: [Payments]
  *     parameters:
- *       - in: query
- *         name: session_id
+*       - in: query
+ *         name: sessionId
  *         schema:
  *           type: string
  *         required: true
- *         description: The ID of the payment session
+ *         description: The Session ID for the payment.
+ *       - in: query
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the order for which the payment was canceled.
  *     responses:
  *       '200':
  *         description: Payment canceled successfully
@@ -102,7 +114,7 @@ paymentRouter.get('/payment/success', checkToken, isBuyer, PaymentController.pay
  *                   type: string
  *                   description: Cancellation message
  *       '400':
- *         description: Bad request - Missing or invalid session_id
+ *         description: Bad request - Missing or invalid orderID
  *       '404':
  *         description: Payment not found
  *       '500':

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { query, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import StripeConfig from '../../config/stripe.js';
 import PaymentService from '../../services/paymentService.js';
@@ -49,7 +49,7 @@ class PaymentController {
           product_data: {
             name: `Order #${orderId}`,
           },
-          unit_amount: amount * 100,
+          unit_amount: amount,
         },
         quantity: 1,
       }];
@@ -72,9 +72,13 @@ class PaymentController {
   }
 
   async paymentSuccess(req: Request, res: Response) {
-    const userId = req.query.userId as string;
-    const orderId = req.query.orderId as string;
 
+    const userId = req.body.userId as string;
+    const orderId = req.query.orderId as string;
+    const sessionId = req.query.sessionId as string;
+    console.log('Query: ',query)
+    console.log('Query Order Id '+orderId);
+    console.log('Query User Id '+userId);
     if (!userId || !orderId) {
       return res.status(400).json({ message: 'Missing required parameters' });
     }
@@ -85,15 +89,15 @@ class PaymentController {
         return res.status(404).json({ message: 'Payment not found' });
       }
 
-      const session = await StripeConfig.checkPaymentStatus(payment.stripeId);
-
-      if (session.payment_status === 'paid') {
-        await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), payment.stripeId, PaymentStatus.Completed);
+      const session = await StripeConfig.checkPaymentStatus(sessionId);
+     // console.log(session);
+      if (session.payment_status === 'unpaid') {
+        await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), payment.dataValues.stripeId, PaymentStatus.Completed);
         await OrderStatusControllerInstance.updateOrderStatus(
           { params: { orderId: String(orderId) }, body: { status: 'Paid' } } as unknown as Request,
           res,
         );
-        return res.status(200).json({ message: 'Payment successful' });
+        //return res.status(200).json({ message: 'Payment successful' });
       } else {
         return res.status(400).json({ message: 'Payment not successful' });
       }
@@ -105,8 +109,9 @@ class PaymentController {
   }
 
   async paymentCancel(req: Request, res: Response) {
-    let userId = req.query.userId as string;
-    let orderId = req.query.orderId as string;
+    const userId = req.body.userId as string;
+    const orderId = req.query.orderId as string;
+    const sessionId = req.query.sessionId as string;
     if (!userId || !orderId) {
       return res.status(400).json({ message: 'Missing required parameters' });
     }
@@ -118,8 +123,8 @@ class PaymentController {
         return res.status(404).json({ message: 'Payment not found' });
       }
 
-      await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), String(payment.stripeId), PaymentStatus.Canceled);
-      await StripeConfig.deleteSession(payment.stripeId);
+      await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), payment.dataValues.stripeId, PaymentStatus.Canceled);
+      await StripeConfig.deleteSession(sessionId);
       return res.status(200).json({ message: 'Payment canceled' });
     } catch (error) {
       if (error instanceof Error) {
