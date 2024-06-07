@@ -17,6 +17,9 @@ const options: swaggerJsdoc.Options = {
       {
         url: 'https://e-commerce-lydia-32-bn.onrender.com',
       },
+      {
+        url: 'https://team-lydia-demo.onrender.com',
+      },
     ],
     components: {
       securitySchemes: {
