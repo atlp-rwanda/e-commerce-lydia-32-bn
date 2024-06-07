@@ -10,7 +10,6 @@ import { rolesRouter } from './routes/roleRoutes.js';
 import { wishListRouter } from './routes/wishListRoutes.js';
 import { notificationRouter } from './routes/notificationRoute.js';
 import {reviewRouter} from './routes/reviewroute.js'
-
 import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js'
@@ -63,8 +62,7 @@ app.get('/', (req, res) => {
 
 // Routes for the endpoints
 
-app.use('/api', cartRoutes, notificationRouter, orderRoutes, productRouter, reviewRouter, rolesRouter, sellerRouter, usersRouter, wishListRouter);
-app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter, wishListRouter, cartRoutes, orderRoutes, paymentRouter);
+app.use('/api', cartRoutes, notificationRouter, orderRoutes, productRouter, reviewRouter, rolesRouter, sellerRouter, usersRouter, wishListRouter, paymentRouter);
 
 swaggerDocs(app, port);
 app.listen(port, () => {
