@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import UserModel from '../models/userModel.js';
 import RoleModel from '../models/roleModel.js';
-import sendVerificationToken from '../helpers/sendEmail.js';
+import sendEmailMessage from '../helpers/sendEmail.js';
 
 dotenv.config();
 
@@ -49,7 +49,7 @@ class AuthenticateAndAuthorizeUserController {
 
         if (updatedRows === 1) {
           const text = `Your 2FA code is: ${twoFactorCode}`;
-          sendVerificationToken(user.dataValues.email, '2FA Code', text);
+          sendEmailMessage(user.dataValues.email, '2FA Code', text);
           res.status(200).json({ message: '2FA code sent to your email' });
         } else {
           res.status(500).json({ error: 'Failed to update user' });

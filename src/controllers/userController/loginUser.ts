@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import User from '../../models/userModel.js';
 import { generateToken } from '../../utilis/generateToken.js';
 import sendSms from '../../helpers/sendSms.js';
-import sendVerificationToken from '../../helpers/sendEmail.js';
+import sendEmailMessage from '../../helpers/sendEmail.js';
 import Role from '../../models/roleModel.js';
 
 class LoginController {

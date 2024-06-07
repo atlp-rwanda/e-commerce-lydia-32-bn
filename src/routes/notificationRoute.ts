@@ -1,5 +1,6 @@
 import express from 'express';
-import { notificationControllerInstance } from '../controllers/notificationController/notificationController.js';
+import { NotificationController } from '../controllers/notificationController/notificationController.js';
+import { isLoggedIn } from '../middleware/authMiddleware.js';
 
 /**
  * @swagger
@@ -58,4 +59,5 @@ import { notificationControllerInstance } from '../controllers/notificationContr
 
 export const notificationRouter = express.Router();
 
-notificationRouter.put('/notification/updatestatus/:id', notificationControllerInstance.updateReadStatus);
+notificationRouter.put('/notification/updatestatus/:id', NotificationController.updateReadStatus);
+notificationRouter.get('/notifications', isLoggedIn, NotificationController.viewNotifications);

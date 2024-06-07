@@ -1,10 +1,28 @@
 import { Request, Response } from 'express';
+import { notificationService } from '../../services/notification.service.js';
+import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
 import Notification from '../../models/notificationModels.js';
 
 class notificationController {
-  async updateReadStatus(req: Request, res: Response): Promise<void> {
+  viewNotifications = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    if (!req.user || !req.user.id) {
+      res.status(400).json({ error: 'Invalid User ID' });
+      return;
+    }
+
+    const userId = req.user.id;
+
     try {
-      const { id } = req.params;
+      const notifications = await notificationService.getNotificationsForUser(userId);
+      res.json(notifications);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  };
+
+  updateReadStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
 
       const notification = await Notification.findByPk(Number(id));
 
@@ -21,7 +39,7 @@ class notificationController {
       res.status(500).json({ message: error.message });
       console.log(error);
     }
-  }
+  };
 }
 
-export const notificationControllerInstance = new notificationController();
+export const NotificationController = new notificationController();
