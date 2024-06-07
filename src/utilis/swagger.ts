@@ -115,9 +115,8 @@ const options: swaggerJsdoc.Options = {
         Payment: {
           type: 'object',
           properties: {
-            userId: { type: 'number' },
-            paymentDate: { type: 'string', format: 'date-time' },
-            totalAmount: { type: 'number' },
+            amount: { type: 'number' },
+            currency: { type: 'string' },
             orderId: { type: 'number' },
           },
         },
