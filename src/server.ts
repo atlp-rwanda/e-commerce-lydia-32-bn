@@ -11,7 +11,7 @@ import { rolesRouter } from './routes/roleRoutes.js';
 import { wishListRouter } from './routes/wishListRoutes.js';
 import { notificationRouter } from './routes/notificationRoute.js';
 import {reviewRouter} from './routes/reviewroute.js'
-
+import {paymentRouter} from './routes/paymentsRoutes.js'
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js'
 import http from 'http';
