@@ -1,142 +1,131 @@
 import { Request, Response } from 'express';
-import stripe from '../../config/stripe.js';
-import Payment, { PaymentCreationAttributes } from '../../models/paymentModel.js';
+import dotenv from 'dotenv';
+import StripeConfig from '../../config/stripe.js';
+import PaymentService from '../../services/paymentService.js';
+import { PaymentStatus } from '../../models/paymentModel.js';
 import Order from '../../models/orderModel.js';
-
-interface PaymentRequestBody {
-  amount: number;
-  currency: string;
-  orderId: number;
-  userId: number;
-}
+import User from '../../models/userModel.js';
+import { OrderStatusControllerInstance } from '../orderController.ts/orderStatus.js';
+dotenv.config();
 
 class PaymentController {
-  public async createPaymentIntent(req: Request, res: Response): Promise<void> {
+  async makePaymentSession(req: Request, res: Response) {
+    let { userId, orderId, amount, currency } = req.body;
+    userId =Number(userId);
+    orderId=Number(orderId);
 
-    const { amount, currency, orderId, userId }: PaymentRequestBody = req.body;
+    if (isNaN(userId) || isNaN(orderId)) {
+      return res.status(400).json({ message: 'Invalid userId or orderId' });
+    }
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(403).json({ message: 'Unauthorized! Please Login First' });
+    }
 
-    if (!userId) {
-        res.status(400).send({ error: 'User ID is missing' });
-        return;
+    const baseUrl = process.env.FRONTEND_URL || '';
+    const success_url = `${baseUrl}/api/payment/success?userId=${user.dataValues.id}&orderId=${orderId}`;
+    const cancel_url = `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`;
+    console.log('BASE URL:', baseUrl);
+    console.log('Success URL:', success_url);
+    console.log('Cancel URL:', cancel_url);
+    try {
+      const order = await Order.findByPk(orderId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
       }
-    const order = await Order.findByPk(orderId);
-    if(!order){
-      res.status(400).send({ error: 'We con not find order with ID: '+orderId });
-      return;
-    }
-    if (amount > order.totalAmount) { 
-      res.status(400).send({ error: 'Payment amount exceeds order total amount' });
-      return;
-    }
-    // const remainingBalance = order.totalAmount - order.totalPaid;
-    // if (amount > remainingBalance) {
-    //   res.status(400).send({ error: `Payment amount exceeds remaining balance. Remaining balance: ${remainingBalance}` });
-    //   return;
-    // }
-      console.log('In CREATING PAYMENT INTENT')
-    try {
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: amount,
-        currency: currency,
-        metadata: {
-            userId: userId.toString(),
-            orderId: orderId.toString(),
+
+      if (amount > order.totalAmount) {
+        return res.status(400).json({ message: 'Payment amount exceeds order total amount' });
+      }
+
+      const remainingBalance = order.totalAmount - order.totalPaid;
+      if (amount > remainingBalance) {
+        return res.status(400).json({ message: 'Payment amount exceeds remaining balance' });
+      }
+
+      const lineItems = [{
+        price_data: {
+          currency: currency || 'usd',
+          product_data: {
+            name: `Order #${orderId}`,
           },
-      });
+          unit_amount: amount * 100,
+        },
+        quantity: 1,
+      }];
 
-      // Save payment details 
-      const paymentId = await this.savePaymentDetails({
-        userId,
-        stripePaymentId: paymentIntent.id,
-        amount,
-        currency,
-        orderId
-      });
+      const metadata = {
+        userId: user.dataValues.id,
+        orderId: orderId,
+      };
 
-      res.status(201).send({
-        paymentIntentId: paymentIntent.id,
-        clientSecret: paymentIntent.client_secret,
-        paymentId,
-      });
+      const session = await StripeConfig.createStripeSession(lineItems, metadata, success_url, cancel_url);
+      console.log("USerId: "+ metadata.userId+" OrderId "+metadata.orderId+" amount "+session.amount_total+" currency "+currency)
+      await PaymentService.createPayment(metadata.userId, metadata.orderId, session.amount_total || 0, session.id,currency);
+
+      res.status(201).json({ sessionId: session.id });
     } catch (error) {
-        if (error instanceof Error) {
-            res.status(500).send({ error: error.message });
-          } else {
-            res.status(500).send({ error: 'An unknown error occurred' });
-          }
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
     }
   }
 
-  private async savePaymentDetails(paymentData: PaymentCreationAttributes): Promise<Payment> {
+  async paymentSuccess(req: Request, res: Response) {
+    const userId = req.query.userId as string;
+    const orderId = req.query.orderId as string;
+
+    if (!userId || !orderId) {
+      return res.status(400).json({ message: 'Missing required parameters' });
+    }
     try {
-      console.log('In SAVING PAYMENT DETAILS')
-      const payment = await Payment.create(paymentData);
-      return payment;
+      const payment = await PaymentService.findPendingPayment(Number(userId), Number(orderId));
+
+      if (!payment) {
+        return res.status(404).json({ message: 'Payment not found' });
+      }
+
+      const session = await StripeConfig.checkPaymentStatus(payment.stripeId);
+
+      if (session.payment_status === 'paid') {
+        await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), payment.stripeId, PaymentStatus.Completed);
+        await OrderStatusControllerInstance.updateOrderStatus(
+          { params: { orderId: String(orderId) }, body: { status: 'Paid' } } as unknown as Request,
+          res,
+        );
+        return res.status(200).json({ message: 'Payment successful' });
+      } else {
+        return res.status(400).json({ message: 'Payment not successful' });
+      }
     } catch (error) {
-        if (error instanceof Error) {
-            throw new Error('Error saving payment details: ' + error.message);
-          } else {
-            throw new Error('An unknown error occurred while saving payment details');
-          }
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
     }
   }
 
-  public async handleWebhook(req: Request, res: Response): Promise<void> {
-    console.log('In HANDLINGS WEBHOOK')
-    const sig = req.headers['stripe-signature'] as string;
-    const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_DEV;
-    //console.log('Request body: ',req.body);
-    //console.log('Signature: ',sig);
-    //console.log('End-point secret: ',endpointSecret);
-
-    if (!sig || !endpointSecret) {
-      res.status(400).send({ error: 'Missing Stripe signature or endpoint secret' });
-      return;
+  async paymentCancel(req: Request, res: Response) {
+    let userId = req.query.userId as string;
+    let orderId = req.query.orderId as string;
+    if (!userId || !orderId) {
+      return res.status(400).json({ message: 'Missing required parameters' });
     }
-    let event;
-    console.log('In CREATING EVENTS')
+
     try {
-      const payload = JSON.stringify(req.body);
-      console.log('Payload ', payload);
-      console.log('Request body: ',req.body);
-      //console.log('Request Stringified body: ',JSON.stringify(req.body));
-      event = stripe.webhooks.constructEvent(req.body, sig, "whsec_AwG9qCt9QkhJ4oTXoxdUbMzwJyOH6GkO");
-      console.log('EVENT CONSTRUCTED')
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-      res.status(400).send(`Webhook Error: ${errorMessage}`);
-      return;
-    }
-    switch(event.type){
-      case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object;
-      //Update order status in database
-     // await this.updateOrderStatus(paymentIntent.metadata.orderId, 'Paid');
-        break;
-      case 'payment_intent.payment_failed':
-          const paymentIntentFailed = event.data.object;
-          console.log('PaymentIntent failed!', paymentIntentFailed);
-          break;
-          
-      case 'payment_intent.canceled':
-          const paymentIntentCanceled = event.data.object;
-          console.log('PaymentIntent was canceled!', paymentIntentCanceled);
-          break;
-          
-      case 'payment_intent.processing':
-          const paymentIntentProcessing = event.data.object;
-          console.log('PaymentIntent is processing!', paymentIntentProcessing);
-          break;
-          
-      case 'payment_intent.requires_action':
-          const paymentIntentRequiresAction = event.data.object;
-          console.log('PaymentIntent requires action!', paymentIntentRequiresAction);
-          break;  
-      default:
-        res.status(400).send(`Unhandled event type ${event.type}`);
-    }
+      const payment = await PaymentService.findPendingPayment(Number(userId), Number(orderId));
 
-    res.status(200).send();
+      if (!payment) {
+        return res.status(404).json({ message: 'Payment not found' });
+      }
+
+      await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), String(payment.stripeId), PaymentStatus.Canceled);
+      await StripeConfig.deleteSession(payment.stripeId);
+      return res.status(200).json({ message: 'Payment canceled' });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
+    }
   }
 }
 

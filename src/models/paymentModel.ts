@@ -3,26 +3,44 @@ import sequelize from '../config/db.js';
 import User from './userModel.js';
 import Order from './orderModel.js';
 
+export enum PaymentStatus {
+  Pending = 'Pending',
+  Completed = 'Completed',
+  Failed = 'Failed',
+  Canceled = 'Canceled',
+  Refunded = 'Refunded',
+}
+
+export enum PaymentMethod {
+  Stripe = 'Stripe',
+  MOMO = 'MOMO',
+}
+
 interface PaymentAttributes {
   id: number;
-  stripePaymentId: string;
+  stripeId: string;
   userId: number;
   orderId: number;
   amount: number;
   currency: string;
+  payment_status: PaymentStatus;
+  payment_method: PaymentMethod;
   createdAt?: Date;
   updatedAt?: Date;
 }
+
 
 export interface PaymentCreationAttributes extends Optional<PaymentAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
 class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implements PaymentAttributes {
   public id!: number;
-  public stripePaymentId!: string;
+  public stripeId!: string;
   public userId!: number;
   public orderId!: number;
   public amount!: number;
   public currency!: string;
+  public payment_method!: PaymentMethod;
+  public payment_status!: PaymentStatus;
   public createdAt!: Date;
   public updatedAt!: Date;
 
@@ -30,16 +48,18 @@ class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implem
     Payment.belongsTo(User, { foreignKey: 'userId', as: 'user', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
     Payment.belongsTo(Order, { foreignKey: 'orderId', as: 'order', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
   }
+  
 
   static initialize(sequelize: Sequelize) {
     Payment.init(
       {
         id: {
           type: DataTypes.INTEGER,
+          allowNull: false,
           autoIncrement: true,
           primaryKey: true,
         },
-        stripePaymentId: {
+        stripeId: {
           type: new DataTypes.STRING(128),
           allowNull: false,
         },
@@ -70,6 +90,15 @@ class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implem
         currency: {
           type: new DataTypes.STRING(128),
           allowNull: false,
+        },
+        payment_method: {
+          type: DataTypes.ENUM,
+          values: ['Stripe', 'MOMO'],
+        },
+        payment_status: {
+          type: DataTypes.ENUM,
+          values: ['Pending', 'Completed', 'Failed', 'Refunded', 'Canceled'],
+          defaultValue: PaymentStatus.Pending,
         },
         createdAt: {
           type: DataTypes.DATE,

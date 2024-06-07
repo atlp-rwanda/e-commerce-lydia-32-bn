@@ -8,7 +8,7 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
-      stripePaymentId: {
+      stripeId: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -25,6 +25,14 @@ module.exports = {
         allowNull: false,
       },
       currency: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      payment_method: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      payment_status: {
         type: Sequelize.STRING,
         allowNull: false,
       },

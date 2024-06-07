@@ -1,62 +1,60 @@
-// services/paymentService.ts
-import Payment from '../models/paymentModel.js';
-import { PaymentCreationAttributes } from '../models/paymentModel.js';
+import Payment, { PaymentMethod, PaymentStatus } from '../models/paymentModel.js';
 
 class PaymentService {
-  static async createPayment(data: PaymentCreationAttributes) {
-    try {
-      const payment = await Payment.create(data);
-      return payment;
-    } catch (error) {
-      throw new Error('Error creating payment: ' + error.message);
-    }
+  public static async createPayment(
+    userId: number,
+    orderId: number,
+    amount: number,
+    stripeId: string,
+    currency: string,
+  ){
+    const createPayment = await Payment.create({
+      userId,
+      orderId,
+      amount,
+      stripeId: stripeId,
+      currency,
+      payment_method: PaymentMethod.Stripe,
+      payment_status: PaymentStatus.Pending,
+    });
+
+    return createPayment;
   }
 
-  static async getPaymentById(id: number) {
-    try {
-      const payment = await Payment.findByPk(id);
-      if (!payment) {
-        throw new Error('Payment not found');
-      }
-      return payment;
-    } catch (error) {
-      throw new Error('Error fetching payment: ' + error.message);
-    }
+  public static async updatePaymentStatus(
+    userId: number,
+    orderId: number,
+    stripeId: string,
+    newStatus: PaymentStatus,
+  ) {
+    await Payment.update(
+      {
+        payment_status: newStatus,
+      },
+      {
+        where: {
+          userId,
+          orderId,
+          stripeId,
+          payment_status: PaymentStatus.Pending,
+        },
+      },
+    );
   }
 
-  static async updatePayment(id: number, data: Partial<PaymentCreationAttributes>) {
-    try {
-      const payment = await Payment.findByPk(id);
-      if (!payment) {
-        throw new Error('Payment not found');
-      }
-      await payment.update(data);
-      return payment;
-    } catch (error) {
-      throw new Error('Error updating payment: ' + error.message);
-    }
-  }
+  public static async findPendingPayment(
+    userId: number,
+    orderId: number,
+  ): Promise<Payment | null> {
+    const payment = await Payment.findOne({
+      where: {
+        userId,
+        orderId,
+        payment_status: PaymentStatus.Pending,
+      },
+    });
 
-  static async deletePayment(id: number) {
-    try {
-      const payment = await Payment.findByPk(id);
-      if (!payment) {
-        throw new Error('Payment not found');
-      }
-      await payment.destroy();
-      return payment;
-    } catch (error) {
-      throw new Error('Error deleting payment: ' + error.message);
-    }
-  }
-
-  static async listPayments() {
-    try {
-      const payments = await Payment.findAll();
-      return payments;
-    } catch (error) {
-      throw new Error('Error listing payments: ' + error.message);
-    }
+    return payment;
   }
 }
 

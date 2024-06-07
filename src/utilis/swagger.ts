@@ -112,13 +112,11 @@ const options: swaggerJsdoc.Options = {
         Payment: {
           type: 'object',
           properties: {
-            stripePaymentId: { type: 'number' },
             amount: { type: 'number' },
             currency: { type: 'string' },
             orderId: { type: 'number' },
           },
           required: [
-            'stripePaymentId',
             'amount',
             'currency',
             'orderId'
