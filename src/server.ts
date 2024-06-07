@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
 
 // Routes for the endpoints
 
-app.use('/api', cartRoutes, notificationRouter, orderRoutes, productRouter, reviewRouter, rolesRouter, sellerRouter, usersRouter, wishListRouter);
+app.use('/api', cartRoutes, notificationRouter, orderRoutes, productRouter, reviewRouter, rolesRouter, sellerRouter, usersRouter, wishListRouter, paymentRouter);
 
 swaggerDocs(app, port);
 app.listen(port, () => {
