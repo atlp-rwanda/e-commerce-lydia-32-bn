@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
+import cors from "cors";
 import dotenv from 'dotenv';
 import db from './config/db.js';
 import swaggerDocs from './utilis/swagger.js';
@@ -25,7 +26,12 @@ db.authenticate()
   .catch((error) => console.log(error));
 const app = express();
 
-// Use cookie-parser middleware
+app.use(cors({
+  origin: ['https://team-lydia-demo.onrender.com', 'https://05cd-154-68-94-10.ngrok-free.app'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(cookieParser());
 
 const server = http.createServer(app);
