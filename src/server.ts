@@ -27,7 +27,7 @@ db.authenticate()
 const app = express();
 
 app.use(cors({
-  origin: ['*', 'https://team-lydia-demo.onrender.com', 'https://e-commerce-lydia-32-bn.onrender.com', 'https://05cd-154-68-94-10.ngrok-free.app'],
+  origin:'*',
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
