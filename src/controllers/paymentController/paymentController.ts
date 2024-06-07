@@ -96,9 +96,11 @@ class PaymentController {
     let event;
     console.log('In CREATING EVENTS')
     try {
-      //console.log('Request body: ',req.body);
+      const payload = JSON.stringify(req.body);
+      console.log('Payload ', payload);
+      console.log('Request body: ',req.body);
       //console.log('Request Stringified body: ',JSON.stringify(req.body));
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(req.body, sig, "whsec_AwG9qCt9QkhJ4oTXoxdUbMzwJyOH6GkO");
       console.log('EVENT CONSTRUCTED')
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
