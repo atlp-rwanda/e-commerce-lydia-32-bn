@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import generateToken from '../../utilis/generateToken.js';
+import {generateToken, verifyToken} from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
 
 class userController {
@@ -35,9 +35,7 @@ class userController {
 
       const token = generateToken(res, user.id, email, firstname);
 
-      // Send verification email
-      // edit the front end url section
-      const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>
@@ -57,8 +55,19 @@ class userController {
 
   verifyUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-      // get the token instead of the userid in body
-      const { userId } = req.body;
+      const token = req.query.token as string;
+
+      if (!token) {
+        return res.status(400).json({error: "No token provided"})
+      }
+
+      const decodedToken = verifyToken(token);
+      
+      if(!decodedToken) {
+        return res.status(400).json({error: "Invalid token or expired."})
+      }
+
+      const userId = decodedToken.userId;
       const user = await UserService.getUserById(userId);
 
       if (!user) {
@@ -265,18 +274,14 @@ class userController {
 
   logout = async (req: Request, res: Response): Promise<void> => {
     try {
-      const token = req.cookies.jwt;
-      const loggedOutCookie = req.cookies.loggedOut;
-      console.log(loggedOutCookie);
-      if (loggedOutCookie) {
-        res.status(400).json({ error: 'You are already logged out' });
-      } else if (token) {
-        res.clearCookie('jwt');
-        res.cookie('loggedOut', token, { httpOnly: true });
-        res.status(200).json({ message: 'Logout successful' });
-      } else {
-        res.status(400).json({ error: "You're not yet logged In !" });
+      if (!req.userId) {
+        res.status(401).json({ error: 'User is not logged in' });
+        return;
       }
+      
+      res.clearCookie('jwt', { path: '/' });
+    
+      res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });

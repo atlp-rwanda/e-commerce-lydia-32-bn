@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import { getSellerProductSchema, getBuyerProductSchema } from '../validations/getItem.validation.js';
 import { productSchema, updateProductSchema } from '../validations/product.validation.js';
+import { OrderStatus } from '../utilis/orderStatusConstants.js';
 
 const searchSchema = Joi.object({
   name: Joi.string().optional(),
@@ -61,5 +62,24 @@ export const validateUpdateProductRequest = (req: Request, res: Response, next: 
     res.status(400).json({ errors: error.details.map((err) => err.message) });
     return;
   }
+  next();
+};
+
+
+const isValidOrderStatus = (value: any): value is OrderStatus => {
+  return Object.values(OrderStatus).includes(value);
+};
+
+export const validateOrderStatusRequest = (req: Request, res: Response, next: NextFunction) => {
+  const { status } = req.body;
+
+  if (!status || status.trim() === '') {
+    return res.status(400).json({ error: 'Order status is required' });
+  }
+
+  if (!isValidOrderStatus(status)) {
+    return res.status(400).json({ error: 'Invalid order status' });
+  }
+
   next();
 };
