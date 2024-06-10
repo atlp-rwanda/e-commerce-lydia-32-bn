@@ -1,4 +1,10 @@
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'
+interface DecodedToken {
+    userId: number;
+    email: string;
+    firstname: string;
+    exp: number;
+}
 
 const generateToken = (res: any, userId: any, email: any, firstname: any) => {
   const token = jwt.sign({ userId, email, firstname }, process.env.VERIFICATION_JWT_SECRET || '', {
@@ -14,4 +20,14 @@ const generateToken = (res: any, userId: any, email: any, firstname: any) => {
   return token;
 };
 
-export default generateToken;
+const verifyToken = (token: string): DecodedToken | null => {
+    try {
+        const decoded = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET || '') as DecodedToken;
+        return decoded;
+    } catch (error) {
+        console.error('JWT verification error:', error);
+        return null;
+    }
+};
+
+export  { generateToken, verifyToken };
