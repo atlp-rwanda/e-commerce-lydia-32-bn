@@ -17,6 +17,9 @@ const options: swaggerJsdoc.Options = {
       {
         url: 'https://e-commerce-lydia-32-bn.onrender.com',
       },
+      {
+        url: 'https://team-lydia-demo.onrender.com',
+      },
     ],
     components: {
       securitySchemes: {
@@ -112,9 +115,8 @@ const options: swaggerJsdoc.Options = {
         Payment: {
           type: 'object',
           properties: {
-            userId: { type: 'number' },
-            paymentDate: { type: 'string', format: 'date-time' },
-            totalAmount: { type: 'number' },
+            amount: { type: 'number' },
+            currency: { type: 'string' },
             orderId: { type: 'number' },
           },
         },
