@@ -1,16 +1,16 @@
-import express from "express";
-import {reviewControllers} from "../controllers/reviewController/review.controller.js";
-import { isLoggedIn } from "../middleware/authMiddleware.js";
-import { BuyerMiddleware} from "../middleware/buyerMiddleware.js";
+import express from 'express';
+import { reviewControllers } from '../controllers/reviewController/review.controller.js';
+import { isLoggedIn } from '../middleware/authMiddleware.js';
+import { BuyerMiddleware } from '../middleware/buyerMiddleware.js';
 
- export const reviewRouter = express.Router()
- /**
+export const reviewRouter = express.Router();
+/**
  * @swagger
  * /api/review/create:
  *   post:
- *     summary: Create   review for product 
+ *     summary: Create   review for product
  *     description: A buyer should be able to provide a review on a product they have bought successfully, with feedback
- *     tags: 
+ *     tags:
  *       - Review
  *     requestBody:
  *       required: true
@@ -27,10 +27,10 @@ import { BuyerMiddleware} from "../middleware/buyerMiddleware.js";
  *                 description: Value of rating between 0-10
  *               review:
  *                 type: string
- *                 description: Feedback for product 
- *              
- *                 
- *               
+ *                 description: Feedback for product
+ *
+ *
+ *
  *     responses:
  *       '201':
  *         description: Review created successfully
@@ -41,7 +41,7 @@ import { BuyerMiddleware} from "../middleware/buyerMiddleware.js";
  *               properties:
  *                 message:
  *                   type: string
- *                  
+ *
  *       '500':
  *         description: Internal server error
  *         content:
@@ -60,8 +60,7 @@ import { BuyerMiddleware} from "../middleware/buyerMiddleware.js";
  *               properties:
  *                 message:
  *                   type: string
- *        
+ *
  */
 
- reviewRouter.post('/review/create',isLoggedIn,BuyerMiddleware, reviewControllers.addReview)
- 
+reviewRouter.post('/review/create', isLoggedIn, BuyerMiddleware, reviewControllers.addReview);

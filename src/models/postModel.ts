@@ -13,8 +13,11 @@ interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
 
 class Post extends Model<PostAttributes, PostCreationAttributes> implements PostAttributes {
   public id!: number;
+
   public userId!: number;
+
   public content!: string;
+
   public name!: string;
 }
 
@@ -46,7 +49,7 @@ Post.init(
   },
   {
     sequelize,
-    modelName: 'Posts'
+    modelName: 'Posts',
   },
 );
 

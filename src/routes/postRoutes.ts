@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {createMessage, viewAllMessage} from '../controllers/postController/messageController.js'
+import { createMessage, viewAllMessage } from '../controllers/postController/messageController.js';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 
 const postRoutes = Router();
@@ -77,7 +77,6 @@ postRoutes.post('/post/add', isLoggedIn, createMessage);
  * @returns {Promise<Response>} - Promise resolving with the response object containing an array of posts
  * @throws {Error} - If there is an error retrieving posts
  */
-
 
 /**
  * @swagger
@@ -161,6 +160,5 @@ postRoutes.post('/post/add', isLoggedIn, createMessage);
  * @returns {Promise<Response>} - Promise resolving with the response object containing the created post
  * @throws {Error} - If there is an error creating the post
  */
-  
 
-export default postRoutes
+export default postRoutes;

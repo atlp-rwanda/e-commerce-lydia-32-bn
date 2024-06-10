@@ -12,23 +12,23 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'users', 
-          key: 'id'
+          model: 'users',
+          key: 'id',
         },
       },
       productId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'products', 
-          key: 'productId'
-        }
+          model: 'products',
+          key: 'productId',
+        },
       },
       RatingValue: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       review: {
-        type: Sequelize.STRING(100)
+        type: Sequelize.STRING(100),
       },
       createdAt: {
         type: Sequelize.DATE,
