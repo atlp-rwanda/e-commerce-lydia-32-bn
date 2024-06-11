@@ -16,14 +16,14 @@ import { reviewRouter } from './routes/reviewroute.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js';
-import { startCronJob } from './Jobs/passwordExpirationJob.js';
+import postRoutes from './routes/postRoutes.js';
+import {startCronJob} from '../src/Jobs/passwordExpirationJob.js'
 
 dotenv.config();
 
 db.authenticate()
-  .then(() => console.log('Connected to database successfully'))
+  .then((res) => console.log('connected to database successfully'))
   .catch((error) => console.log(error));
-
 const app = express();
 
 app.use(
@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
 
 setTimeout(() => {
   console.log('Emitting order status update');
-  io.emit('orderStatusUpdate', {
+  socket.emit('orderStatusUpdate', {
     orderId: '12345',
     orderStatus: 'Awaiting Payment',
   });
@@ -60,11 +60,10 @@ app.use(express.json());
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.get('/', (req, res) => {
-  res.send('Welcome to our project');
+  res.send('welcome to our project');
 });
-
-// Start the cron job to check for expired passwords
 startCronJob();
+// Routes for the endpoints
 
 app.use(
   '/api',
@@ -78,11 +77,12 @@ app.use(
   usersRouter,
   wishListRouter,
   paymentRouter,
-  postRoutes
+  postRoutes,
 );
 
 swaggerDocs(app, port);
-
-server.listen(port, () => {
-  console.log(`App is running on http://localhost:${port}`);
+app.listen(port, () => {
+  console.log(`app is running on http://localhost:${port}`);
 });
+
+
