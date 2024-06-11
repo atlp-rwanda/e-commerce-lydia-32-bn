@@ -159,7 +159,23 @@ export class userService {
       throw new Error(`Failed to change password: ${error.message}`);
     }
   }
-  
+  async getUsersWithExpiredPasswords(): Promise<UserAttributes[]> {
+    try {
+      const currentDate = new Date();
+      const users = await User.findAll({
+        where: {
+          passwordExpiresAt: {
+            [Op.lt]: currentDate,
+          },
+        },
+        attributes: { exclude: ['password'] },
+      });
+      return users.map((user) => user.toJSON() as UserAttributes);
+    } catch (error: any) {
+      throw new Error(`Error fetching users with expired passwords: ${error.message}`);
+    }
+  }
 }
+
 
 export const UserService = new userService();
