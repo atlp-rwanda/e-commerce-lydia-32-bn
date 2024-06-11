@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../../services/registeruser.service.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import {generateToken, verifyToken} from '../../utilis/generateToken.js';
+import { generateToken, verifyToken } from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
 
 class userController {
@@ -58,16 +58,16 @@ class userController {
       const token = req.query.token as string;
 
       if (!token) {
-        return res.status(400).json({error: "No token provided"})
+        return res.status(400).json({ error: 'No token provided' });
       }
 
       const decodedToken = verifyToken(token);
-      
-      if(!decodedToken) {
-        return res.status(400).json({error: "Invalid token or expired."})
+
+      if (!decodedToken) {
+        return res.status(400).json({ error: 'Invalid token or expired.' });
       }
 
-      const userId = decodedToken.userId;
+      const { userId } = decodedToken;
       const user = await UserService.getUserById(userId);
 
       if (!user) {
@@ -278,9 +278,9 @@ class userController {
         res.status(401).json({ error: 'User is not logged in' });
         return;
       }
-      
+
       res.clearCookie('jwt', { path: '/' });
-    
+
       res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
       console.error(error);

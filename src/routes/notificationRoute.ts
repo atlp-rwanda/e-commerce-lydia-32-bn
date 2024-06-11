@@ -1,6 +1,5 @@
-import express from "express";
-import { notificationControllerInstance } from "../controllers/notificationController/notificationController.js"
-
+import express from 'express';
+import { notificationControllerInstance } from '../controllers/notificationController/notificationController.js';
 
 /**
  * @swagger

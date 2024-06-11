@@ -7,12 +7,12 @@ class PaymentService {
     amount: number,
     stripeId: string,
     currency: string,
-  ){
+  ) {
     const createPayment = await Payment.create({
       userId,
       orderId,
       amount,
-      stripeId: stripeId,
+      stripeId,
       currency,
       payment_method: PaymentMethod.Stripe,
       payment_status: PaymentStatus.Pending,
@@ -21,12 +21,7 @@ class PaymentService {
     return createPayment;
   }
 
-  public static async updatePaymentStatus(
-    userId: number,
-    orderId: number,
-    stripeId: string,
-    newStatus: PaymentStatus,
-  ) {
+  public static async updatePaymentStatus(userId: number, orderId: number, stripeId: string, newStatus: PaymentStatus) {
     await Payment.update(
       {
         payment_status: newStatus,
@@ -42,10 +37,7 @@ class PaymentService {
     );
   }
 
-  public static async findPendingPayment(
-    userId: number,
-    orderId: number,
-  ): Promise<Payment | null> {
+  public static async findPendingPayment(userId: number, orderId: number): Promise<Payment | null> {
     const payment = await Payment.findOne({
       where: {
         userId,
