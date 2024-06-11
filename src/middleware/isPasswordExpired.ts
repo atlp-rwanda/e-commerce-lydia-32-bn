@@ -1,12 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/registeruser.service.js';
+import { AuthenticatedRequest } from '../middleware/authMiddleware.js'; // Import the interface
 
-export const passwordExpirationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const passwordExpirationMiddleware = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    // Assuming req.user contains the authenticated user information
-    // @ts-ignore
-    const userId = 5;
+    // Extract userId from the authenticated user information set by isLoggedIn middleware
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
     const user = await UserService.getUserById(userId);
+    console.log('Retrieved user:', user);
 
     if (user && user.passwordExpiresAt) {
       const currentDate = new Date();
@@ -21,7 +31,7 @@ export const passwordExpirationMiddleware = async (req: Request, res: Response, 
         });
       }
     }
-    
+
     next();
   } catch (error) {
     console.error('Error in passwordExpirationMiddleware:', error);

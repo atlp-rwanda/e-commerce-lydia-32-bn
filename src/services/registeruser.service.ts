@@ -159,5 +159,7 @@ export class userService {
       throw new Error(`Failed to change password: ${error.message}`);
     }
   }
+  
 }
+
 export const UserService = new userService();

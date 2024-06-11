@@ -3,6 +3,7 @@ import { sellerControllerInstance } from '../controllers/seller controller/selle
 import { validateSellerProductRequest } from '../middleware/validateSearch.js';
 import { authSellerRole } from '../middleware/checkSellerRole.js';
 import { passwordExpirationMiddleware } from '../middleware/isPasswordExpired.js';
+import { isLoggedIn } from '../middleware/authMiddleware.js';
 
 export const sellerRouter = express.Router();
 
@@ -217,7 +218,7 @@ sellerRouter.put('/seller/products/:productId/availability', sellerControllerIns
  *               $ref: '#/components/schemas/Error'
  */
 
-sellerRouter.get('/products/available', passwordExpirationMiddleware, sellerControllerInstance.getAvailableProducts);
+sellerRouter.get('/products/available', isLoggedIn,passwordExpirationMiddleware, sellerControllerInstance.getAvailableProducts);
 
 /**
  * @swagger

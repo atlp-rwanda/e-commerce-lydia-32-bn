@@ -16,7 +16,7 @@ import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js'
 import http from 'http';
 import { Server } from 'socket.io';
-import { startCronJob } from '../src/Jobs/passwordExpirationCron.js';
+import { startCronJob } from '../src/Jobs/passwordExpirationJob.js';
 
 
 
