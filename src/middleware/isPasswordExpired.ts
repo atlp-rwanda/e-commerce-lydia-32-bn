@@ -5,7 +5,7 @@ export const passwordExpirationMiddleware = async (req: Request, res: Response, 
   try {
     // Assuming req.user contains the authenticated user information
     // @ts-ignore
-    const userId = req.user.id;
+    const userId = 5;
     const user = await UserService.getUserById(userId);
 
     if (user && user.passwordExpiresAt) {
@@ -14,12 +14,14 @@ export const passwordExpirationMiddleware = async (req: Request, res: Response, 
 
       // Check if the password has expired
       if (currentDate >= expirationDate) {
-        // Password has expired, block access and redirect to password reset page
-        return res.status(403).redirect('/reset-password');
+        return res.status(403).json({
+          status: 'Unauthorized',
+          message: 'Your password has expired. Please reset your password to continue using the app.',
+          resetPasswordUrl: 'https://your-app.com/reset-password'
+        });
       }
     }
-
-    // Password has not expired, continue to the next middleware
+    
     next();
   } catch (error) {
     console.error('Error in passwordExpirationMiddleware:', error);
