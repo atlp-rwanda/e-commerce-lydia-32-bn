@@ -119,12 +119,6 @@ User.init(
     passwordExpiresAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      get() {
-        return this.getDataValue('passwordExpiresAt');
-      },
-      set(value: Date) {
-        this.setDataValue('passwordExpiresAt', value);
-      }
     },
     street: {
       type: DataTypes.STRING(128),
