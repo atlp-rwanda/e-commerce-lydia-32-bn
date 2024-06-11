@@ -18,10 +18,15 @@ class Notification
   implements NotificationAttributes
 {
   public id!: number;
+
   public userId!: number;
+
   public message!: string;
+
   public readstatus!: boolean;
+
   public createdAt!: Date;
+
   public updatedAt!: Date;
 
   static associate(models: any) {

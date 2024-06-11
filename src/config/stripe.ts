@@ -8,9 +8,10 @@
 
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-class StripeConfig{
+class StripeConfig {
   private stripe: Stripe;
 
   constructor() {
@@ -18,7 +19,8 @@ class StripeConfig{
       apiVersion: '2024-04-10',
     });
   }
- async createStripeSession(
+
+  async createStripeSession(
     lineItems: Stripe.Checkout.SessionCreateParams.LineItem[],
     metadata: Stripe.MetadataParam,
     success_url: string,
@@ -28,19 +30,19 @@ class StripeConfig{
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: success_url,
-      cancel_url: cancel_url,
-      metadata: metadata,
+      success_url,
+      cancel_url,
+      metadata,
     });
-  
+
     return session;
   }
-  
-   async checkPaymentStatus(sessionId: string) {
+
+  async checkPaymentStatus(sessionId: string) {
     const session = await this.stripe.checkout.sessions.retrieve(sessionId);
     return session;
   }
-  
+
   async deleteSession(sessionId: string) {
     await this.stripe.checkout.sessions.expire(sessionId);
   }
