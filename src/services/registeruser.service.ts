@@ -33,12 +33,10 @@ export class userService {
     }
   }
 
-  async getAllUsers(): Promise<Omit<UserAttributes, 'password'>[]> {
+  async getAllUsers(): Promise<UserAttributes[]> {
     try {
-      const users = await User.findAll({
-        attributes: { exclude: ['password'] },
-      });
-      return users.map((user) => user.toJSON() as unknown as Omit<UserAttributes, 'password'>);
+      const users = await User.findAll();
+      return users.map((user) => user.toJSON() as UserAttributes);
     } catch (error: any) {
       throw new Error(`Error fetching users: ${error.message}`);
     }
@@ -120,41 +118,46 @@ export class userService {
   async changePassword(userId: number, oldPassword: string, newPassword: string) {
     try {
       const salt = await genSalt(10);
-
       const hashedPassword = await bcrypt.hash(newPassword, salt);
       const { error } = passwordValidation.validate({ password: newPassword });
       const user = await User.findByPk(userId);
+  
       if (user) {
         const userData = user.toJSON();
-        const content = `
-        <p>Hi ${userData.firstname},</p>
-        <div>Congratulations! Your paasword  has been successfully changed.</div>
-        <div>if is not you chnaged password please reset password and create strong password</div>
-        <div>If you have any questions or need further assistance, feel free to contact our support team.</div>
-        <div>Best regards,</div>
-        <div>The E-Commerce Lydia Team</div>
-      `;
-        if (!userData.isverified) {
-          return { code: 401, message: 'You are not verified' };
-        }
         const match = await bcrypt.compare(oldPassword, userData.password);
-
+  
         if (match) {
           if (error) {
             throw new Error(`Validation:${error.message}`);
           }
-          await user.update({ password: hashedPassword });
-
-          sendVerificationToken(userData.email, 'password changed ', content);
-          console.log('email sent');
-          return { code: 200, message: 'password changed successfully' };
+          const expirationPeriod = parseInt(process.env.PASSWORD_EXPIRATION_MINUTES || '3', 10);
+          const passwordExpiresAt = new Date();
+          passwordExpiresAt.setMinutes(passwordExpiresAt.getMinutes() + expirationPeriod);
+  
+          await user.update({
+            password: hashedPassword,
+            lastPasswordChange: new Date(),
+            passwordExpiresAt,
+            isBlocked: false,
+          });
+  
+          const content = `
+            <p>Hi ${userData.firstname},</p>
+            <div>Congratulations! Your password has been successfully changed.</div>
+            <div>If this wasn't you, please reset your password and create a strong password.</div>
+            <div>If you have any questions or need further assistance, feel free to contact our support team.</div>
+            <div>Best regards,</div>
+            <div>The E-Commerce Lydia Team</div>
+          `;
+  
+          sendVerificationToken(userData.email, 'Password Changed', content);
+          return { code: 200, message: 'Password changed successfully' };
         }
         return { code: 401, message: 'Incorrect old password' };
       }
     } catch (error: any) {
-      throw new Error(`failed to change password:${error.message}`);
+      throw new Error(`Failed to change password: ${error.message}`);
     }
   }
 }
-
 export const UserService = new userService();

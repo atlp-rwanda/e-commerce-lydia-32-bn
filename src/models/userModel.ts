@@ -9,6 +9,8 @@ export interface UserAttributes {
   email: string;
   phone: string;
   password: string;
+  lastPasswordChange: Date;
+  passwordExpiresAt: Date;
   street: string | null;
   city: string | null;
   state: string | null;
@@ -35,6 +37,10 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public phone!: string;
 
   public password!: string;
+
+  public lastPasswordChange!: Date;
+
+  public passwordExpiresAt!: Date;
 
   public street!: string | null;
 
@@ -104,6 +110,21 @@ User.init(
     password: {
       type: DataTypes.STRING(128),
       allowNull: false,
+    },
+    lastPasswordChange: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    }, 
+    passwordExpiresAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      get() {
+        return this.getDataValue('passwordExpiresAt');
+      },
+      set(value: Date) {
+        this.setDataValue('passwordExpiresAt', value);
+      }
     },
     street: {
       type: DataTypes.STRING(128),

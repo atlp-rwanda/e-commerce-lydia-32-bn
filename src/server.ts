@@ -16,6 +16,7 @@ import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js'
 import http from 'http';
 import { Server } from 'socket.io';
+import { startCronJob } from '../src/Jobs/passwordExpirationCron.js';
 
 
 
@@ -63,6 +64,7 @@ const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 app.get('/', (req, res) => {
   res.send('welcome to our project');
 });
+startCronJob(5); // Replace 123 with the actual user ID
 
 // Routes for the endpoints
 

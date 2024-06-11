@@ -33,6 +33,9 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         email: getPayLoad?.email || 'default@example.com',
         phone: '',
         password: await bcrypt.hash(defaultPassword, 10),
+        lastPasswordChange: new Date(),
+        // @ts-ignore
+        passwordExpiresAt: new Date(new Date().getTime() + PASSWORD_EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
         isverified: false,
         isBlocked: false,
         hasTwoFactor: false,
