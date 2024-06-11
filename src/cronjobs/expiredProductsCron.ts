@@ -25,18 +25,12 @@ cron.schedule('0 0 * * *', async () => {
             },
         });
 
-        console.log(`Found ${expiredProducts.length} expired products.`);
-
         await Promise.all(expiredProducts.map(async (product) => {
             try {
-
-                console.log(`The product being processed is`, product.dataValues);
                 
                 if (!product.dataValues.userId) {
                     throw new Error(`Product ${product.dataValues.productId} does not have a valid userId`);
                 }
-
-                console.log(`Processing product ${product.dataValues.productId}:`, product.dataValues);
 
                 const user = await UserService.getUserByFields({ id: product.dataValues.userId });
                 if (!user) {
@@ -109,7 +103,6 @@ cron.schedule('0 0 * * *', async () => {
                 await sendVerificationToken(user.email, subject, content);
                 await product.update({ isAvailable: false });
 
-                console.log(`Product ${product.dataValues.productId} processed successfully.`);
             } catch (error) {
                 console.error(`Error processing product ${product.dataValues.productId}:`, error);
             }
