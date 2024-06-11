@@ -6,7 +6,7 @@ import Notification from '../../models/notificationModels.js';
 class notificationController {
   viewNotifications = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     if (!req.user || !req.user.id) {
-      res.status(400).json({ error: 'Invalid User ID' });
+      res.status(400).json({ error: 'Invalid User' });
       return;
     }
 
@@ -17,6 +17,24 @@ class notificationController {
       res.json(notifications);
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
+    }
+  };
+
+  getNotificationById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    if (!req.user || !req.user.id) {
+      res.status(400).json({ error: 'Invalid User ID' });
+      return;
+    }
+
+    const userId = req.user.id;
+    const id = req.params.id;
+
+    try {
+      const notification = await notificationService.getNotificationByIdAndUserId(Number(id), userId);
+      res.status(200).json(notification);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+      console.log(error);
     }
   };
 
