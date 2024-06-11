@@ -6,16 +6,16 @@ import {
   deleteCartItem,
   updateCartItem,
 } from '../controllers/cartController/cartControllers.js';
-
+import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 
 const cartRoutes = Router();
 
-cartRoutes.get('/cart', isLoggedIn, viewUserCart);
-cartRoutes.post('/cart/add', isLoggedIn, addItemToCart);
-cartRoutes.post('/cart/update/:cartItemId', isLoggedIn, updateCartItem);
-cartRoutes.delete('/cart/delete/:cartItemId', isLoggedIn, deleteCartItem);
-cartRoutes.delete('/cart/delete', isLoggedIn, deleteCart);
+cartRoutes.get('/cart', isLoggedIn,isPasswordNotExpired, viewUserCart);
+cartRoutes.post('/cart/add', isLoggedIn,isPasswordNotExpired, addItemToCart);
+cartRoutes.post('/cart/update/:cartItemId',isPasswordNotExpired, isLoggedIn, updateCartItem);
+cartRoutes.delete('/cart/delete/:cartItemId',isPasswordNotExpired, isLoggedIn, deleteCartItem);
+cartRoutes.delete('/cart/delete', isLoggedIn,isPasswordNotExpired, deleteCart);
 
 /**
  * @swagger

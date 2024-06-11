@@ -1,40 +1,51 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserService } from '../services/registeruser.service.js';
-import { AuthenticatedRequest } from '../middleware/authMiddleware.js'; // Import the interface
+import jwt from 'jsonwebtoken';
+import User, { UserAttributes } from '../models/userModel.js';
 
-export const passwordExpirationMiddleware = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export interface AuthenticatedRequest extends Request {
+  user?: UserAttributes;
+}
+
+export const isPasswordNotExpired = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  let token: string | undefined;
   try {
-    // Extract userId from the authenticated user information set by isLoggedIn middleware
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
+    if (req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
 
-    const user = await UserService.getUserById(userId);
-    console.log('Retrieved user:', user);
-
-    if (user && user.passwordExpiresAt) {
-      const currentDate = new Date();
-      const expirationDate = new Date(user.passwordExpiresAt);
-
-      // Check if the password has expired
-      if (currentDate >= expirationDate) {
-        return res.status(403).json({
-          status: 'Unauthorized',
-          message: 'Your password has expired. Please reset your password to continue using the app.',
-          resetPasswordUrl: 'https://your-app.com/reset-password'
-        });
-      }
+    if (!token) {
+      return res.status(401).json({
+        status: 'Unauthorized',
+        message: 'You are not logged in. Please login to continue.',
+      });
     }
 
+    const decoded: any = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string);
+    const loggedUser: any = await User.findOne({ where: { id: decoded.userId } });
+
+    if (!loggedUser) {
+      return res.status(401).json({
+        status: 'Unauthorized',
+        message: 'Please login to continue',
+      });
+    }
+
+    const currentDate = new Date();
+    const userData = loggedUser.dataValues;
+
+    if (userData.passwordExpiresAt && userData.passwordExpiresAt < currentDate) {
+      return res.status(403).json({
+        status: 'Forbidden',
+        message: 'Your password has expired. Please reset your password to continue.',
+      });
+    }
+
+    req.user = userData;
     next();
-  } catch (error) {
-    console.error('Error in passwordExpirationMiddleware:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+  } catch (error: any) {
+    return res.status(401).json({
+      status: 'failed',
+      error: `${error.message} Token has expired. Please login again.`,
+    });
   }
 };

@@ -130,7 +130,9 @@ export class userService {
           if (error) {
             throw new Error(`Validation:${error.message}`);
           }
-          const expirationPeriod = parseInt(process.env.PASSWORD_EXPIRATION_MINUTES || '3', 10);
+          
+          // Set password expiration period to 30 days
+          const expirationPeriod = 30 * 24 * 60; // 30 days in minutes
           const passwordExpiresAt = new Date();
           passwordExpiresAt.setMinutes(passwordExpiresAt.getMinutes() + expirationPeriod);
   
@@ -159,6 +161,7 @@ export class userService {
       throw new Error(`Failed to change password: ${error.message}`);
     }
   }
+  
   async getUsersWithExpiredPasswords(): Promise<UserAttributes[]> {
     try {
       const currentDate = new Date();

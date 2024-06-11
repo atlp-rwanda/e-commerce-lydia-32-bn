@@ -40,6 +40,6 @@ async function checkAndNotifyExpiredPasswords() {
 }
 
 export function startCronJob() {
-  console.log('Cron job scheduled to run every minute to check for expired passwords');
+  console.log('Cron job scheduled to run every day to check for expired passwords');
   cron.schedule('0 0 * * *', checkAndNotifyExpiredPasswords);
 }
