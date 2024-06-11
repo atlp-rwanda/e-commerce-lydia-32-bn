@@ -17,8 +17,6 @@ import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js'
 import postRoutes from './routes/postRoutes.js';
-import http from 'http';
-import { Server } from 'socket.io';
 import path from 'path';
 import cron from 'node-cron';
 import './cronjobs/expiredProductsCron.js'
