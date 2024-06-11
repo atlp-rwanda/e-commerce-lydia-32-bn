@@ -21,7 +21,7 @@ export const BuyerMiddleware = async (req: AuthenticatedRequest, res: Response, 
       return res.status(401).json({ message: 'Unauthorized. Invalid token.' });
     }
 
-    const user = await User.findByPk(userId, { include: { model: Role, as: 'Role' } }) as any;
+    const user = (await User.findByPk(userId, { include: { model: Role, as: 'Role' } })) as any;
     if (!user) {
       return res.status(401).json({ message: 'User not found.' });
     }

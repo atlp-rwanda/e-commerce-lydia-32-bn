@@ -65,10 +65,7 @@ export const validateUpdateProductRequest = (req: Request, res: Response, next: 
   next();
 };
 
-
-const isValidOrderStatus = (value: any): value is OrderStatus => {
-  return Object.values(OrderStatus).includes(value);
-};
+const isValidOrderStatus = (value: any): value is OrderStatus => Object.values(OrderStatus).includes(value);
 
 export const validateOrderStatusRequest = (req: Request, res: Response, next: NextFunction) => {
   const { status } = req.body;
