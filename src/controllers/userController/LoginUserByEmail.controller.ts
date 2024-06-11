@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
 import sendVerificationToken from '../../helpers/sendEmail.js';
-import {generateToken} from '../../utilis/generateToken.js';
+import { generateToken } from '../../utilis/generateToken.js';
 
 export const loginByGoogle = async (req: Request, res: Response) => {
   const { accessToken } = req.body;

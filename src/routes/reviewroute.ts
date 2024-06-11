@@ -4,14 +4,14 @@ import { isLoggedIn } from "../middleware/authMiddleware.js";
 import { BuyerMiddleware} from "../middleware/buyerMiddleware.js";
 import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
 
- export const reviewRouter = express.Router()
- /**
+export const reviewRouter = express.Router();
+/**
  * @swagger
  * /api/review/create:
  *   post:
- *     summary: Create   review for product 
+ *     summary: Create   review for product
  *     description: A buyer should be able to provide a review on a product they have bought successfully, with feedback
- *     tags: 
+ *     tags:
  *       - Review
  *     requestBody:
  *       required: true
@@ -28,10 +28,10 @@ import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
  *                 description: Value of rating between 0-10
  *               review:
  *                 type: string
- *                 description: Feedback for product 
- *              
- *                 
- *               
+ *                 description: Feedback for product
+ *
+ *
+ *
  *     responses:
  *       '201':
  *         description: Review created successfully
@@ -42,7 +42,7 @@ import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
  *               properties:
  *                 message:
  *                   type: string
- *                  
+ *
  *       '500':
  *         description: Internal server error
  *         content:
@@ -61,7 +61,7 @@ import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
  *               properties:
  *                 message:
  *                   type: string
- *        
+ *
  */
 
  reviewRouter.post('/review/create',isLoggedIn,isPasswordNotExpired, BuyerMiddleware, reviewControllers.addReview)

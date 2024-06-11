@@ -1,9 +1,9 @@
-// In your main server file (e.g., index.js or app.js)
-
-import dotenv from 'dotenv';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import http from 'http';
+import { Server } from 'socket.io';
 import db from './config/db.js';
 import swaggerDocs from './utilis/swagger.js';
 import { usersRouter } from './routes/user.route.js';
@@ -16,8 +16,6 @@ import { reviewRouter } from './routes/reviewroute.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js';
-import http from 'http';
-import { Server } from 'socket.io';
 import { startCronJob } from './Jobs/passwordExpirationJob.js';
 
 dotenv.config();
@@ -28,16 +26,19 @@ db.authenticate()
 
 const app = express();
 
-app.use(cors({
-  origin: ['https://team-lydia-demo.onrender.com', 'https://05cd-154-68-94-10.ngrok-free.app'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: ['https://team-lydia-demo.onrender.com', 'https://05cd-154-68-94-10.ngrok-free.app'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
+);
 
 app.use(cookieParser());
 
 const server = http.createServer(app);
-const io = new Server(server);
+export const io = new Server(server);
+export const socket = new Server(server);
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -51,7 +52,7 @@ setTimeout(() => {
   console.log('Emitting order status update');
   io.emit('orderStatusUpdate', {
     orderId: '12345',
-    orderStatus: 'Awaiting Payment'
+    orderStatus: 'Awaiting Payment',
   });
 }, 5000);
 
@@ -65,12 +66,23 @@ app.get('/', (req, res) => {
 // Start the cron job to check for expired passwords
 startCronJob();
 
-// Routes for the endpoints
-app.use('/api', cartRoutes, notificationRouter, orderRoutes, productRouter, reviewRouter, rolesRouter, sellerRouter, usersRouter, wishListRouter, paymentRouter);
+app.use(
+  '/api',
+  cartRoutes,
+  notificationRouter,
+  orderRoutes,
+  productRouter,
+  reviewRouter,
+  rolesRouter,
+  sellerRouter,
+  usersRouter,
+  wishListRouter,
+  paymentRouter,
+  postRoutes
+);
 
 swaggerDocs(app, port);
 
 server.listen(port, () => {
   console.log(`App is running on http://localhost:${port}`);
 });
-export { io }

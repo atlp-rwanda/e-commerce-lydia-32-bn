@@ -5,10 +5,10 @@ import { UserService } from '../../services/registeruser.service.js';
 
 export const blockUser = async (req: Request, res: Response) => {
   try {
-    const { email }  = req.body
+    const { email } = req.body;
     const user = await UserService.getUserByFields({ email });
 
-    if(user) {
+    if (user) {
       const [updatedRows, [updatedUser]] = await User.update(
         {
           isBlocked: true,

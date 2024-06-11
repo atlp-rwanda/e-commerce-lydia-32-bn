@@ -51,7 +51,7 @@ paymentRouter.post('/payment/pay',isPasswordNotExpired, checkToken, isBuyer, Pay
  *     description: Endpoint to handle successful payment.
  *     tags: [Payments]
  *     parameters:
-*       - in: query
+ *       - in: query
  *         name: sessionId
  *         schema:
  *           type: string
@@ -91,7 +91,7 @@ paymentRouter.get('/payment/success', isPasswordNotExpired,checkToken, isBuyer, 
  *     description: Endpoint to handle payment cancellation.
  *     tags: [Payments]
  *     parameters:
-*       - in: query
+ *       - in: query
  *         name: sessionId
  *         schema:
  *           type: string
