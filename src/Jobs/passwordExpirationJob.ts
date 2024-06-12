@@ -1,5 +1,3 @@
-// In your passwordExpirationJob.js file
-
 import cron from 'node-cron';
 import { UserService } from '../services/registeruser.service.js';
 import sendVerificationToken from '../helpers/sendEmail.js';
