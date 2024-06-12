@@ -15,9 +15,12 @@ import { notificationRouter } from './routes/notificationRoute.js';
 import { reviewRouter } from './routes/reviewroute.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
-import orderRoutes from './routes/orderRoute.js';
+import orderRoutes from './routes/orderRoute.js'
 import postRoutes from './routes/postRoutes.js';
 import {startCronJob} from '../src/Jobs/passwordExpirationJob.js'
+import path from 'path';
+import cron from 'node-cron';
+import './cronjobs/expiredProductsCron.js'
 import './handles/notifications.service.js';
 
 dotenv.config();
