@@ -118,7 +118,7 @@ User.init(
     }, 
     passwordExpiresAt: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
     },
     street: {
       type: DataTypes.STRING(128),
