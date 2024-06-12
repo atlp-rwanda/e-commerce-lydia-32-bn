@@ -29,26 +29,43 @@ interface PaymentAttributes {
   updatedAt?: Date;
 }
 
-
 export interface PaymentCreationAttributes extends Optional<PaymentAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
 class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implements PaymentAttributes {
   public id!: number;
+
   public stripeId!: string;
+
   public userId!: number;
+
   public orderId!: number;
+
   public amount!: number;
+
   public currency!: string;
+
   public payment_method!: PaymentMethod;
+
   public payment_status!: PaymentStatus;
+
   public createdAt!: Date;
+
   public updatedAt!: Date;
 
   static associate(models: any) {
-    Payment.belongsTo(User, { foreignKey: 'userId', as: 'user', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-    Payment.belongsTo(Order, { foreignKey: 'orderId', as: 'order', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+    Payment.belongsTo(User, {
+      foreignKey: 'userId',
+      as: 'user',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
+    Payment.belongsTo(Order, {
+      foreignKey: 'orderId',
+      as: 'order',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
   }
-  
 
   static initialize(sequelize: Sequelize) {
     Payment.init(
@@ -64,7 +81,7 @@ class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implem
           allowNull: false,
         },
         userId: {
-          type: new DataTypes.INTEGER,
+          type: new DataTypes.INTEGER(),
           allowNull: false,
           references: {
             model: 'users',
@@ -74,7 +91,7 @@ class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implem
           onUpdate: 'CASCADE',
         },
         orderId: {
-          type: new DataTypes.INTEGER,
+          type: new DataTypes.INTEGER(),
           allowNull: false,
           references: {
             model: 'orders',
@@ -84,7 +101,7 @@ class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implem
           onUpdate: 'CASCADE',
         },
         amount: {
-          type: new DataTypes.INTEGER,
+          type: new DataTypes.INTEGER(),
           allowNull: false,
         },
         currency: {
@@ -115,7 +132,7 @@ class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implem
         sequelize,
         modelName: 'Payment',
         tableName: 'payments',
-      }
+      },
     );
   }
 }

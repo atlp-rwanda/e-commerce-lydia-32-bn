@@ -1,7 +1,7 @@
- import express from "express";
-import checkToken from "../middleware/checkToken.js";
-import PaymentController from '../controllers/paymentController/paymentController.js'
-import { isBuyer } from "../middleware/isBuyerMiddleware.js";
+import express from 'express';
+import checkToken from '../middleware/checkToken.js';
+import PaymentController from '../controllers/paymentController/paymentController.js';
+import { isBuyer } from '../middleware/isBuyerMiddleware.js';
 
 export const paymentRouter = express.Router();
 
@@ -50,7 +50,7 @@ paymentRouter.post('/payment/pay', checkToken, isBuyer, PaymentController.makePa
  *     description: Endpoint to handle successful payment.
  *     tags: [Payments]
  *     parameters:
-*       - in: query
+ *       - in: query
  *         name: sessionId
  *         schema:
  *           type: string
@@ -90,7 +90,7 @@ paymentRouter.get('/payment/success', checkToken, isBuyer, PaymentController.pay
  *     description: Endpoint to handle payment cancellation.
  *     tags: [Payments]
  *     parameters:
-*       - in: query
+ *       - in: query
  *         name: sessionId
  *         schema:
  *           type: string
