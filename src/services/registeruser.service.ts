@@ -130,7 +130,6 @@ export class userService {
           if (error) {
             throw new Error(`Validation:${error.message}`);
           }
-<<<<<<< HEAD
           
           // Set password expiration period to 30 days
           const expirationPeriod = 30 * 24 * 60; // 30 days in minutes
@@ -153,15 +152,8 @@ export class userService {
             <div>The E-Commerce Lydia Team</div>
           `;
   
-          sendVerificationToken(userData.email, 'Password Changed', content);
+          sendEmailMessage(userData.email, 'Password Changed', content);
           return { code: 200, message: 'Password changed successfully' };
-=======
-          await user.update({ password: hashedPassword });
-
-          sendEmailMessage(userData.email, 'password changed ', content);
-          console.log('email sent');
-          return { code: 200, message: 'password changed successfully' };
->>>>>>> develop
         }
         return { code: 401, message: 'Incorrect old password' };
       }

@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { UserService } from '../services/registeruser.service.js';
-import sendVerificationToken from '../helpers/sendEmail.js';
+import sendEmailMessage from '../helpers/sendEmail.js';
 
 async function checkAndNotifyExpiredPasswords() {
   console.log('Checking for users with expired passwords...');
@@ -26,7 +26,7 @@ async function checkAndNotifyExpiredPasswords() {
 
       console.log(`Sending password expiration email to ${user.email}`);
       try {
-        await sendVerificationToken(user.email, subject, content);
+        await sendEmailMessage(user.email, subject, content);
         console.log(`Email sent to ${user.email}`);
       } catch (emailError) {
         console.error(`Failed to send email to ${user.email}:`, emailError);
@@ -39,5 +39,5 @@ async function checkAndNotifyExpiredPasswords() {
 
 export function startCronJob() {
   console.log('Cron job scheduled to run every day to check for expired passwords');
-  cron.schedule('0 0 * * *', checkAndNotifyExpiredPasswords);
+  cron.schedule('* * * * *', checkAndNotifyExpiredPasswords);
 }
