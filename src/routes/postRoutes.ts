@@ -1,18 +1,19 @@
 import { Router } from 'express';
 import { createMessage, viewAllMessage } from '../controllers/postController/messageController.js';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
+import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 
 const postRoutes = Router();
 
-postRoutes.get('/post', isLoggedIn, viewAllMessage);
-postRoutes.post('/post/add', isLoggedIn, createMessage);
+postRoutes.get('/post', viewAllMessage);
+postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
 
 /**
  * @swagger
  * /api/post:
  *   get:
  *     summary: Get all posts
- *     description: Retrieves all posts from the database. Requires authentication.
+ *     description: Retrieves all posts from the database.
  *     tags: [Posts]
  *     responses:
  *       200:
@@ -23,20 +24,12 @@ postRoutes.post('/post/add', isLoggedIn, createMessage);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Post'
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Internal Server Error
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *     security:
- *       - bearerAuth: []
  *
  * components:
  *   schemas:
@@ -64,19 +57,14 @@ postRoutes.post('/post/add', isLoggedIn, createMessage);
  *           type: string
  *         message:
  *           type: string
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
  *
  * @route GET /api/post
  * @summary Get all posts
- * @description Retrieves all posts from the database. Requires authentication.
- * @security Bearer
+ * @description Retrieves all posts from the database.
  * @returns {Promise<Response>} - Promise resolving with the response object containing an array of posts
  * @throws {Error} - If there is an error retrieving posts
  */
+
 
 /**
  * @swagger

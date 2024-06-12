@@ -11,6 +11,7 @@ import { authenticateAndAuthorizeUserController } from '../middleware/authentica
 import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
 import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
 
+
 export const usersRouter = express.Router();
 
 /**
@@ -397,3 +398,75 @@ usersRouter.post('/factor', verifyTwoFactor);
  */
 
 usersRouter.get('/users/products/:productId', validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
+/**
+ * @swagger
+ * /api/changepassword:
+ *   patch:
+ *     summary: Change user's password
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ChangePasswordRequest'
+ *     responses:
+ *       '200':
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '404':
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *
+ * components:
+ *   schemas:
+ *     ChangePasswordRequest:
+ *       type: object
+ *       required:
+ *         - newPassword
+ *         - oldPassword
+ *       properties:
+ *         newPassword:
+ *           type: string
+ *         oldPassword:
+ *           type: string
+ *
+ *     SuccessResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword);
