@@ -25,9 +25,7 @@ db.authenticate()
   .then((res) => console.log('connected to database successfully'))
   .catch((error) => console.log(error));
 const app = express();
-
-const PASSWORD_EXPIRATION_DAYS: string | number = process.env.PASSWORD_EXPIRATION_DAYS || '30';
-
+// 
 app.use(
   cors({
     origin: ['https://team-lydia-demo.onrender.com', 'https://05cd-154-68-94-10.ngrok-free.app'],
