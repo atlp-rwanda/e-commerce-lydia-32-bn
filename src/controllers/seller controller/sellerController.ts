@@ -1,4 +1,4 @@
-import { Request, Response, response } from 'express';
+import { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ProductService } from '../../services/product.service.js';
 import { AuthenticatedRequest } from '../../middleware/checkSellerRole.js';
@@ -6,6 +6,7 @@ import { SellerService } from '../../services/seller.Service.js';
 import { userService } from '../../services/registeruser.service.js';
 import Role from '../../models/roleModel.js';
 import User from '../../models/userModel.js';
+import notificationEmitter from '../../utilis/eventEmitter.js';
 
 interface Product {
   dataValues: {
@@ -197,6 +198,14 @@ class SellerController {
       }
 
       const updatedProduct = await productServiceInstance.updateProduct(productId, { isAvailable });
+
+      if (isAvailable) {
+        notificationEmitter.removeAllListeners('productAvailable');
+        notificationEmitter.emit('productAvailable', updatedProduct);
+      } else {
+        notificationEmitter.removeAllListeners('productUnavailable');
+        notificationEmitter.emit('productUnavailable', updatedProduct);
+      }
 
       const availabilityMessage = isAvailable
         ? 'Product is now available for buyers'

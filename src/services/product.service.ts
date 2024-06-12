@@ -1,11 +1,16 @@
 import { Op } from 'sequelize'; // Import Op from sequelize
 import Product from '../models/productModel.js';
 import ProductAttributes from '../models/productModel.js';
+import notificationEmitter from '../utilis/eventEmitter.js';
 
 export class ProductService {
   async createProduct(productDetails: Product): Promise<Product> {
     try {
       const product = await Product.create(productDetails);
+
+      notificationEmitter.removeAllListeners('productAdded');
+      notificationEmitter.emit('productAdded', product);
+
       return product;
     } catch (error) {
       if (error instanceof Error) {
@@ -77,6 +82,10 @@ export class ProductService {
         throw new Error('Product not found');
       }
       const updatedProduct = await product.update(updates);
+
+      notificationEmitter.removeAllListeners('productUpdated');
+      notificationEmitter.emit('productUpdated', product);
+
       return updatedProduct;
     } catch (error) {
       if (error instanceof Error) {
@@ -94,6 +103,8 @@ export class ProductService {
         throw new Error('Product not found');
       }
       await product.destroy();
+      notificationEmitter.removeAllListeners('productDeleted');
+      notificationEmitter.emit('productDeleted', product);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Error deleting product: ${error.message}`);

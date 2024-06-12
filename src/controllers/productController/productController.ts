@@ -1,12 +1,8 @@
 import { Request, Response } from 'express';
-import Joi from 'joi';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize'; // Import Op from sequelize
-import { log } from 'console';
 import Product from '../../models/productModel.js';
 import { productService } from '../../services/product.service.js';
 import User from '../../models/userModel.js';
-import { productSchema } from '../../validations/product.validation.js';
 import Role from '../../models/roleModel.js';
 
 interface ProductDetails {

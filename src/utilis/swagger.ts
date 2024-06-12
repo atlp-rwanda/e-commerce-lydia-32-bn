@@ -145,6 +145,15 @@ const options: swaggerJsdoc.Options = {
           },
           required: ['permissionId', 'name'],
         },
+        Notification: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            userId: { type: 'number' },
+            message: { type: 'string' },
+            readStatus: { type: 'boolean' },
+          },
+        },
       },
       security: [
         {

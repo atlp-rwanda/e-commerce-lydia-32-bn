@@ -11,7 +11,10 @@ import { rolesRouter } from './routes/roleRoutes.js';
 import { wishListRouter } from './routes/wishListRoutes.js';
 import {reviewRouter} from './routes/reviewroute.js'
 
+import {reviewRouter} from './routes/reviewroute.js'
+
 import cartRoutes from './routes/cartRoutes.js';
+
 
 
 dotenv.config();
@@ -21,6 +24,7 @@ db.authenticate()
   .catch((error) => console.log(error));
 const app = express();
 
+// Use cookie-parser middleware
 app.use(cors({
   origin:'*',
   credentials: true,
@@ -42,9 +46,15 @@ app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
 
 app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes,reviewRouter);
 
+app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
+app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
+
+app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes,reviewRouter);
+
 
 swaggerDocs(app, port);
 app.listen(port, () => {
   console.log(`app is running on http://localhost:${port}`);
 });
+
 
