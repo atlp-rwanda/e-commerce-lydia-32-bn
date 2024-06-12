@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import db from './config/db.js';
 import swaggerDocs from './utilis/swagger.js';
 import { usersRouter } from './routes/user.route.js';
