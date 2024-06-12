@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { checkout } from '../controllers/orderController.ts/checkoutController.js';
-import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
-import { buyerCheckout } from '../middleware/buyerCheckout.js';
-import { validateOrderStatusRequest } from '../middleware/validateSearch.js';
-import { OrderStatusControllerInstance } from '../controllers/orderController.ts/orderStatus.js';
+import {isRoleAdmin} from '../middleware/checkAdminRoleMiddleware.js'
+import {buyerCheckout} from '../middleware/buyerCheckout.js'
+import {validateOrderStatusRequest} from '../middleware/validateSearch.js'
+import {OrderStatusControllerInstance} from '../controllers/orderController.ts/orderStatus.js'
+import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
+
 
 /**
  * @swagger
@@ -63,7 +65,8 @@ import { OrderStatusControllerInstance } from '../controllers/orderController.ts
 
 const orderRoutes = Router();
 
-orderRoutes.post('/order', buyerCheckout, checkout);
+
+orderRoutes.post('/order',isPasswordNotExpired, buyerCheckout, checkout);
 
 /**
  * @swagger
@@ -102,7 +105,7 @@ orderRoutes.post('/order', buyerCheckout, checkout);
  *                   type: string
  */
 
-orderRoutes.get('/order/status/:orderId', buyerCheckout, OrderStatusControllerInstance.getOrderStatus);
+orderRoutes.get('/order/status/:orderId', isPasswordNotExpired,buyerCheckout, OrderStatusControllerInstance.getOrderStatus);
 
 /**
  * @swagger

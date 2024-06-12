@@ -9,6 +9,7 @@ import {
 } from '../middleware/validateSearch.js';
 
 import { authSellerRole } from '../middleware/checkSellerRole.js';
+import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
 
 export const productRouter = express.Router();
 
@@ -83,6 +84,7 @@ export const productRouter = express.Router();
 
 productRouter.post(
   '/product/create',
+  isPasswordNotExpired,
   sellerAuthJWT,
   validateCreateProductRequest,
   authSellerRole,
@@ -128,6 +130,7 @@ productRouter.post(
 
 productRouter.put(
   '/product/update/:productId',
+  isPasswordNotExpired,
   validateUpdateProductRequest,
   authSellerRole,
   ProductControllerInstance.updateProduct,
@@ -155,7 +158,7 @@ productRouter.put(
  *       '401':
  *         description: Unauthorized - You are not authorized to perform such action
  */
-productRouter.delete('/product/deleteProduct/:productId', checkToken, ProductControllerInstance.deleteProduct);
+productRouter.delete('/product/deleteProduct/:productId', isPasswordNotExpired, checkToken, ProductControllerInstance.deleteProduct);
 
 /**
  * @swagger
@@ -199,4 +202,4 @@ productRouter.delete('/product/deleteProduct/:productId', checkToken, ProductCon
  *       '500':
  *         description: Internal server error
  */
-productRouter.get('/product/search', validateSearchProduct, ProductControllerInstance.searchProduct);
+productRouter.get('/product/search',isPasswordNotExpired, validateSearchProduct, ProductControllerInstance.searchProduct);
