@@ -1,12 +1,4 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import User from '../../models/userModel.js';
-import { generateToken } from '../../utilis/generateToken.js';
-import sendSms from '../../helpers/sendSms.js';
-import sendVerificationToken from '../../helpers/sendEmail.js';
-import Role from '../../models/roleModel.js';
 
 class LoginController {
   async login(req: Request, res: Response): Promise<void> {

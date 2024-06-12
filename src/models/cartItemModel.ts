@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/db.js';
 import Product, { ProductCreationAttributes } from './productModel.js';
+import notificationEmitter from '../utilis/eventEmitter.js';
 
 export interface CartItemAttributes {
   id?: number;

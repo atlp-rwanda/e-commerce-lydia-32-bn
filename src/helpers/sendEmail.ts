@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendVerificationToken = (email: any, subject: any, content: any) => {
+const sendEmailMessage = (email: any, subject: any, content: any) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -20,9 +20,9 @@ const sendVerificationToken = (email: any, subject: any, content: any) => {
     if (error) {
       console.error(error);
     } else {
-      console.log(`Verification Email Sent: ${info.response}`);
+      console.log(`Email Sent: ${info.response}`);
     }
   });
 };
 
-export default sendVerificationToken;
+export default sendEmailMessage;
