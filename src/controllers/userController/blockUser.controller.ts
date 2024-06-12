@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../../models/userModel.js';
-import sendVerificationToken from '../../helpers/sendEmail.js';
+import sendEmailMessage from '../../helpers/sendEmail.js';
 import { UserService } from '../../services/registeruser.service.js';
 
 export const blockUser = async (req: Request, res: Response) => {
@@ -45,7 +45,7 @@ export const blockUser = async (req: Request, res: Response) => {
     </div>
   </div>
 `;
-        sendVerificationToken(user.dataValues.email, subject, content);
+        sendEmailMessage(user.dataValues.email, subject, content);
         return res.status(200).json({ message: 'user is blocked' });
       }
     }

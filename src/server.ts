@@ -17,11 +17,12 @@ import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js';
 import postRoutes from './routes/postRoutes.js';
+import './handles/notifications.service.js';
 
 dotenv.config();
 
 db.authenticate()
-  .then((res) => console.log('connected to database successfully'))
+  .then(() => console.log('connected to database successfully'))
   .catch((error) => console.log(error));
 const app = express();
 
@@ -63,7 +64,6 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
-
 app.use(
   '/api',
   cartRoutes,
