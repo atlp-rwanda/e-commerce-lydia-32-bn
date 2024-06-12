@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { createMessage, viewAllMessage } from '../controllers/postController/messageController.js';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
-import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
+import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 
 const postRoutes = Router();
 
