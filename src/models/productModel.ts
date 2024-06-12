@@ -16,10 +16,11 @@ interface ProductAttributes {
   isAvailable?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  expiryDate?: Date;
 }
 
 export interface ProductCreationAttributes
-  extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt'> {}
+  extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt' | 'expiryDate'> {}
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
   public productId!: number;
@@ -34,6 +35,8 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
   public isAvailable?: boolean;
   public createdAt!: Date;
   public updatedAt!: Date;
+
+  public expiryDate!: Date;
 
   static associate(models: any) {
     Product.belongsTo(User, {
