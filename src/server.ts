@@ -10,12 +10,7 @@ import { sellerRouter } from './routes/sellerRoutes.js';
 import { rolesRouter } from './routes/roleRoutes.js';
 import { wishListRouter } from './routes/wishListRoutes.js';
 import {reviewRouter} from './routes/reviewroute.js'
-
-import {reviewRouter} from './routes/reviewroute.js'
-
 import cartRoutes from './routes/cartRoutes.js';
-
-
 
 dotenv.config();
 
@@ -41,10 +36,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes for the endpoints
-app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
-app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
 
-app.use('/api', usersRouter,productRouter, sellerRouter,cartRoutes,reviewRouter);
 
 app.use('/api', usersRouter, productRouter, sellerRouter, rolesRouter);
 app.use('/api', usersRouter, productRouter, sellerRouter, wishListRouter);
