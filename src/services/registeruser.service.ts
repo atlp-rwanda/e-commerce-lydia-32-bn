@@ -6,7 +6,7 @@ import User from '../models/userModel.js';
 import UserCreationAttributes from '../models/userModel.js';
 import UserAttributes from '../models/userModel.js';
 import { validateUserupdates, passwordValidation } from '../validations/updatesValidation.js';
-import sendVerificationToken from '../helpers/sendEmail.js';
+import sendEmailMessage from '../helpers/sendEmail.js';
 
 export class userService {
   async createUser(userDetails: UserCreationAttributes): Promise<UserAttributes> {
@@ -130,6 +130,7 @@ export class userService {
           if (error) {
             throw new Error(`Validation:${error.message}`);
           }
+<<<<<<< HEAD
           
           // Set password expiration period to 30 days
           const expirationPeriod = 30 * 24 * 60; // 30 days in minutes
@@ -154,6 +155,13 @@ export class userService {
   
           sendVerificationToken(userData.email, 'Password Changed', content);
           return { code: 200, message: 'Password changed successfully' };
+=======
+          await user.update({ password: hashedPassword });
+
+          sendEmailMessage(userData.email, 'password changed ', content);
+          console.log('email sent');
+          return { code: 200, message: 'password changed successfully' };
+>>>>>>> develop
         }
         return { code: 401, message: 'Incorrect old password' };
       }
