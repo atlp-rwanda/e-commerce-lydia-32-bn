@@ -82,7 +82,7 @@ class ProductController {
   async deleteProduct(req: Request, res: Response): Promise<void> {
     const productId: number = Number(req.params.productId);
     try {
-      const { userId } = req.body;
+      const  userId  = Number(req.userId);
       const user = (await User.findByPk(userId)) as any;
       const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 
