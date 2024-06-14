@@ -1,8 +1,8 @@
- import express from "express";
-import checkToken from "../middleware/checkToken.js";
+import express from "express";
 import PaymentController from '../controllers/paymentController/paymentController.js'
 import { isBuyer } from "../middleware/isBuyerMiddleware.js";
 import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
+import { userAuthJWT } from "../middleware/verfication.middleware.js";
 
 export const paymentRouter = express.Router();
 
@@ -41,7 +41,7 @@ export const paymentRouter = express.Router();
  *         description: Internal server error
  */
 
-paymentRouter.post('/payment/pay',isPasswordNotExpired, checkToken, isBuyer, PaymentController.makePaymentSession);
+paymentRouter.post('/payment/pay',isPasswordNotExpired, userAuthJWT, isBuyer, PaymentController.makePaymentSession);
 
 /**
  * @swagger
@@ -81,7 +81,7 @@ paymentRouter.post('/payment/pay',isPasswordNotExpired, checkToken, isBuyer, Pay
  *       '500':
  *         description: Internal server error
  */
-paymentRouter.get('/payment/success', isPasswordNotExpired,checkToken, isBuyer, PaymentController.paymentSuccess);
+paymentRouter.get('/payment/success', isPasswordNotExpired,userAuthJWT, isBuyer, PaymentController.paymentSuccess);
 
 /**
  * @swagger
@@ -121,6 +121,6 @@ paymentRouter.get('/payment/success', isPasswordNotExpired,checkToken, isBuyer, 
  *       '500':
  *         description: Internal server error
  */
-paymentRouter.get('/payment/cancel',isPasswordNotExpired, checkToken, isBuyer, PaymentController.paymentCancel);
+paymentRouter.get('/payment/cancel',isPasswordNotExpired, userAuthJWT, isBuyer, PaymentController.paymentCancel);
 
 export default paymentRouter;

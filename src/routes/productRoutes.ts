@@ -158,7 +158,7 @@ productRouter.put(
  *       '401':
  *         description: Unauthorized - You are not authorized to perform such action
  */
-productRouter.delete('/product/deleteProduct/:productId', isPasswordNotExpired, checkToken, ProductControllerInstance.deleteProduct);
+productRouter.delete('/product/deleteProduct/:productId', isPasswordNotExpired, userAuthJWT, ProductControllerInstance.deleteProduct);
 
 /**
  * @swagger
