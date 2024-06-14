@@ -2,6 +2,8 @@ import express from 'express';
 import { NotificationController } from '../controllers/notificationController/notificationController.js';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 
+export const notificationRouter = express.Router();
+
 /**
  * @swagger
  * tags:
@@ -56,8 +58,6 @@ import { isLoggedIn } from '../middleware/authMiddleware.js';
  *                   type: string
  *                   example: Error updating read status
  */
-
-export const notificationRouter = express.Router();
 
 notificationRouter.put('/notification/updatestatus/:id', NotificationController.updateReadStatus);
 
