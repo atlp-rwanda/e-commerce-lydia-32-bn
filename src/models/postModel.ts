@@ -5,6 +5,7 @@ import User from './userModel.js';
 interface PostAttributes {
   id: number;
   userId: number;
+  room: string;
   content: string;
   name: string;
 }
@@ -15,6 +16,8 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
   public id!: number;
 
   public userId!: number;
+
+  public room!: string;
 
   public content!: string;
 
@@ -37,6 +40,10 @@ Post.init(
       },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
+    },
+    room: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     content: {
       type: DataTypes.TEXT,
