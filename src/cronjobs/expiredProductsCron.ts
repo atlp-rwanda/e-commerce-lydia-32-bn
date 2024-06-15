@@ -1,44 +1,44 @@
 import cron from 'node-cron';
-import Product from './../models/productModel.js';
-import Sequelize from 'sequelize';
-import { Op } from 'sequelize';
-import sendVerificationToken from './../helpers/sendEmail.js';
-import { UserService } from './../services/registeruser.service.js';
+import Sequelize, { Op } from 'sequelize';
+import Product from '../models/productModel.js';
+
+import sendVerificationToken from '../helpers/sendEmail.js';
+import { UserService } from '../services/registeruser.service.js';
 
 let isRunning = false;
 
 cron.schedule('0 0 * * *', async () => {
-    if (isRunning) {
-        console.log('Previous job still running, skipping this run.');
-        return;
-    }
-    isRunning = true;
+  if (isRunning) {
+    console.log('Previous job still running, skipping this run.');
+    return;
+  }
+  isRunning = true;
 
-    const currentDateOnly = new Date().toISOString().slice(0, 10);
-    try {
-        const expiredProducts = await Product.findAll({
-            where: {
-                expiryDate: {
-                    [Op.lt]: Sequelize.literal(`DATE('${currentDateOnly}')`),
-                },
-                isAvailable: true,
-            },
-        });
+  const currentDateOnly = new Date().toISOString().slice(0, 10);
+  try {
+    const expiredProducts = await Product.findAll({
+      where: {
+        expiryDate: {
+          [Op.lt]: Sequelize.literal(`DATE('${currentDateOnly}')`),
+        },
+        isAvailable: true,
+      },
+    });
 
-        await Promise.all(expiredProducts.map(async (product) => {
-            try {
-                
-                if (!product.dataValues.userId) {
-                    throw new Error(`Product ${product.dataValues.productId} does not have a valid userId`);
-                }
+    await Promise.all(
+      expiredProducts.map(async (product) => {
+        try {
+          if (!product.dataValues.userId) {
+            throw new Error(`Product ${product.dataValues.productId} does not have a valid userId`);
+          }
 
-                const user = await UserService.getUserByFields({ id: product.dataValues.userId });
-                if (!user) {
-                    throw new Error("User not found");
-                }
+          const user = await UserService.getUserByFields({ id: product.dataValues.userId });
+          if (!user) {
+            throw new Error('User not found');
+          }
 
-                const subject = 'Successful Product Expiry Notification';
-                const content = `
+          const subject = 'Successful Product Expiry Notification';
+          const content = `
                 <p>Dear ${user.firstname},</p>
                 <p>We hope this message finds you well.</p>
                 <p>We wanted to inform you that your product '<strong>${product.dataValues.productName}</strong>' has reached its expiration date and will no longer be listed as available.</p>
@@ -99,19 +99,19 @@ cron.schedule('0 0 * * *', async () => {
                 <p>Best regards,</p>
                 <p>The E-Commerce Lydia Team</p>
             `;
-            
-                await sendVerificationToken(user.email, subject, content);
-                await product.update({ isAvailable: false });
 
-            } catch (error) {
-                console.error(`Error processing product ${product.dataValues.productId}:`, error);
-            }
-        }));
+          await sendVerificationToken(user.email, subject, content);
+          await product.update({ isAvailable: false });
+        } catch (error) {
+          console.error(`Error processing product ${product.dataValues.productId}:`, error);
+        }
+      }),
+    );
 
-        console.log('All expired products processed.');
-    } catch (error) {
-        console.error('Error processing expired products:', error);
-    } finally {
-        isRunning = false;
-    }
+    console.log('All expired products processed.');
+  } catch (error) {
+    console.error('Error processing expired products:', error);
+  } finally {
+    isRunning = false;
+  }
 });

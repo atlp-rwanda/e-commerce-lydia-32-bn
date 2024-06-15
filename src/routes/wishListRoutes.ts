@@ -3,8 +3,7 @@ import { wishListController } from '../controllers/wishListController/wishlistsC
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { isBuyer } from '../middleware/isBuyerMiddleware.js';
 import { userAuthJWT } from '../middleware/verfication.middleware.js';
-import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
-
+import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 
 export const wishListRouter = express.Router();
 
@@ -38,7 +37,7 @@ export const wishListRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.post('/wishlist/addItem/:productId',userAuthJWT, wishListController.addItemToWishList);
+wishListRouter.post('/wishlist/addItem/:productId', userAuthJWT, wishListController.addItemToWishList);
 
 /**
  * @swagger
@@ -70,7 +69,13 @@ wishListRouter.post('/wishlist/addItem/:productId',userAuthJWT, wishListControll
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.delete('/wishlist/removeItem/:itemId', isPasswordNotExpired, userAuthJWT, isBuyer, wishListController.removeItemFromWishList);
+wishListRouter.delete(
+  '/wishlist/removeItem/:itemId',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  wishListController.removeItemFromWishList,
+);
 
 /**
  * @swagger
@@ -95,7 +100,13 @@ wishListRouter.delete('/wishlist/removeItem/:itemId', isPasswordNotExpired, user
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.get('/wishlist/getUserWishlists', isPasswordNotExpired, userAuthJWT, isBuyer, wishListController.getWishListItemsByUser);
+wishListRouter.get(
+  '/wishlist/getUserWishlists',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  wishListController.getWishListItemsByUser,
+);
 
 /**
  * @swagger

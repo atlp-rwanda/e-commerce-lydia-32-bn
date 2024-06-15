@@ -43,7 +43,7 @@ Post.init(
     },
     room: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     content: {
       type: DataTypes.TEXT,

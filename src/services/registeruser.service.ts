@@ -121,28 +121,28 @@ export class userService {
       const hashedPassword = await bcrypt.hash(newPassword, salt);
       const { error } = passwordValidation.validate({ password: newPassword });
       const user = await User.findByPk(userId);
-  
+
       if (user) {
         const userData = user.toJSON();
         const match = await bcrypt.compare(oldPassword, userData.password);
-  
+
         if (match) {
           if (error) {
             throw new Error(`Validation:${error.message}`);
           }
-          
+
           // Set password expiration period to 30 days
           const expirationPeriod = 30 * 24 * 60; // 30 days in minutes
           const passwordExpiresAt = new Date();
           passwordExpiresAt.setMinutes(passwordExpiresAt.getMinutes() + expirationPeriod);
-  
+
           await user.update({
             password: hashedPassword,
             lastPasswordChange: new Date(),
             passwordExpiresAt,
             isBlocked: false,
           });
-  
+
           const content = `
             <p>Hi ${userData.firstname},</p>
             <div>Congratulations! Your password has been successfully changed.</div>
@@ -151,7 +151,7 @@ export class userService {
             <div>Best regards,</div>
             <div>The E-Commerce Lydia Team</div>
           `;
-  
+
           sendEmailMessage(userData.email, 'Password Changed', content);
           return { code: 200, message: 'Password changed successfully' };
         }
@@ -161,7 +161,7 @@ export class userService {
       throw new Error(`Failed to change password: ${error.message}`);
     }
   }
-  
+
   async getUsersWithExpiredPasswords(): Promise<UserAttributes[]> {
     try {
       const currentDate = new Date();
@@ -179,6 +179,5 @@ export class userService {
     }
   }
 }
-
 
 export const UserService = new userService();

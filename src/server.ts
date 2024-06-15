@@ -1,7 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import path from 'path'
+import path from 'path';
 import dotenv from 'dotenv';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
@@ -16,11 +16,10 @@ import { notificationRouter } from './routes/notificationRoute.js';
 import { reviewRouter } from './routes/reviewroute.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
-import orderRoutes from './routes/orderRoute.js'
-import './cronjobs/expiredProductsCron.js'
-import {startCronJob} from '../src/Jobs/passwordExpirationJob.js'
-import chatApp from './utilis/Chat/chat.js'
-
+import orderRoutes from './routes/orderRoute.js';
+import './cronjobs/expiredProductsCron.js';
+import { startCronJob } from '../src/Jobs/passwordExpirationJob.js';
+import chatApp from './utilis/Chat/chat.js';
 
 dotenv.config();
 
@@ -35,12 +34,11 @@ app.use(
     origin: '*',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
-  })
+  }),
 );
 
 app.use(cookieParser());
 app.use(express.json());
-
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
@@ -60,16 +58,16 @@ app.use(
   sellerRouter,
   usersRouter,
   wishListRouter,
-  paymentRouter
+  paymentRouter,
 );
 
 const server = http.createServer(app);
-export const io = new SocketIOServer(server); 
+export const io = new SocketIOServer(server);
 
-const __dirname = path.resolve()
+const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, 'public')));
 
-chatApp()
+chatApp();
 
 swaggerDocs(app, port);
 

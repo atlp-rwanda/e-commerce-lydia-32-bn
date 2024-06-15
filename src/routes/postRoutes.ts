@@ -6,7 +6,7 @@ import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 const postRoutes = Router();
 
 postRoutes.get('/post', viewAllMessage);
-postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
+postRoutes.post('/post/add', isPasswordNotExpired, isLoggedIn, createMessage);
 
 /**
  * @swagger
@@ -64,7 +64,6 @@ postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
  * @returns {Promise<Response>} - Promise resolving with the response object containing an array of posts
  * @throws {Error} - If there is an error retrieving posts
  */
-
 
 /**
  * @swagger

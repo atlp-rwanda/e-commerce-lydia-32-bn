@@ -108,7 +108,5 @@
   },
   "include": ["src//*", "tests", "src/utilis/swagger.ts"],
   "exclude": ["node_modules"],
-  "files": [
-      "./src/utilis/swagger.ts"
-    ]
+  "files": ["./src/utilis/swagger.ts"]
 }

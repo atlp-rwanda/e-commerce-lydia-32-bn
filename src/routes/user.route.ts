@@ -11,7 +11,6 @@ import { authenticateAndAuthorizeUserController } from '../middleware/authentica
 import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
 import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
 
-
 export const usersRouter = express.Router();
 
 /**
@@ -253,7 +252,7 @@ usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword)
  *           schema:
  *             type: object
  *             properties:
- *               phone: 
+ *               phone:
  *                 type: string
  *     responses:
  *       '200':
@@ -271,7 +270,6 @@ usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword)
  *       '500':
  *         description: Internal server error
  */
-
 
 usersRouter.patch('/users/update', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);

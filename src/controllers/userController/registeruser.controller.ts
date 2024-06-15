@@ -101,8 +101,8 @@ class userController {
 
   changePassword = async (req: Request, res: Response) => {
     try {
-      const { newPassword, oldPassword} = req.body;
-      const userId = parseInt(req.userId as string)
+      const { newPassword, oldPassword } = req.body;
+      const userId = parseInt(req.userId as string);
       const user = await UserService.changePassword(userId, oldPassword, newPassword);
 
       if (user) {
@@ -140,7 +140,7 @@ class userController {
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const updates = req.body;
-      const userId = parseInt(req.userId as string)
+      const userId = parseInt(req.userId as string);
       const { userId: _, email, password, ...validUpdates } = updates;
 
       const user = await UserService.updateUserInfo(userId, validUpdates);

@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import { number } from 'joi';
 import User from '../models/userModel.js';
 import { UserService } from '../services/registeruser.service.js';
-import { number } from 'joi';
 
 export const isBuyer = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const  userId  = Number(req.userId);
+    const userId = Number(req.userId);
     const user = await UserService.getUserById(userId);
 
     if (user) {
