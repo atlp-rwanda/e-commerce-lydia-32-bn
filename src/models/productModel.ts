@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import sequelize from '../config/db.js';
 import User from '../models/userModel.js';
+import notificationEmitter from '../utilis/eventEmitter.js';
 
 interface ProductAttributes {
   productId: number;
@@ -15,35 +16,27 @@ interface ProductAttributes {
   isAvailable?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  expiryDate?: Date;
 }
 
 export interface ProductCreationAttributes
-  extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt'> {}
+  extends Optional<ProductAttributes, 'productId' | 'isAvailable' | 'createdAt' | 'updatedAt' | 'expiryDate'> {}
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
   public productId!: number;
-
   public userId!: number;
-
   public productName!: string;
-
   public description!: string;
-
   public productCategory!: string;
-
   public price!: number;
-
   public quantity!: number;
-
   public images!: string;
-
   public dimensions?: string;
-
   public isAvailable?: boolean;
-
   public createdAt!: Date;
-
   public updatedAt!: Date;
+
+  public expiryDate!: Date;
 
   static associate(models: any) {
     Product.belongsTo(User, {
@@ -51,11 +44,6 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
       as: 'seller',
       onDelete: 'SET NULL',
       onUpdate: 'SET NULL',
-    });
-    Product.belongsToMany(models.WishList, {
-      through: models.WishListProduct,
-      foreignKey: 'productId',
-      as: 'wishLists',
     });
   }
 
@@ -124,6 +112,26 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
         sequelize,
         modelName: 'Product',
         tableName: 'products',
+        hooks: {
+          afterCreate: (product: Product) => {
+            notificationEmitter.emit('productAdded', product);
+          },
+          afterUpdate: (product: Product) => {
+            const previousDataValues = (product as any)._previousDataValues as ProductAttributes;
+            if (previousDataValues.isAvailable !== product.dataValues.isAvailable) {
+              if (product.dataValues.isAvailable === true) {
+                notificationEmitter.emit('productAvailable', product);
+              } else {
+                notificationEmitter.emit('productUnavailable', product);
+              }
+            } else {
+              notificationEmitter.emit('productUpdated', product);
+            }
+          },
+          afterDestroy: (product: Product) => {
+            notificationEmitter.emit('productDeleted', product);
+          },
+        },
       },
     );
   }

@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
-import sendVerificationToken from '../../helpers/sendEmail.js';
+import sendEmailMessage from '../../helpers/sendEmail.js';
 import { generateToken } from '../../utilis/generateToken.js';
 
 export const loginByGoogle = async (req: Request, res: Response) => {
@@ -33,6 +33,9 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         email: getPayLoad?.email || 'default@example.com',
         phone: '',
         password: await bcrypt.hash(defaultPassword, 10),
+        lastPasswordChange: new Date(),
+        // @ts-ignore
+        passwordExpiresAt: new Date(new Date().getTime() + PASSWORD_EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
         isverified: false,
         isBlocked: false,
         hasTwoFactor: false,
@@ -55,7 +58,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         <p><strong>Important:</strong> For your security, please do not share this link with anyone.</p>
         <p>Best regards,</p>
       `;
-      sendVerificationToken(NewUser.dataValues.email, subject, content);
+      sendEmailMessage(NewUser.dataValues.email, subject, content);
 
       return res.status(201).json({
         message: 'User created successfully. Please check your email to verify your account.',

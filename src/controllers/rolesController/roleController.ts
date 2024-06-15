@@ -194,13 +194,13 @@ class roleController {
     try {
       const permissionId = parseInt(req.params.id, 10);
 
-      const defaultPermission = await Permission.findOne({ where: { name: 'read' } });
-      if (defaultPermission) {
-        return res.status(400).json({ error: ' Default permission can not be deleted' });
+      const permission = await Permission.findByPk(permissionId);
+      if (permission?.dataValues.name === 'read') {
+        return res.status(400).json({ error: `Default permission '${permission.dataValues.name}' can not be deleted` });
       }
       const deleted = await RoleService.deletePermission(permissionId);
       if (deleted) {
-        return res.status(200).json({ message: 'Permission deleted successfully' });
+        return res.status(200).json({ message: `Permission '${permission?.dataValues.name}' deleted successfully` });
       }
       return res.status(404).json({ error: 'Permission not found' });
     } catch (error: any) {

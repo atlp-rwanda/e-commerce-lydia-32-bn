@@ -294,31 +294,6 @@ rolesRouter.delete('/roles/permissions/remove/:id', isRoleAdmin, RoleController.
  *         description: Internal server error
  */
 rolesRouter.post('/roles/assign/:id', isRoleAdmin, RoleController.assignRoleToUser);
-
-/**
- * @swagger
- * /api/roles/delete/{roleId}:
- *   delete:
- *     summary: Delete a role
- *     description: Endpoint to delete a role.
- *     tags: [Role]
- *     parameters:
- *       - in: path
- *         name: roleId
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID of role to be deleted
- *     responses:
- *       '200':
- *         description: Role deleted successfully
- *       '404':
- *         description: Role not found
- *       '500':
- *         description: Internal server error
- */
-rolesRouter.delete('/roles/delete/:id', isRoleAdmin, RoleController.deleteRole);
-
 /**
  * @swagger
  * /api/permissions/delete/{permissionId}:

@@ -11,6 +11,7 @@ import { authenticateAndAuthorizeUserController } from '../middleware/authentica
 import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
 import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
 
+
 export const usersRouter = express.Router();
 
 /**
@@ -119,7 +120,6 @@ usersRouter.post(
 );
 usersRouter.get('/users/:id', UserController.getUserById);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
-usersRouter.put('/users/update//:id', UserController.updateUser);
 
 /**
  * @swagger
@@ -196,43 +196,89 @@ usersRouter.put('/users/update//:id', UserController.updateUser);
 
 usersRouter.put('/block/:id', isRoleAdmin, blockUser);
 usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
-usersRouter.put('/users/update/:id', UserController.updateUser);
 
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
-usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword);
 /**
  * @swagger
- * /api/users/update/:id:
+ * /api/changepassword/:
  *   patch:
- *     summary: update user information
- *     description: update personal information
- *   post:
- *     summary: Update user information
- *     description: Update personal information
+ *     summary: User changes their password
+ *     description: Change password with the current password
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
  *     responses:
  *       '200':
- *         description: User info updated successfully
+ *         description: Password changed successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Password changed successfully
  *       '404':
  *         description: User not found
  *       '500':
  *         description: Internal server error
  */
+
+usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword);
+
+/**
+ * @swagger
+ * /api/users/update:
+ *   patch:
+ *     summary: User Update personal information
+ *     description: User must login and update their information in settings
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone: 
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Information updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Information updated successfully
+ *       '404':
+ *         description: User not found
+ *       '500':
+ *         description: Internal server error
+ */
+
+
 usersRouter.patch('/users/update', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
-usersRouter.put('/users/update/:id', UserController.updateUser);
 usersRouter.put('/block/:id', isRoleAdmin, blockUser);
 
 /**
@@ -352,3 +398,75 @@ usersRouter.post('/factor', verifyTwoFactor);
  */
 
 usersRouter.get('/users/products/:productId', validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
+/**
+ * @swagger
+ * /api/changepassword:
+ *   patch:
+ *     summary: Change user's password
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ChangePasswordRequest'
+ *     responses:
+ *       '200':
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '404':
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *
+ * components:
+ *   schemas:
+ *     ChangePasswordRequest:
+ *       type: object
+ *       required:
+ *         - newPassword
+ *         - oldPassword
+ *       properties:
+ *         newPassword:
+ *           type: string
+ *         oldPassword:
+ *           type: string
+ *
+ *     SuccessResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword);

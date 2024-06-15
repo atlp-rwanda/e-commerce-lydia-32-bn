@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/db.js';
 import User from '../models/userModel.js';
+import notificationEmitter from '../utilis/eventEmitter.js';
 
 interface OrderAttributes {
   id: number;

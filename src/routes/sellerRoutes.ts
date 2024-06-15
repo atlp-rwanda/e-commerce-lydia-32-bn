@@ -2,6 +2,7 @@ import express from 'express';
 import { sellerControllerInstance } from '../controllers/seller controller/sellerController.js';
 import { validateSellerProductRequest } from '../middleware/validateSearch.js';
 import { authSellerRole } from '../middleware/checkSellerRole.js';
+import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
 
 export const sellerRouter = express.Router();
 
@@ -108,7 +109,7 @@ export const sellerRouter = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-sellerRouter.get('/seller/products', sellerControllerInstance.getAllProductsBySeller);
+sellerRouter.get('/seller/products',isPasswordNotExpired, sellerControllerInstance.getAllProductsBySeller);
 
 /**
  * @swagger
@@ -178,7 +179,7 @@ sellerRouter.get('/seller/products', sellerControllerInstance.getAllProductsBySe
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-sellerRouter.put('/seller/products/:productId/availability', sellerControllerInstance.updateProductAvailability);
+sellerRouter.put('/seller/products/:productId/availability',isPasswordNotExpired, sellerControllerInstance.updateProductAvailability);
 /**
  * @swagger
  * /api/products/available:
@@ -216,7 +217,7 @@ sellerRouter.put('/seller/products/:productId/availability', sellerControllerIns
  *               $ref: '#/components/schemas/Error'
  */
 
-sellerRouter.get('/products/available', sellerControllerInstance.getAvailableProducts);
+sellerRouter.get('/products/available',isPasswordNotExpired, sellerControllerInstance.getAvailableProducts);
 
 /**
  * @swagger
@@ -281,6 +282,7 @@ sellerRouter.get('/products/available', sellerControllerInstance.getAvailablePro
 
 sellerRouter.get(
   '/seller/products/:productId',
+  isPasswordNotExpired,
   validateSellerProductRequest,
   authSellerRole,
   sellerControllerInstance.getSellerProduct,

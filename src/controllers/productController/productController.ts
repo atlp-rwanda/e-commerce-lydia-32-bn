@@ -1,12 +1,8 @@
 import { Request, Response } from 'express';
-import Joi from 'joi';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize'; // Import Op from sequelize
-import { log } from 'console';
 import Product from '../../models/productModel.js';
 import { productService } from '../../services/product.service.js';
 import User from '../../models/userModel.js';
-import { productSchema } from '../../validations/product.validation.js';
 import Role from '../../models/roleModel.js';
 
 interface ProductDetails {
@@ -86,7 +82,7 @@ class ProductController {
   async deleteProduct(req: Request, res: Response): Promise<void> {
     const productId: number = Number(req.params.productId);
     try {
-      const { userId } = req.body;
+      const  userId  = Number(req.userId);
       const user = (await User.findByPk(userId)) as any;
       const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 

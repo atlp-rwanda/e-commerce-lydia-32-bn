@@ -16,8 +16,11 @@ import { notificationRouter } from './routes/notificationRoute.js';
 import { reviewRouter } from './routes/reviewroute.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
-import orderRoutes from './routes/orderRoute.js';
+import orderRoutes from './routes/orderRoute.js'
+import './cronjobs/expiredProductsCron.js'
+import {startCronJob} from '../src/Jobs/passwordExpirationJob.js'
 import chatApp from './utilis/Chat/chat.js'
+
 
 dotenv.config();
 
@@ -29,7 +32,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['https://team-lydia-demo.onrender.com', 'https://05cd-154-68-94-10.ngrok-free.app'],
+    origin: '*',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
@@ -38,13 +41,14 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
+
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // app.get('/', (req, res) => {
 //   res.send('welcome to our project');
 // });
 
-// Routes for the endpoints
+startCronJob();
 app.use(
   '/api',
   cartRoutes,
