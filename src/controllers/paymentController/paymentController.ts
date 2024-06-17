@@ -208,7 +208,9 @@ class PaymentController {
     const userId = req.userId;
     const orderId = Number(req.params.orderId);
    // orderId = Number(orderId);
-
+    console.log('Order ID ', req.params.orderId);
+    console.log('UserId ', userId);
+    console.log('Order ', orderId);
     if (!userId || isNaN(orderId)) {
       return res.status(400).json({ message: 'Invalid userId or orderId' });
     }
@@ -290,7 +292,7 @@ class PaymentController {
   }
 
   async paymentSuccess(req: Request, res: Response) {
-    const orderId = req.query.orderId as string;
+    const orderId = req.params.orderId as string;
     const sessionId = req.query.sessionId as string;
     const userId = req.userId;
     console.log('OrderId ', orderId);
@@ -319,52 +321,65 @@ class PaymentController {
 
         const orderData = await Order.findByPk(Number(orderId));
         const products = orderData?.dataValues?.items ?? [];
-        const buyer = await User.findByPk(orderData?.userId);
-
+        const buyer = await User.findByPk(orderData?.dataValues?.userId);
+       // console.log('Order data ', orderData)
         if (buyer && orderData) {
           const toDate = new Date(); // Assuming toDate is available in your orderData or can be fetched
           const shippingDate = addDays(toDate, 15);
-          const emailContent = `
-          Dear ${buyer.dataValues.firstname},
-
-          Thank you for your recent purchase from Our Company! We are excited to inform you that your order has been successfully placed.
-
-          Here are the details of your order:
-
-          **Order Summary:**
-          - **Order ID:** ${orderData.dataValues.id}
-          - **Order Date:** ${orderData?.dataValues?.createdAt ? new Date(orderData.dataValues.createdAt).toLocaleDateString() : 'Date not available'}
-          - **Total Amount:** ${orderData.dataValues.totalAmount} USD
-
-          **Items Purchased:**
-          ${orderData.dataValues.items.map(item => `
-            - **Product Name:** ${item.productName}
-            - **Quantity:** ${item.quantity}
-            - **Price:** ${item.price} USD
-          `).join('')}
-
-          **Shipping Information:**
-          - **Shipping Address:** ${buyer.dataValues.country}, ${buyer.dataValues.city}
-          - **Estimated Delivery Date:** ${shippingDate}
-
-          **What Happens Next:**
-          1. **Order Processing:** Our team is preparing your order for shipment.
-          2. **Shipping Confirmation:** Once your order is on its way, you will receive a shipping confirmation email with tracking details.
-
-          **Customer Support:**
-          If you have any questions or need assistance, please don't hesitate to contact our support team at **atlp32tl@gmail.com**. We are here to help you!
-
-          Thank you again for choosing us. We appreciate your business and look forward to serving you again.
-
-          Best Regards,
-
-          Andela Cohort 32 Team Lydia
-          Sales Manager
-          Andela
-
-          P.S. We love seeing our products in their new homes!
+         const emailContent = `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Your Order Has Been Placed Successfully!</title>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              h1 { color: #d63384; }
+              ul, ol { margin: 0; padding: 0 0 0 20px; }
+              li { margin: 10px 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Dear ${buyer.dataValues.firstname},</h1>
+            <p>Thank you for your recent purchase from Our Company! We are excited to inform you that your order has been successfully placed.</p>
+            <h2>Order Summary:</h2>
+            <ul>
+              <li><strong>Order ID:</strong> ${orderData.dataValues.id}</li>
+              <li><strong>Order Date:</strong> ${orderData?.dataValues?.createdAt ? new Date(orderData.dataValues.createdAt).toLocaleDateString() : 'Date not available'}</li>
+              <li><strong>Total Amount:</strong> ${orderData.dataValues.totalAmount} USD</li>
+            </ul>
+            <h2>Items Purchased:</h2>
+            <ul>
+              ${orderData?.dataValues?.items.map(item => `
+              <li>
+                <strong>Product Name:</strong> ${item.productName}<br>
+                <strong>Quantity:</strong> ${item.quantity}<br>
+                <strong>Price:</strong> ${item.price} USD
+              </li>`).join('')}
+            </ul>
+            <h2>Shipping Information:</h2>
+            <ul>
+              <li><strong>Shipping Address:</strong> ${buyer.dataValues.country}, ${buyer.dataValues.city}</li>
+              <li><strong>Estimated Delivery Date:</strong> ${shippingDate}</li>
+            </ul>
+            <h2>What Happens Next:</h2>
+            <ol>
+              <li><strong>Order Processing:</strong> Our team is preparing your order for shipment.</li>
+              <li><strong>Shipping Confirmation:</strong> Once your order is on its way, you will receive a shipping confirmation email with tracking details.</li>
+            </ol>
+            <h2>Customer Support:</h2>
+            <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>. We are here to help you!</p>
+            <p>Thank you again for choosing us. We appreciate your business and look forward to serving you again.</p>
+            <p>Best Regards,<br>
+            Andela Cohort 32 Team Lydia<br>
+            Sales Manager<br>
+            Andela</p>
+            <p>P.S. We love seeing our products in their new homes!</p>
+          </body>
+          </html>
           `;
-
+           console.log('Email  ', buyer.dataValues.email);
           await sendEmailMessage(buyer.dataValues.email, "Your Order Has Been Placed Successfully!", emailContent);
         }
 
@@ -372,35 +387,56 @@ class PaymentController {
         await Promise.all(
           products.map(async (product: { productId: number; quantity: number }) => {
             const productDetail = await productService.getProductById(product.productId);
+           // console.log('Product detail ', productDetail)
             if (productDetail) {
-              const user = await User.findByPk(productDetail.userId);
+              const user = await User.findByPk(productDetail.dataValues.userId);
+              console.log('Seller ', productDetail.dataValues.userId);
+              console.log('Buyer ', buyer);
               if (user && buyer) {
                 const userEmail = user.dataValues.email;
-                const content = `
-                Dear ${user.dataValues.firstname},
-                We are excited to inform you that your product, **${productDetail.dataValues.productName}**, has been successfully ordered!
-
-                Order Details:
-                  - **Product Name:** ${productDetail.dataValues.productName}
-                  - **Order Quantity:** ${productDetail.dataValues.quantity}
-                  - **Order ID:** ${orderData?.dataValues?.id}
-                  - **Total Amount:** ${productDetail.dataValues.price}
-
-                Buyer's Information:
-                  - **Name:** ${buyer.dataValues.firstname}
-                  - **Email:** ${buyer.dataValues.email}
-                  - **Shipping Address:** ${buyer.dataValues.country},  ${buyer.dataValues.city}
-
-                Next Steps:
-                  Please prepare the product for shipment as soon as possible. Make sure to package it securely to ensure it reaches the buyer in perfect condition. Once the product is shipped, update the order status and provide the tracking information.
-
-                  If you have any questions or need assistance, please don't hesitate to contact our support team at **atlp32tl@gmail.com** .
-
-                Thank you for your dedication and for being a valued part of our marketplace.
-
-                Best Regards,
-                `
-                 await sendEmailMessage(userEmail, `Product ${productDetail.productName} was ordered`, content);
+                console.log('Seller Email ', userEmail);
+                 const content = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Product Ordered</title>
+                  <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    h1 { color: #d63384; }
+                    ul { margin: 0; padding: 0 0 0 20px; }
+                    li { margin: 10px 0; }
+                  </style>
+                </head>
+                <body>
+                  <h1>Dear ${user.dataValues.firstname},</h1>
+                  <p>We are excited to inform you that your product, <strong>${productDetail.dataValues.productName}</strong>, has been successfully ordered!</p>
+                  <h2>Order Details:</h2>
+                  <ul>
+                    <li><strong>Product Name:</strong> ${productDetail.dataValues.productName}</li>
+                    <li><strong>Order Quantity:</strong> ${productDetail.dataValues.quantity}</li>
+                    <li><strong>Order ID:</strong> ${orderData?.dataValues?.id}</li>
+                    <li><strong>Total Amount:</strong> ${productDetail.dataValues.price}</li>
+                  </ul>
+                  <h2>Buyer's Information:</h2>
+                  <ul>
+                    <li><strong>Name:</strong> ${buyer.dataValues.firstname}</li>
+                    <li><strong>Email:</strong> ${buyer.dataValues.email}</li>
+                    <li><strong>Shipping Address:</strong> ${buyer.dataValues.country}, ${buyer.dataValues.city}</li>
+                  </ul>
+                  <h2>Next Steps:</h2>
+                  <p>Please prepare the product for shipment as soon as possible. Make sure to package it securely to ensure it reaches the buyer in perfect condition. Once the product is shipped, update the order status and provide the tracking information.</p>
+                  <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>.</p>
+                  <p>Thank you for your dedication and for being a valued part of our marketplace.</p>
+                  <p>Best Regards,<br>
+                  Andela Cohort 32 Team Lydia<br>
+                  Sales Manager<br>
+                  Andela</p>
+                </body>
+                </html>
+                `;
+                 await sendEmailMessage(userEmail, `Product ${productDetail.dataValues.productName} was ordered`, content);
               }
             }
           })
@@ -421,7 +457,7 @@ class PaymentController {
   }
 
   async paymentCancel(req: Request, res: Response) {
-    const orderId = req.query.orderId as string;
+    const orderId = req.params.orderId as string;
     const sessionId = req.query.sessionId as string;
     const userId = req.userId;
 
