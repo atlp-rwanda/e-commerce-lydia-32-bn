@@ -6,9 +6,8 @@ import notificationEmitter from '../utilis/eventEmitter.js';
 interface OrderAttributes {
   id: number;
   userId: number;
-  products: any[];
+  items: any[];
   totalAmount: number;
-  totalPaid: number;
   status: string;
   payment: string;
   address: any[];
@@ -23,11 +22,9 @@ class Order extends Model<OrderAttributes, OrderCreationAttributes> implements O
 
   public userId!: number;
 
-  public products!: any[];
+  public items!: any[];
 
   public totalAmount!: number;
-
-  public totalPaid!: number;
 
   public status!: string;
 
@@ -55,17 +52,12 @@ Order.init(
         key: 'id',
       },
     },
-    products: {
+    items: {
       type: DataTypes.JSON,
       allowNull: false,
       defaultValue: [],
     },
     totalAmount: {
-      allowNull: false,
-      type: DataTypes.FLOAT,
-      defaultValue: 0,
-    },
-    totalPaid: {
       allowNull: false,
       type: DataTypes.FLOAT,
       defaultValue: 0,

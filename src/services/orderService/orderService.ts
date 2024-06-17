@@ -61,9 +61,8 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
     }
     const order = await Order.create({
       userId: currentUser.id,
-      products: cart.dataValues.items,
+      items: cart.dataValues.items,
       totalAmount: cart.dataValues.total,
-      totalPaid: 0,
       status: 'pending',
       payment,
       address,

@@ -115,9 +115,7 @@ const options: swaggerJsdoc.Options = {
         Payment: {
           type: 'object',
           properties: {
-            amount: { type: 'number' },
             currency: { type: 'string' },
-            orderId: { type: 'number' },
           },
         },
         Rating: {

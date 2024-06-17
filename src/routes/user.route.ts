@@ -47,7 +47,7 @@ usersRouter.post('/register', UserController.createUser);
 /**
  * @swagger
  * /api/verify:
- *   post:
+ *   get:
  *     summary: Email Verification
  *     description: Verify user email
  *     tags: [Users]

@@ -20,6 +20,13 @@ export const paymentRouter = express.Router();
  *     summary: add new payment
  *     description: Endpoint to save customer payment.
  *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: The Order ID for the payment.
  *     requestBody:
  *       required: true
  *       content:
