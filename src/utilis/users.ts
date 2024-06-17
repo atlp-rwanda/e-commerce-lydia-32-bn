@@ -1,13 +1,12 @@
 interface User {
   id: string;
-  username: string;
   room: string;
 }
 
 const users: User[] = [];
 
-function userJoin(id: string, username: string, room: string): User {
-  const user: User = { id, username, room };
+function userJoin(id: string, room: string): User {
+  const user: User = { id, room };
 
   users.push(user);
 

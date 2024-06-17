@@ -77,12 +77,44 @@ export class ProductService {
 
   async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
+      let updatedProduct: any;
       const product = await Product.findByPk(productId);
       if (!product) {
         throw new Error('Product not found');
       }
-      const updatedProduct = await product.update(updates);
+      const {
+        productName, 
+        description, 
+        productCategory, 
+        price,
+        quantity, 
+        images, 
+        dimensions
+      } = updates
 
+      if(productName) {
+        updatedProduct = await product.update({productName});
+      }
+      if(description) {
+        updatedProduct = await product.update({description});
+      }
+      if(productCategory) {
+        updatedProduct = await product.update({productCategory});
+      }
+      if(price) {
+        updatedProduct = await product.update({price});
+      }
+      if(quantity) {
+        updatedProduct = await product.update({quantity});
+      }
+      if(images) {
+        updatedProduct = await product.update({images});
+      }
+      if(dimensions) {
+        updatedProduct = await product.update({dimensions});
+      }
+      // const updatedProduct = await product.update(updates);
+      
       notificationEmitter.removeAllListeners('productUpdated');
       notificationEmitter.emit('productUpdated', product);
 

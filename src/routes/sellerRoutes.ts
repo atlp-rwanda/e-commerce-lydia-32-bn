@@ -186,12 +186,12 @@ sellerRouter.put(
 );
 /**
  * @swagger
- * /api/products/available:
+ * /api/product/available:
  *   get:
  *     summary: Get available products in the store
  *     description: Retrieves a list of all available products
  *     tags:
- *       - Sellers
+ *       - Products
  *     responses:
  *       '200':
  *         description: Successful response
@@ -221,7 +221,7 @@ sellerRouter.put(
  *               $ref: '#/components/schemas/Error'
  */
 
-sellerRouter.get('/products/available', isPasswordNotExpired, sellerControllerInstance.getAvailableProducts);
+sellerRouter.get('/product/available', isPasswordNotExpired, sellerControllerInstance.getAvailableProducts);
 
 /**
  * @swagger

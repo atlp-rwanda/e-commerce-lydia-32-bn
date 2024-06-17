@@ -28,7 +28,12 @@ export const viewCart = async (user: UserAttributes) => {
       const { items } = (userCart as any).dataValues;
       if (items && Array.isArray(items)) {
         if (items.length === 0) {
-          return { message: 'Your cart is empty' };
+          
+          return { message: 'Your cart is empty', cart: {
+            userId: user.id,
+            total: 0,
+            items: []
+          } };
         }
 
         items.forEach((item: any) => {
@@ -43,7 +48,11 @@ export const viewCart = async (user: UserAttributes) => {
         console.error('Items is undefined or not an array');
       }
     } else {
-      return { message: 'Your cart is empty' };
+      return { message: 'Your cart is empty', cart: {
+        userId: user.id,
+        total: 0,
+        items: []
+      } };
     }
 
     return userCart;
@@ -167,7 +176,19 @@ export const deleteCartItem = async (cartItemId: number) => {
 export const deleteCart = async (user: UserAttributes) => {
   try {
     const userCart = await Cart.findOne({ where: { userId: user.id } });
+   
+      //@ts-ignore
+     if(userCart?.dataValues.id === undefined){
+      return {message: 'you have no cart to delete'}
+     }
+
     await userCart?.destroy();
+    return {
+      //@ts-ignore
+      id: userCart.dataValues.id,
+      userId: user.id,
+      items:[]
+    }
   } catch (error: any) {
     console.log('Error deleting cart', error.message);
     throw new Error(error.message);

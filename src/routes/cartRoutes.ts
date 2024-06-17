@@ -228,6 +228,15 @@ cartRoutes.delete('/cart/delete', isLoggedIn, isPasswordNotExpired, deleteCart);
  *                   type: string
  *                 error:
  *                   type: string
+ *       '404':
+ *         description: you have no cart to delete
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  *       '500':
  *         description: Internal Server Error
  *         content:

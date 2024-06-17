@@ -43,6 +43,7 @@
     "@types/socket.io": "^3.0.2",
     "@types/twilio": "^3.19.3",
     "bcrypt": "^5.1.1",
+    "cookie": "^0.6.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dayjs": "^1.11.11",

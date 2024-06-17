@@ -34,7 +34,7 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
         message: "You can't add your own product to cart",
       });
     }
-    await cartService.addToCart(quantity, product, currentUser);
+   await cartService.addToCart(quantity, product, currentUser);
     return res.status(201).json({ message: 'Item added to cart successfully' });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
@@ -56,8 +56,11 @@ export const deleteCart = async (req: Request, res: Response) => {
   // @ts-ignore
   const { user } = req;
   try {
-    await cartService.deleteCart(user);
-    res.status(200).json({ message: 'Cart deleted successfully' });
+  const result = await cartService.deleteCart(user);
+if(result.message) {
+ return res.status(404).json(result)
+}
+    res.status(200).json({ message: 'Cart deleted successfully', cart: result });
   } catch (error: any) {
     console.log(error);
     res.status(500).json({ message: error.message });

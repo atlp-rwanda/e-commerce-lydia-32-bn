@@ -57,21 +57,77 @@ export class userService {
 
   async updateUserInfo(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
-      const validateUpdates = validateUserupdates(updates);
-
       const user = await User.findByPk(userId);
-      if (user) {
-        const userData = user.toJSON() as UserAttributes;
-        if (!userData.isverified) {
-          throw new Error('Error updating user: user not verified');
-        }
-        if (validateUpdates.length > 0) {
-          // throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
-        }
-        await user.update(updates);
-        return user.toJSON() as UserAttributes;
+      if (!user) {
+        throw new Error('User not found');
       }
-      return null;
+  
+      const userData = user.toJSON() as UserAttributes;
+      if (!userData.isverified) {
+        throw new Error('Error updating user: user not verified');
+      }
+  
+      const validateUpdates = validateUserupdates(updates);
+      if (validateUpdates.length > 0) {
+        throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
+      }
+  
+      const {
+        firstname,
+        othername,
+        email,
+        phone,
+        password,
+        street,
+        city,
+        state,
+        postal_code,
+        country,
+      } = updates;
+  
+      let updatedUser: any;
+  
+      if (firstname) {
+        updatedUser = await user.update({ firstname });
+      }
+      if (othername) {
+        updatedUser = await user.update({ othername });
+      }
+      if (email) {
+        const existingEmail = await User.findOne({
+          where: {
+            email,
+          },
+        });
+        if (existingEmail) {
+          throw new Error('Email already exists');
+        }
+        updatedUser = await user.update({ email });
+      }
+      if (phone) {
+        updatedUser = await user.update({ phone });
+      }
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        updatedUser = await user.update({ password: hashedPassword });
+      }
+      if (street) {
+        updatedUser = await user.update({ street });
+      }
+      if (city) {
+        updatedUser = await user.update({ city });
+      }
+      if (state) {
+        updatedUser = await user.update({ state });
+      }
+      if (postal_code) {
+        updatedUser = await user.update({ postal_code });
+      }
+      if (country) {
+        updatedUser = await user.update({ country });
+      }
+  
+      return updatedUser.toJSON() as UserAttributes;
     } catch (error: any) {
       throw new Error(`Error updating user: ${error.message}`);
     }

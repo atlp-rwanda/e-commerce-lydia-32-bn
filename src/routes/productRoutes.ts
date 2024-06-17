@@ -110,35 +110,94 @@ productRouter.post(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/ProductDetails'
+ *             $ref: '#/components/schemas/UpdateProductRequest'
  *     responses:
  *       '200':
  *         description: Product updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
- *       '400':
- *         description: Bad request - Invalid product data
- *       '401':
- *         description: Unauthorized - Token is missing or invalid
+ *               $ref: '#/components/schemas/UpdateProductResponse'
  *       '404':
- *         description: Not found - Product not found
+ *         description: Bad request - Product not found
+ *       '403':
+ *         description: Forbidden - You do not own this product, therefore you cannot update it
+ *       '401':
+ *         description: Unauthorized - You are not authorized to perform this action
  *       '500':
- *         description: Internal server error
+ *         description: Internal Server Error
+ *
+ * components:
+ *   schemas:
+ *     UpdateProductRequest:
+ *       type: object
+ *       properties:
+ *         productName:
+ *           type: string
+ *         description:
+ *           type: string
+ *         productCategory:
+ *           type: string
+ *         price:
+ *           type: number
+ *         quantity:
+ *           type: number
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *         dimensions:
+ *           type: string
+ *
+ *     UpdateProductResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         updatedProduct:
+ *           $ref: '#/components/schemas/Product'
+ *
+ *     Product:
+ *       type: object
+ *       properties:
+ *         productId:
+ *           type: number
+ *         userId:
+ *           type: number
+ *         productName:
+ *           type: string
+ *         description:
+ *           type: string
+ *         productCategory:
+ *           type: string
+ *         price:
+ *           type: number
+ *         quantity:
+ *           type: number
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *         dimensions:
+ *           type: string
+ *         isAvailable:
+ *           type: boolean
+ *         createdAt:
+ *           type: string
+ *         updatedAt:
+ *           type: string
  */
 
 productRouter.put(
   '/product/update/:productId',
   isPasswordNotExpired,
-  validateUpdateProductRequest,
   authSellerRole,
   ProductControllerInstance.updateProduct,
 );
 
 /**
  * @swagger
- * /api/product/deleteProduct/:productId:
+ * /api/product/deleteProduct/{productId}:
  *   delete:
  *     summary: Delete an existing product
  *     description: Endpoint to delete an existing product.
