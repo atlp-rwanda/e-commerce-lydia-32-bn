@@ -24,8 +24,9 @@ export const viewCart = async (user: UserAttributes) => {
     });
 
     let totalPrice = 0;
+    let cartData;
     if (userCart) {
-      const { items } = (userCart as any).dataValues;
+      const { items, userId, id } = (userCart as any).dataValues;
       if (items && Array.isArray(items)) {
         if (items.length === 0) {
           
@@ -44,6 +45,18 @@ export const viewCart = async (user: UserAttributes) => {
         });
 
         await userCart.update({ total: totalPrice });
+
+        cartData = {
+          id,
+          buyerId: userId,
+          total: totalPrice,
+          items: items.map((item: any) => ({
+            id: item.dataValues.id,
+            productId: item.dataValues.productId,
+            quantity: item.dataValues.quantity,
+            images: item.dataValues.product.dataValues.images,
+            productName: item.dataValues.product.dataValues.productName,
+          }))}
       } else {
         console.error('Items is undefined or not an array');
       }
@@ -55,7 +68,7 @@ export const viewCart = async (user: UserAttributes) => {
       } };
     }
 
-    return userCart;
+    return cartData;
   } catch (error: any) {
     throw new Error(error.message || error);
   }
@@ -113,8 +126,19 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
 
     // @ts-ignore
     await Cart.update({ total }, { where: { id: cart.dataValues.id } });
+      
+    interface CartDataValues {
+      id: number;
+      userId: number;
+      total?: number;
+    }
+    const newCart = {
+      id: (cart.dataValues as CartDataValues).id,
+      buyerId: (cart.dataValues as CartDataValues).userId,
+      productId: product.dataValues.productId,
+    };
 
-    return cart;
+    return newCart;
   } catch (error: any) {
     console.error('Error from add to cart:', error.message);
     throw new Error(error.message);
@@ -146,9 +170,7 @@ export const updateCartItem = async (cartItemId: number, quantity: number) => {
     await cartItem.update({ quantity });
 
     // Return the updated cartItem
-    return await CartItem.findByPk(cartItemId, {
-      include: [{ model: Product, as: 'product' }],
-    });
+    return await CartItem.findByPk(cartItemId);
   } catch (error: any) {
     console.error('Error updating cart item:', error.message);
     throw new Error(error.message);

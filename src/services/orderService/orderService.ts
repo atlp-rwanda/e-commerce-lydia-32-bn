@@ -39,12 +39,10 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
       throw new Error('Cart is empty');
     }
 
-    console.log('my cart total is', cart.dataValues.total);
-    console.log('my cart is', cart);
     let totalPrice = 0;
-
+    let cartData
     if (cart) {
-      const { items } = (cart as any).dataValues;
+      const { items,userId, id } = (cart as any).dataValues;
       if (items && Array.isArray(items)) {
         for (const item of items) {
           const productPrice = Number(item.dataValues.product.dataValues.price);
@@ -65,6 +63,17 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
           await item.dataValues.product.reload();
         }
         await cart.update({ total: totalPrice });
+        cartData = {
+          id,
+          buyerId: userId,
+          total: totalPrice,
+          items: items.map((item: any) => ({
+            id: item.dataValues.id,
+            productId: item.dataValues.productId,
+            quantity: item.dataValues.quantity,
+            images: item.dataValues.product.dataValues.images,
+            productName: item.dataValues.product.dataValues.productName,
+          }))}
       }
     }
 
@@ -78,7 +87,15 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
     });
 
     await CartItem.destroy({ where: { cartId: cart.dataValues.id } });
-    return order;
+    const myOrder = {
+      id: order.dataValues.id,
+      buyerId: order.dataValues.userId,
+      items: cartData?.items,
+      totalAmount: order.dataValues.totalAmount,
+      payment: order.dataValues.payment,
+      address: order.dataValues.address 
+    }
+    return myOrder;
   } catch (error: any) {
     console.error('Error from add to order:', error.message);
     throw new Error(error.message);
@@ -118,19 +135,53 @@ export const updateOrderStatus = async (orderId: string, inputStatus: OrderStatu
   }
 };
 
-export const getSingleOrder = async(id: Number) => {
+export const getSingleOrder = async (id: Number) => {
   try {
     //@ts-ignore
-    const order = await Order.findByPk(id)
-    if(!order) {
-      return {message: 'Order Not Found'}
+    const order = await Order.findByPk(id);
+
+    if (!order) {
+      return { message: 'Order Not Found' };
     }
-    return {order} 
+
+    const {
+      userId,
+      totalAmount,
+      status,
+      payment,
+      address,
+      createdAt,
+      updatedAt,
+    } = order.dataValues;
+
+    const formattedOrder = {
+      id: order.dataValues.id,
+      buyerId: userId,
+      items: order.dataValues.items.map((item: any) => ({
+        id: item.id,
+        cartId: item.cartId,
+        productId: item.productId,
+        quantity: item.quantity,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        product: {
+          images: item.product.images,
+          productName: item.product.productName,
+        },
+      })),
+      totalAmount: totalAmount,
+      status,
+      payment,
+      address,
+      createdAt,
+      updatedAt,
+    };
+    return { order: formattedOrder };
   } catch (error) {
-    console.log(error)
-    throw error
+    console.log(error);
+    throw error;
   }
-}
+};
 
 export const cancelOrder = async (id: Number, user: any) => {
   try {
@@ -170,26 +221,94 @@ export const cancelOrder = async (id: Number, user: any) => {
     throw error;
   }
 };
-export const getAllOrders = async(user: any) => {
+
+export const getAllOrders = async (user: any) => {
   try {
-    const orders = await Order.findAll({where: {
-      userId: user.id
-    }})
-    if(!orders) {
-      return {message: "You have no orders"}
+    const orders = await Order.findAll({
+      where: {
+        userId: user.id
+      }
+    });
+
+    if (!orders || orders.length === 0) {
+      return { message: "You have no orders" };
     }
-    return {orders}
+
+    return {
+      buyerOrders: orders.map((order: any) => {
+        const {
+          userId,
+          totalAmount,
+          status,
+          payment,
+          address,
+          createdAt,
+          updatedAt,
+        } = order.dataValues;
+
+        return {
+          id: order.dataValues.id,
+          buyerId: userId,
+          items: order.dataValues.items.map((item: any) => ({
+            id: item.id,
+            cartId: item.cartId,
+            productId: item.productId,
+            quantity: item.quantity,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            product: {
+              images: item.product.images,
+              productName: item.product.productName,
+            },
+          })),
+          totalAmount: totalAmount,
+          status,
+          payment,
+          address,
+          createdAt,
+          updatedAt,
+        };
+      }),
+    };
+
   } catch (error) {
-    console.log(error)
-    throw error
+    console.log(error);
+    throw error;
   }
-}
-export const getAllOrdersByAdmin = async() => {
+};
+export const getAllOrdersByAdmin = async () => {
   try {
-    const orders = await Order.findAll()
-    return orders
+    const orders = await Order.findAll();
+
+    if (!orders || orders.length === 0) {
+      return { message: "There are no orders yet" };
+    }
+
+   return  {
+      AllOrders: orders.map((order: any) => {
+        const {
+          userId,
+          totalAmount,
+          status,
+          payment,
+          createdAt,
+          updatedAt,
+        } = order.dataValues;
+
+        return {
+          id: order.dataValues.id,
+          buyerId: userId,
+          totalAmount: totalAmount,
+          status,
+          payment,
+          createdAt,
+          updatedAt,
+        };
+      }),
+    };
+
   } catch (error) {
-    console.log(error)
-    throw error
+    console.log(error);
+    throw error;
   }
-}
+};

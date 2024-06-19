@@ -13,6 +13,16 @@ export const checkout = async (req: AuthenticatedRequest, res: Response) => {
   const currentUser = req.user;
 
   try {
+    if(payment === undefined) {
+      return res.status(404).json({
+        message: 'payment is required'
+      })
+    }
+    if(address === undefined) {
+      return res.status(404).json({
+        message: 'address is required'
+      })
+    }
     const newOrder = await orderService.addToOrder(currentUser, payment, address);
 
     return res.status(201).json({ message: 'Order processed successfully', order: newOrder });

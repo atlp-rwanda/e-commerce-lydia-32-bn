@@ -221,7 +221,7 @@ sellerRouter.put(
  *               $ref: '#/components/schemas/Error'
  */
 
-sellerRouter.get('/product/available', isPasswordNotExpired, sellerControllerInstance.getAvailableProducts);
+sellerRouter.get('/product/available', sellerControllerInstance.getAvailableProducts);
 
 /**
  * @swagger

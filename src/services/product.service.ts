@@ -118,7 +118,15 @@ export class ProductService {
       notificationEmitter.removeAllListeners('productUpdated');
       notificationEmitter.emit('productUpdated', product);
 
-      return updatedProduct;
+      const { dataValues } = updatedProduct;
+      const { userId, ...rest } = dataValues;
+  
+      const formattedProduct = {
+        ...rest,
+        sellerId: userId,
+      };
+  
+      return formattedProduct;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Error updating product: ${error.message}`);
@@ -156,6 +164,7 @@ export class ProductService {
     }
   }
 
+  //@ts-ignore
   async getProductByFields(fields: Partial<ProductAttributes>): Promise<ProductAttributes | null> {
     try {
       const product = await Product.findOne({
@@ -163,7 +172,25 @@ export class ProductService {
           [Op.and]: fields,
         },
       });
-      return product ? (product.toJSON() as ProductAttributes) : null;
+      if(product) {
+        const formattedProduct = {
+          images: product.dataValues.images,
+          productId: product.dataValues.productId,
+          sellerId: product.dataValues.userId,
+          productName: product.dataValues.productName,
+          description: product.dataValues.description,
+          productCategory: product.dataValues.productCategory,
+          price: product.dataValues.price,
+          quantity: product.dataValues.quantity,
+          dimensions: product.dataValues.dimensions,
+          isAvailable: product.dataValues.isAvailable,
+          createdAt: product.dataValues.createdAt,
+          updatedAt: product.dataValues.updatedAt,
+        };
+        //@ts-ignore
+        return  formattedProduct
+      }
+      // return product ? (product.toJSON() as ProductAttributes) : null;
     } catch (error: any) {
       throw new Error(`Error fetching product by fields: ${error.message}`);
     }

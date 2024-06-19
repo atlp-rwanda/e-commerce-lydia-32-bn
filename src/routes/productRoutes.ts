@@ -268,7 +268,5 @@ productRouter.delete(
  */
 productRouter.get(
   '/product/search',
-  isPasswordNotExpired,
-  validateSearchProduct,
   ProductControllerInstance.searchProduct,
 );

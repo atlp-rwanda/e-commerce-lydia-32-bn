@@ -14,6 +14,18 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
     }
     const product = await Product.findByPk(productId);
 
+     if(productId === undefined) {
+      return res.status(404).json({
+        message: 'productId is required'
+      })
+     }
+
+     if(quantity === undefined) {
+      return res.status(404).json({
+        message: 'quantity is required'
+      })
+     }
+
     if (!product) {
       return res.status(404).json({
         message: 'Product not found',
@@ -34,8 +46,8 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
         message: "You can't add your own product to cart",
       });
     }
-   await cartService.addToCart(quantity, product, currentUser);
-    return res.status(201).json({ message: 'Item added to cart successfully' });
+  const cart = await cartService.addToCart(quantity, product, currentUser);
+    return res.status(201).json({ message: 'Item added to cart successfully', cart });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }

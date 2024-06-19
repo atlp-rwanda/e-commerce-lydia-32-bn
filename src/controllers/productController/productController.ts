@@ -34,19 +34,31 @@ class ProductController {
         return;
       }
 
-      const createdProduct = await Product.create({
+      const created =  await Product.create({
         userId: Number(userId),
         productName: req.body.productName,
         description: req.body.description,
         productCategory: req.body.productCategory,
         price: req.body.price,
         quantity: req.body.quantity,
-        images: req.body.images, // Pass images as a comma-separated string
+        images: req.body.images,
         dimensions: req.body.dimensions,
         isAvailable: true,
       });
+      const productCreated = {
+        id: created.dataValues.productId,
+        sellerId: Number(userId),
+        productName: req.body.productName,
+        description: req.body.description,
+        productCategory: req.body.productCategory,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        images: req.body.images,
+        dimensions: req.body.dimensions,
+        isAvailable: true,
+      };
 
-      res.status(201).json({ message: 'Product created successfully', product: createdProduct });
+      res.status(201).json({ message: 'Product created successfully', product: productCreated });
     } catch (error) {
       res.status(500).json({ message: error });
       console.log(error);

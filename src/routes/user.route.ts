@@ -393,7 +393,7 @@ usersRouter.post('/users/factor', verifyTwoFactor);
  *               $ref: '#/components/schemas/Error'
  */
 
-usersRouter.get('/product/:productId', validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
+usersRouter.get('/product/:productId', BuyerRequestInstance.getBuyerProduct);
 usersRouter.get('/user', userAuthJWT, getUserCredentials)
 
 /**
