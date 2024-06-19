@@ -325,23 +325,6 @@ usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
  *
  * components:
  *   schemas:
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *           description: Unique identifier for the user
- *         firstName:
- *           type: string
- *           description: First name of the user
- *         lastName:
- *           type: string
- *           description: Last name of the user
- *         email:
- *           type: string
- *           description: Email address of the user
- *         # Add other user properties here
- *
  *     Error:
  *       type: object
  *       properties:
