@@ -5,14 +5,14 @@ export class SellerService {
   async getProductsBySellerId(sellerId: number): Promise<any> {
     try {
       const products = await Product.findAll({ where: { userId: sellerId } });
-  
-      const formattedProducts = products.map((product) => {
-          const { userId, ...rest } = product.dataValues
 
-          return {
-            ...rest,
-            sellerId: userId
-          }
+      const formattedProducts = products.map((product) => {
+        const { userId, ...rest } = product.dataValues;
+
+        return {
+          ...rest,
+          sellerId: userId,
+        };
       });
 
       return formattedProducts;
@@ -28,15 +28,15 @@ export class SellerService {
       if (!product) {
         return null;
       }
-  
+
       const { dataValues } = product;
       const { userId, ...rest } = dataValues;
-  
+
       const formattedProduct = {
         ...rest,
         sellerId: userId,
       };
-  
+
       return { product: formattedProduct };
     } catch (error) {
       if (error instanceof Error) {
@@ -57,7 +57,7 @@ export class SellerService {
       const updatedProduct = await product.update(updates);
       const { dataValues } = updatedProduct;
       const { userId } = dataValues;
-  
+
       const formattedProduct = {
         images: dataValues.images,
         productId: dataValues.productId,
@@ -72,7 +72,7 @@ export class SellerService {
         createdAt: dataValues.createdAt,
         updatedAt: dataValues.updatedAt,
       };
-  
+
       return { product: formattedProduct };
     } catch (error) {
       if (error instanceof Error) {
@@ -87,7 +87,7 @@ export class SellerService {
   async getAvailableProducts(): Promise<Product[]> {
     try {
       const products = await Product.findAll({ where: { isAvailable: true } });
-      
+
       return products;
     } catch (error) {
       throw new Error('Failed to fetch available products');

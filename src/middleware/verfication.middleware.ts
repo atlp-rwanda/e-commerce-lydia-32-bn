@@ -44,12 +44,11 @@ const userAuthJWT = (req: Request, res: Response, next: NextFunction) => {
   }
 
   if (token) {
-    jwt.verify(token, JWT_SECRET, async(err: any, decoded: any) => {
+    jwt.verify(token, JWT_SECRET, async (err: any, decoded: any) => {
       if (err) {
         return res.status(403).json({ error: 'Failed to authenticate token, Please Login again' });
       }
       const { userId, firstname, usertype, isAdmin, isverified, isBlocked } = decoded;
-      
 
       req.userId = userId;
       req.firstname = firstname;
@@ -58,8 +57,8 @@ const userAuthJWT = (req: Request, res: Response, next: NextFunction) => {
       req.isverified = isverified;
       req.isBlocked = isBlocked;
       const user = (await User.findByPk(userId)) as any;
-      //@ts-ignore
-      req.user = user.dataValues
+      // @ts-ignore
+      req.user = user.dataValues;
 
       if (!isverified) {
         return res.status(403).json({ error: 'You are not Verified please verify your email at /verify' });

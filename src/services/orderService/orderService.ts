@@ -41,9 +41,9 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
     }
 
     let totalPrice = 0;
-    let cartData
+    let cartData;
     if (cart) {
-      const { items,userId, id } = (cart as any).dataValues;
+      const { items, userId, id } = (cart as any).dataValues;
       if (items && Array.isArray(items)) {
         for (const item of items) {
           const productPrice = Number(item.dataValues.product.dataValues.price);
@@ -51,7 +51,7 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
           const price = productPrice * productQuantity;
           totalPrice += price;
 
-          const productId = item.dataValues.product.dataValues.productId;
+          const { productId } = item.dataValues.product.dataValues;
           const originalQuantity = item.dataValues.product.dataValues.quantity;
           const quantityToUpdate = originalQuantity - productQuantity;
 
@@ -74,7 +74,8 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
             quantity: item.dataValues.quantity,
             images: item.dataValues.product.dataValues.images,
             productName: item.dataValues.product.dataValues.productName,
-          }))}
+          })),
+        };
       }
     }
 
@@ -94,9 +95,9 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
       items: cartData?.items,
       totalAmount: order.dataValues.totalAmount,
       payment: order.dataValues.payment,
-      address: order.dataValues.address 
-    }
-    const userEmail = currentUser.email; 
+      address: order.dataValues.address,
+    };
+    const userEmail = currentUser.email;
     const subject = 'Order Confirmation';
     const content = `
       <h1>Order Confirmation</h1>
@@ -147,24 +148,16 @@ export const updateOrderStatus = async (orderId: string, inputStatus: OrderStatu
   }
 };
 
-export const getSingleOrder = async (id: Number) => {
+export const getSingleOrder = async (id: number) => {
   try {
-    //@ts-ignore
+    // @ts-ignore
     const order = await Order.findByPk(id);
 
     if (!order) {
       return { message: 'Order Not Found' };
     }
 
-    const {
-      userId,
-      totalAmount,
-      status,
-      payment,
-      address,
-      createdAt,
-      updatedAt,
-    } = order.dataValues;
+    const { userId, totalAmount, status, payment, address, createdAt, updatedAt } = order.dataValues;
 
     const formattedOrder = {
       id: order.dataValues.id,
@@ -181,7 +174,7 @@ export const getSingleOrder = async (id: Number) => {
           productName: item.product.productName,
         },
       })),
-      totalAmount: totalAmount,
+      totalAmount,
       status,
       payment,
       address,
@@ -195,9 +188,9 @@ export const getSingleOrder = async (id: Number) => {
   }
 };
 
-export const cancelOrder = async (id: Number, user: any) => {
+export const cancelOrder = async (id: number, user: any) => {
   try {
-    //@ts-ignore
+    // @ts-ignore
     const order = await Order.findByPk(id);
 
     if (!order) {
@@ -205,20 +198,17 @@ export const cancelOrder = async (id: Number, user: any) => {
     }
 
     // Get the items from the order
-    const items = order.dataValues.items;
+    const { items } = order.dataValues;
 
     if (items && Array.isArray(items)) {
       for (const item of items) {
-        const product = item.product;
-        const productId = product.productId;
+        const { product } = item;
+        const { productId } = product;
         const quantityOrdered = item.quantity;
         const originalQuantity = product.quantity;
         const updatedQuantity = originalQuantity + quantityOrdered;
 
-        await Product.update(
-          { quantity: updatedQuantity, isAvailable: true },
-          { where: { productId } }
-        );
+        await Product.update({ quantity: updatedQuantity, isAvailable: true }, { where: { productId } });
       }
     }
 
@@ -238,25 +228,17 @@ export const getAllOrders = async (user: any) => {
   try {
     const orders = await Order.findAll({
       where: {
-        userId: user.id
-      }
+        userId: user.id,
+      },
     });
 
     if (!orders || orders.length === 0) {
-      return { message: "You have no orders" };
+      return { message: 'You have no orders' };
     }
 
     return {
       buyerOrders: orders.map((order: any) => {
-        const {
-          userId,
-          totalAmount,
-          status,
-          payment,
-          address,
-          createdAt,
-          updatedAt,
-        } = order.dataValues;
+        const { userId, totalAmount, status, payment, address, createdAt, updatedAt } = order.dataValues;
 
         return {
           id: order.dataValues.id,
@@ -273,7 +255,7 @@ export const getAllOrders = async (user: any) => {
               productName: item.product.productName,
             },
           })),
-          totalAmount: totalAmount,
+          totalAmount,
           status,
           payment,
           address,
@@ -282,7 +264,6 @@ export const getAllOrders = async (user: any) => {
         };
       }),
     };
-
   } catch (error) {
     console.log(error);
     throw error;
@@ -293,24 +274,17 @@ export const getAllOrdersByAdmin = async () => {
     const orders = await Order.findAll();
 
     if (!orders || orders.length === 0) {
-      return { message: "There are no orders yet" };
+      return { message: 'There are no orders yet' };
     }
 
-   return  {
+    return {
       AllOrders: orders.map((order: any) => {
-        const {
-          userId,
-          totalAmount,
-          status,
-          payment,
-          createdAt,
-          updatedAt,
-        } = order.dataValues;
+        const { userId, totalAmount, status, payment, createdAt, updatedAt } = order.dataValues;
 
         return {
           id: order.dataValues.id,
           buyerId: userId,
-          totalAmount: totalAmount,
+          totalAmount,
           status,
           payment,
           createdAt,
@@ -318,7 +292,6 @@ export const getAllOrdersByAdmin = async () => {
         };
       }),
     };
-
   } catch (error) {
     console.log(error);
     throw error;

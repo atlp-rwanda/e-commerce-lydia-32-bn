@@ -266,7 +266,4 @@ productRouter.delete(
  *       '500':
  *         description: Internal server error
  */
-productRouter.get(
-  '/product/search',
-  ProductControllerInstance.searchProduct,
-);
+productRouter.get('/product/search', ProductControllerInstance.searchProduct);

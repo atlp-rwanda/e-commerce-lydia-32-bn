@@ -15,10 +15,10 @@ export class userService {
       throw new Error(`Validation failed: ${validationErrors.join(', ')}`);
     }
     try {
-      const expirationPeriod = 30 * 24 * 60; 
+      const expirationPeriod = 30 * 24 * 60;
       const passwordExpiresAt = new Date();
       passwordExpiresAt.setMinutes(passwordExpiresAt.getMinutes() + expirationPeriod);
-  
+
       const user = await User.create({
         ...userDetails,
         lastPasswordChange: new Date(),
@@ -69,32 +69,21 @@ export class userService {
       if (!user) {
         throw new Error('User not found');
       }
-  
+
       const userData = user.toJSON() as UserAttributes;
       if (!userData.isverified) {
         throw new Error('Error updating user: user not verified');
       }
-  
+
       const validateUpdates = validateUserupdates(updates);
       if (validateUpdates.length > 0) {
         throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
       }
-  
-      const {
-        firstname,
-        othername,
-        email,
-        phone,
-        password,
-        street,
-        city,
-        state,
-        postal_code,
-        country,
-      } = updates;
-  
+
+      const { firstname, othername, email, phone, password, street, city, state, postal_code, country } = updates;
+
       let updatedUser: any;
-  
+
       if (firstname) {
         updatedUser = await user.update({ firstname });
       }
@@ -134,7 +123,7 @@ export class userService {
       if (country) {
         updatedUser = await user.update({ country });
       }
-  
+
       return updatedUser.toJSON() as UserAttributes;
     } catch (error: any) {
       throw new Error(`Error updating user: ${error.message}`);

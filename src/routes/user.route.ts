@@ -10,7 +10,7 @@ import { verifyTwoFactor } from '../controllers/userController/2Factor.controlle
 import { authenticateAndAuthorizeUserController } from '../middleware/authenticateAndAuthorizeUser.js';
 import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
 import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
-import { getUserCredentials } from '../controllers/userController/getCredentials.controller.js'
+import { getUserCredentials } from '../controllers/userController/getCredentials.controller.js';
 
 export const usersRouter = express.Router();
 
@@ -394,7 +394,7 @@ usersRouter.post('/users/factor', verifyTwoFactor);
  */
 
 usersRouter.get('/product/:productId', BuyerRequestInstance.getBuyerProduct);
-usersRouter.get('/user', userAuthJWT, getUserCredentials)
+usersRouter.get('/user', userAuthJWT, getUserCredentials);
 
 /**
  * @swagger
@@ -452,7 +452,7 @@ usersRouter.get('/user', userAuthJWT, getUserCredentials)
  *       type: apiKey
  *       in: cookie
  *       name: jwt
- *   
+ *
  *   schemas:
  *     Error:
  *       type: object

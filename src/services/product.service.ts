@@ -82,50 +82,42 @@ export class ProductService {
       if (!product) {
         throw new Error('Product not found');
       }
-      const {
-        productName, 
-        description, 
-        productCategory, 
-        price,
-        quantity, 
-        images, 
-        dimensions
-      } = updates
+      const { productName, description, productCategory, price, quantity, images, dimensions } = updates;
 
-      if(productName) {
-        updatedProduct = await product.update({productName});
+      if (productName) {
+        updatedProduct = await product.update({ productName });
       }
-      if(description) {
-        updatedProduct = await product.update({description});
+      if (description) {
+        updatedProduct = await product.update({ description });
       }
-      if(productCategory) {
-        updatedProduct = await product.update({productCategory});
+      if (productCategory) {
+        updatedProduct = await product.update({ productCategory });
       }
-      if(price) {
-        updatedProduct = await product.update({price});
+      if (price) {
+        updatedProduct = await product.update({ price });
       }
-      if(quantity) {
-        updatedProduct = await product.update({quantity});
+      if (quantity) {
+        updatedProduct = await product.update({ quantity });
       }
-      if(images) {
-        updatedProduct = await product.update({images});
+      if (images) {
+        updatedProduct = await product.update({ images });
       }
-      if(dimensions) {
-        updatedProduct = await product.update({dimensions});
+      if (dimensions) {
+        updatedProduct = await product.update({ dimensions });
       }
       // const updatedProduct = await product.update(updates);
-      
+
       notificationEmitter.removeAllListeners('productUpdated');
       notificationEmitter.emit('productUpdated', product);
 
       const { dataValues } = updatedProduct;
       const { userId, ...rest } = dataValues;
-  
+
       const formattedProduct = {
         ...rest,
         sellerId: userId,
       };
-  
+
       return formattedProduct;
     } catch (error) {
       if (error instanceof Error) {
@@ -164,7 +156,7 @@ export class ProductService {
     }
   }
 
-  //@ts-ignore
+  // @ts-ignore
   async getProductByFields(fields: Partial<ProductAttributes>): Promise<ProductAttributes | null> {
     try {
       const product = await Product.findOne({
@@ -172,7 +164,7 @@ export class ProductService {
           [Op.and]: fields,
         },
       });
-      if(product) {
+      if (product) {
         const formattedProduct = {
           images: product.dataValues.images,
           productId: product.dataValues.productId,
@@ -187,8 +179,8 @@ export class ProductService {
           createdAt: product.dataValues.createdAt,
           updatedAt: product.dataValues.updatedAt,
         };
-        //@ts-ignore
-        return  formattedProduct
+        // @ts-ignore
+        return formattedProduct;
       }
       // return product ? (product.toJSON() as ProductAttributes) : null;
     } catch (error: any) {

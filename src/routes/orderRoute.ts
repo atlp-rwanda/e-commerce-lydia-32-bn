@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { checkout, getOrderById, cancelOrderById, getAllOrdersByBuyer, getByAdminAllOrders } from '../controllers/orderController.ts/checkoutController.js';
+import {
+  checkout,
+  getOrderById,
+  cancelOrderById,
+  getAllOrdersByBuyer,
+  getByAdminAllOrders,
+} from '../controllers/orderController.ts/checkoutController.js';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { buyerCheckout } from '../middleware/buyerCheckout.js';
 import { validateOrderStatusRequest } from '../middleware/validateSearch.js';
@@ -160,10 +166,10 @@ orderRoutes.put(
   OrderStatusControllerInstance.updateOrderStatus,
 );
 
-orderRoutes.get('/order/admin', isRoleAdmin, getByAdminAllOrders)
-orderRoutes.get('/order', buyerCheckout, getAllOrdersByBuyer)
-orderRoutes.get('/order/:id', buyerCheckout, getOrderById)
-orderRoutes.delete('/order/cancel/:id', buyerCheckout, cancelOrderById)
+orderRoutes.get('/order/admin', isRoleAdmin, getByAdminAllOrders);
+orderRoutes.get('/order', buyerCheckout, getAllOrdersByBuyer);
+orderRoutes.get('/order/:id', buyerCheckout, getOrderById);
+orderRoutes.delete('/order/cancel/:id', buyerCheckout, cancelOrderById);
 
 /**
  * @swagger

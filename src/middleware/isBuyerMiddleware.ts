@@ -11,9 +11,9 @@ export const isBuyer = async (req: Request, res: Response, next: NextFunction) =
     if (user) {
       const roleName = await User.getRoleName(userId);
       console.log('User role name', roleName);
-      if(roleName === 'admin') {
-        req.body.userId = userId
-        return next()
+      if (roleName === 'admin') {
+        req.body.userId = userId;
+        return next();
       }
       if (roleName === 'buyer') {
         req.body.userId = userId;

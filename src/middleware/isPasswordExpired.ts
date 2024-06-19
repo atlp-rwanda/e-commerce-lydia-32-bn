@@ -32,12 +32,12 @@ export const isPasswordNotExpired = async (req: AuthenticatedRequest, res: Respo
 
     const currentDate = new Date();
     const userData = loggedUser.dataValues;
-    const roleName = await User.getRoleName(loggedUser.dataValues.id)
+    const roleName = await User.getRoleName(loggedUser.dataValues.id);
 
-    if(roleName === 'admin') {
-      return next()
+    if (roleName === 'admin') {
+      return next();
     }
-    
+
     if (userData.passwordExpiresAt && userData.passwordExpiresAt < currentDate) {
       return res.status(403).json({
         status: 'Forbidden',

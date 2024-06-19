@@ -14,7 +14,7 @@ import { wishListRouter } from './routes/wishListRoutes.js';
 import { notificationRouter } from './routes/notificationRoute.js';
 import { reviewRouter } from './routes/reviewroute.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
-import chatRouter from './routes/postRoutes.js'
+import chatRouter from './routes/postRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoute.js';
 import './cronjobs/expiredProductsCron.js';
@@ -59,13 +59,13 @@ app.use(
   usersRouter,
   wishListRouter,
   paymentRouter,
-  chatRouter
+  chatRouter,
 );
 
 const server = http.createServer(app);
 export const io = new SocketIOServer(server, {
   cors: {
-    origin: ['*','http://localhost:5173'],
+    origin: ['*', 'http://localhost:5173'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
   },

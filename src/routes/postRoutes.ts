@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {sendMessages, getPastMessages } from '../controllers/chatController/chat-controller.js';
+import { sendMessages, getPastMessages } from '../controllers/chatController/chat-controller.js';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 

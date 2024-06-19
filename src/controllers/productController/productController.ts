@@ -34,7 +34,7 @@ class ProductController {
         return;
       }
 
-      const created =  await Product.create({
+      const created = await Product.create({
         userId: Number(userId),
         productName: req.body.productName,
         description: req.body.description,

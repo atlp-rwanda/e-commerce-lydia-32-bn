@@ -14,17 +14,17 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
     }
     const product = await Product.findByPk(productId);
 
-     if(productId === undefined) {
+    if (productId === undefined) {
       return res.status(404).json({
-        message: 'productId is required'
-      })
-     }
+        message: 'productId is required',
+      });
+    }
 
-     if(quantity === undefined) {
+    if (quantity === undefined) {
       return res.status(404).json({
-        message: 'quantity is required'
-      })
-     }
+        message: 'quantity is required',
+      });
+    }
 
     if (!product) {
       return res.status(404).json({
@@ -46,7 +46,7 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
         message: "You can't add your own product to cart",
       });
     }
-  const cart = await cartService.addToCart(quantity, product, currentUser);
+    const cart = await cartService.addToCart(quantity, product, currentUser);
     return res.status(201).json({ message: 'Item added to cart successfully', cart });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
@@ -68,10 +68,10 @@ export const deleteCart = async (req: Request, res: Response) => {
   // @ts-ignore
   const { user } = req;
   try {
-  const result = await cartService.deleteCart(user);
-if(result.message) {
- return res.status(404).json(result)
-}
+    const result = await cartService.deleteCart(user);
+    if (result.message) {
+      return res.status(404).json(result);
+    }
     res.status(200).json({ message: 'Cart deleted successfully', cart: result });
   } catch (error: any) {
     console.log(error);

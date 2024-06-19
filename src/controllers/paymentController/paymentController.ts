@@ -37,7 +37,7 @@ class PaymentController {
       if (amount > order.totalAmount) {
         return res.status(400).json({ message: 'Payment amount exceeds order total amount' });
       }
-       //@ts-ignore
+      // @ts-ignore
       const remainingBalance = order.totalAmount - order.totalPaid;
       if (amount > remainingBalance) {
         return res.status(400).json({ message: 'Payment amount exceeds remaining balance' });
