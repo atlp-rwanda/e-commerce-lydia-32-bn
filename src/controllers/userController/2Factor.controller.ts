@@ -52,3 +52,13 @@ export const verifyTwoFactor = async (req: Request, res: Response): Promise<void
     console.log(error);
   }
 };
+
+export const getAllUsers = async(req: Request, res: Response) => {
+  try {
+    const users = await User.findAll()
+    return res.status(200).json(users)
+  } catch (error) {
+    res.status(500).json(error)
+    console.log(error)
+  }
+}

@@ -65,7 +65,7 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
         }
         await cart.update({ total: totalPrice });
         cartData = {
-          id,
+          orderId: id,
           buyerId: userId,
           total: totalPrice,
           items: items.map((item: any) => ({
@@ -160,7 +160,7 @@ export const getSingleOrder = async (id: number) => {
     const { userId, totalAmount, status, payment, address, createdAt, updatedAt } = order.dataValues;
 
     const formattedOrder = {
-      id: order.dataValues.id,
+      orderId: order.dataValues.id,
       buyerId: userId,
       items: order.dataValues.items.map((item: any) => ({
         id: item.id,
@@ -241,7 +241,7 @@ export const getAllOrders = async (user: any) => {
         const { userId, totalAmount, status, payment, address, createdAt, updatedAt } = order.dataValues;
 
         return {
-          id: order.dataValues.id,
+          orderId: order.dataValues.id,
           buyerId: userId,
           items: order.dataValues.items.map((item: any) => ({
             id: item.id,
@@ -282,7 +282,7 @@ export const getAllOrdersByAdmin = async () => {
         const { userId, totalAmount, status, payment, createdAt, updatedAt } = order.dataValues;
 
         return {
-          id: order.dataValues.id,
+          orderId: order.dataValues.id,
           buyerId: userId,
           totalAmount,
           status,

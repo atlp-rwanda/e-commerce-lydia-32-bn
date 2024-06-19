@@ -119,7 +119,6 @@ usersRouter.post(
   loginController.login,
 );
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 
 /**
  * @swagger
@@ -195,9 +194,7 @@ usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
  */
 
 usersRouter.put('/users/block/:id', isRoleAdmin, blockUser);
-usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
 
-usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 /**
  * @swagger
  * /api/users/changepassword/:
@@ -275,7 +272,88 @@ usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
-usersRouter.put('/block/:id', isRoleAdmin, blockUser);
+
+/**
+* @swagger
+* /api/users:
+*   get:
+*     summary: Get all users (Admin only)
+*     description: Retrieves a list of all users in the system. This endpoint is restricted to users with the 'admin' role only.
+*     tags:
+*       - Users
+*     security:
+*       - bearerAuth: []
+*     responses:
+*       '200':
+*         description: Successful response
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: Users Retrieved succesfully
+*                 users:
+*                   type: array
+*                   items:
+*                     $ref: '#/components/schemas/User'
+*       '401':
+*         description: Unauthorized - No token provided or invalid token
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Error'
+*       '403':
+*         description: Forbidden - User does not have admin role
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Error'
+*       '404':
+*         description: User not found
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Error'
+*       '500':
+*         description: Internal Server Error
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Error'
+*
+* components:
+*   schemas:
+*     User:
+*       type: object
+*       properties:
+*         id:
+*           type: integer
+*           description: Unique identifier for the user
+*         firstName:
+*           type: string
+*           description: First name of the user
+*         lastName:
+*           type: string
+*           description: Last name of the user
+*         email:
+*           type: string
+*           description: Email address of the user
+*         # Add other user properties here
+*
+*     Error:
+*       type: object
+*       properties:
+*         message:
+*           type: string
+*
+*   securitySchemes:
+*     bearerAuth:
+*       type: http
+*       scheme: bearer
+*       bearerFormat: JWT
+*/
 
 /**
  * @swagger
@@ -460,3 +538,5 @@ usersRouter.get('/user', userAuthJWT, getUserCredentials);
  *         error:
  *           type: string
  */
+
+usersRouter.get('/')
