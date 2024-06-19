@@ -1,28 +1,19 @@
 import { Request, Response } from 'express';
 import * as orderService from '../../services/orderService/orderService.js';
 import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
-
-interface AddressData {
-  country: string;
-  city: string;
-  street: string;
-}
+import { orderSchema } from '../../validations/orderValidation.js';
 
 export const checkout = async (req: AuthenticatedRequest, res: Response) => {
   const { payment, address } = req.body;
   const currentUser = req.user;
 
   try {
-    if(payment === undefined) {
-      return res.status(404).json({
-        message: 'payment is required'
-      })
+    // Validate the request body against the Joi schema
+    const { error } = orderSchema.validate({ payment, address });
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
     }
-    if(address === undefined) {
-      return res.status(404).json({
-        message: 'address is required'
-      })
-    }
+
     const newOrder = await orderService.addToOrder(currentUser, payment, address);
 
     return res.status(201).json({ message: 'Order processed successfully', order: newOrder });

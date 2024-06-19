@@ -15,7 +15,15 @@ export class userService {
       throw new Error(`Validation failed: ${validationErrors.join(', ')}`);
     }
     try {
-      const user = await User.create(userDetails);
+      const expirationPeriod = 30 * 24 * 60; 
+      const passwordExpiresAt = new Date();
+      passwordExpiresAt.setMinutes(passwordExpiresAt.getMinutes() + expirationPeriod);
+  
+      const user = await User.create({
+        ...userDetails,
+        lastPasswordChange: new Date(),
+        passwordExpiresAt,
+      });
       return user.toJSON() as UserAttributes;
     } catch (error: any) {
       throw new Error(`Error creating user: ${error.message}`);
