@@ -6,7 +6,7 @@ import { UserService } from '../../services/registeruser.service.js';
 export const blockUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = await User.findByPk(id)
+    const user = await User.findByPk(id);
 
     if (user) {
       const [updatedRows, [updatedUser]] = await User.update(
