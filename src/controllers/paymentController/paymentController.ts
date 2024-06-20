@@ -84,7 +84,7 @@ class PaymentController {
       await PaymentService.createPayment(
         metadata.userId,
         metadata.orderId,
-        (session.amount_total ?? 0) / 100, 
+        (session.amount_total ?? 0) / 100,
         session.id,
         currency || 'usd',
       );
@@ -120,7 +120,7 @@ class PaymentController {
         const products = orderData?.dataValues?.items ?? [];
         const buyer = await User.findByPk(orderData?.dataValues?.userId);
         if (buyer && orderData) {
-          const toDate = new Date(); 
+          const toDate = new Date();
           const shippingDate = addDays(toDate, 15);
           const emailContent = `
           <!DOCTYPE html>
