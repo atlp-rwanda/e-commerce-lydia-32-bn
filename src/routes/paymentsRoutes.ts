@@ -15,11 +15,18 @@ export const paymentRouter = express.Router();
 
 /**
  * @swagger
- * /api/payment/pay:
+ * /api/payment/pay/{orderId}:
  *   post:
  *     summary: add new payment
  *     description: Endpoint to save customer payment.
  *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: The Order ID for the payment.
  *     requestBody:
  *       required: true
  *       content:
@@ -40,12 +47,17 @@ export const paymentRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-
-paymentRouter.post('/payment/pay', isPasswordNotExpired, userAuthJWT, isBuyer, PaymentController.makePaymentSession);
+paymentRouter.post(
+  '/payment/pay/:orderId',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  PaymentController.makePaymentSession,
+);
 
 /**
  * @swagger
- * /api/payment/success:
+ * /api/payment/success/{orderId}:
  *   get:
  *     summary: Handle payment success
  *     description: Endpoint to handle successful payment.
@@ -57,12 +69,12 @@ paymentRouter.post('/payment/pay', isPasswordNotExpired, userAuthJWT, isBuyer, P
  *           type: string
  *         required: true
  *         description: The Session Id for the payment.
- *       - in: query
+ *       - in: path
  *         name: orderId
  *         schema:
  *           type: string
  *         required: true
- *         description: The ID of the order for which the payment was successful.
+ *         description: The Order Id for the payment.
  *     responses:
  *       '200':
  *         description: Payment successful
@@ -81,11 +93,17 @@ paymentRouter.post('/payment/pay', isPasswordNotExpired, userAuthJWT, isBuyer, P
  *       '500':
  *         description: Internal server error
  */
-paymentRouter.get('/payment/success', isPasswordNotExpired, userAuthJWT, isBuyer, PaymentController.paymentSuccess);
+paymentRouter.get(
+  '/payment/success/:orderId',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  PaymentController.paymentSuccess,
+);
 
 /**
  * @swagger
- * /api/payment/cancel:
+ * /api/payment/cancel/{orderId}:
  *   get:
  *     summary: Handle payment cancellation
  *     description: Endpoint to handle payment cancellation.
@@ -97,12 +115,12 @@ paymentRouter.get('/payment/success', isPasswordNotExpired, userAuthJWT, isBuyer
  *           type: string
  *         required: true
  *         description: The Session ID for the payment.
- *       - in: query
+ *       - in: path
  *         name: orderId
- *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the order for which the payment was canceled.
+ *         required: true
+ *         description: The order Id for the payment.
  *     responses:
  *       '200':
  *         description: Payment canceled successfully
@@ -121,6 +139,12 @@ paymentRouter.get('/payment/success', isPasswordNotExpired, userAuthJWT, isBuyer
  *       '500':
  *         description: Internal server error
  */
-paymentRouter.get('/payment/cancel', isPasswordNotExpired, userAuthJWT, isBuyer, PaymentController.paymentCancel);
+paymentRouter.get(
+  '/payment/cancel/:orderId',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  PaymentController.paymentCancel,
+);
 
 export default paymentRouter;

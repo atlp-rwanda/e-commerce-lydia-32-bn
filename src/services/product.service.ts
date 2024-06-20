@@ -128,6 +128,28 @@ export class ProductService {
     }
   }
 
+  async updateProductQuantity(productId: number, quantity: number): Promise<Product | null> {
+    try {
+      const product = await Product.findByPk(productId);
+      if (!product) {
+        throw new Error('Product not found');
+      }
+      product.quantity = quantity;
+      const updatedProduct = await product.update(product);
+
+      notificationEmitter.removeAllListeners('productUpdated');
+      notificationEmitter.emit('productUpdated', product);
+
+      return updatedProduct;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error updating product: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred while updating product.');
+      }
+    }
+  }
+
   async deleteProduct(productId: number): Promise<void> {
     try {
       const product = await Product.findByPk(productId);

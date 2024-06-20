@@ -1,11 +1,3 @@
-// import Stripe from 'stripe';
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-//   apiVersion: '2024-04-10',
-// });
-
-// export default stripe;
-
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 
@@ -45,6 +37,10 @@ class StripeConfig {
 
   async deleteSession(sessionId: string) {
     await this.stripe.checkout.sessions.expire(sessionId);
+  }
+
+  async retrieveBalance() {
+    return this.stripe.balance.retrieve();
   }
 }
 
