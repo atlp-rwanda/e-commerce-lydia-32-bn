@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import http from 'http';
-import { Server } from 'socket.io';
+import { Server as SocketIOServer } from 'socket.io';
 import db from './config/db.js';
 import swaggerDocs from './utilis/swagger.js';
 import { usersRouter } from './routes/user.route.js';
@@ -14,12 +14,12 @@ import { wishListRouter } from './routes/wishListRoutes.js';
 import { notificationRouter } from './routes/notificationRoute.js';
 import { reviewRouter } from './routes/reviewroute.js';
 import { paymentRouter } from './routes/paymentsRoutes.js';
+import chatRouter from './routes/postRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
-import orderRoutes from './routes/orderRoute.js'
-import postRoutes from './routes/postRoutes.js';
-import './cronjobs/expiredProductsCron.js'
-import {startCronJob} from '../src/Jobs/passwordExpirationJob.js'
-
+import orderRoutes from './routes/orderRoute.js';
+import './cronjobs/expiredProductsCron.js';
+import { startCronJob } from '../src/Jobs/passwordExpirationJob.js';
+import chatApp from './utilis/Chat/chat.js';
 
 dotenv.config();
 
@@ -40,26 +40,6 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-const server = http.createServer(app);
-export const io = new Server(server);
-export const socket = new Server(server);
-
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
-});
-
-setTimeout(() => {
-  socket.emit('orderStatusUpdate', {
-    orderId: '12345',
-    orderStatus: 'Awaiting Payment',
-  });
-}, 5000);
-
-
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.get('/', (req, res) => {
@@ -79,10 +59,22 @@ app.use(
   usersRouter,
   wishListRouter,
   paymentRouter,
-  postRoutes,
+  chatRouter,
 );
 
+const server = http.createServer(app);
+export const io = new SocketIOServer(server, {
+  cors: {
+    origin: ['*', 'http://localhost:5173'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  },
+});
+
+chatApp();
+
 swaggerDocs(app, port);
-app.listen(port, () => {
+
+server.listen(port, () => {
   console.log(`app is running on http://localhost:${port}`);
 });

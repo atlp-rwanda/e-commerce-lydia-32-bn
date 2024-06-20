@@ -1,2 +1,4 @@
-#!/usr/bin/env sh
-. "${0%/*}/h"
+#!/bin/sh
+
+npm run lint:fix
+npm run format

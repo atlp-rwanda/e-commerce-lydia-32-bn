@@ -2,7 +2,7 @@ import express from 'express';
 import { sellerControllerInstance } from '../controllers/seller controller/sellerController.js';
 import { validateSellerProductRequest } from '../middleware/validateSearch.js';
 import { authSellerRole } from '../middleware/checkSellerRole.js';
-import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
+import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 
 export const sellerRouter = express.Router();
 
@@ -109,7 +109,7 @@ export const sellerRouter = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-sellerRouter.get('/seller/products',isPasswordNotExpired, sellerControllerInstance.getAllProductsBySeller);
+sellerRouter.get('/seller/products', isPasswordNotExpired, sellerControllerInstance.getAllProductsBySeller);
 
 /**
  * @swagger
@@ -179,15 +179,19 @@ sellerRouter.get('/seller/products',isPasswordNotExpired, sellerControllerInstan
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-sellerRouter.put('/seller/products/:productId/availability',isPasswordNotExpired, sellerControllerInstance.updateProductAvailability);
+sellerRouter.put(
+  '/seller/products/:productId/availability',
+  isPasswordNotExpired,
+  sellerControllerInstance.updateProductAvailability,
+);
 /**
  * @swagger
- * /api/products/available:
+ * /api/product/available:
  *   get:
  *     summary: Get available products in the store
  *     description: Retrieves a list of all available products
  *     tags:
- *       - Sellers
+ *       - Products
  *     responses:
  *       '200':
  *         description: Successful response
@@ -217,7 +221,7 @@ sellerRouter.put('/seller/products/:productId/availability',isPasswordNotExpired
  *               $ref: '#/components/schemas/Error'
  */
 
-sellerRouter.get('/products/available',isPasswordNotExpired, sellerControllerInstance.getAvailableProducts);
+sellerRouter.get('/product/available', sellerControllerInstance.getAvailableProducts);
 
 /**
  * @swagger

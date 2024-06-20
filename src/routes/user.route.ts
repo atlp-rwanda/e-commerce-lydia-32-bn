@@ -10,7 +10,7 @@ import { verifyTwoFactor } from '../controllers/userController/2Factor.controlle
 import { authenticateAndAuthorizeUserController } from '../middleware/authenticateAndAuthorizeUser.js';
 import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
 import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
-
+import { getUserCredentials } from '../controllers/userController/getCredentials.controller.js';
 
 export const usersRouter = express.Router();
 
@@ -23,7 +23,7 @@ export const usersRouter = express.Router();
 
 /**
  * @swagger
- * /api/register:
+ * /api/users/register:
  *   post:
  *     summary: Sign Up
  *     description: Register a new user.
@@ -42,11 +42,11 @@ export const usersRouter = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/User'
  */
-usersRouter.post('/register', UserController.createUser);
+usersRouter.post('/users/register', UserController.createUser);
 
 /**
  * @swagger
- * /api/verify:
+ * /api/users/verify:
  *   post:
  *     summary: Email Verification
  *     description: Verify user email
@@ -67,7 +67,7 @@ usersRouter.post('/register', UserController.createUser);
  *       '500':
  *         description: Internal server error
  */
-usersRouter.get('/verify', UserController.verifyUser);
+usersRouter.get('/users/verify', UserController.verifyUser);
 
 /**
  * @swagger
@@ -119,11 +119,10 @@ usersRouter.post(
   loginController.login,
 );
 usersRouter.get('/users/:id', UserController.getUserById);
-usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 
 /**
  * @swagger
- * /api/block/{id}:
+ * /api/users/block/{id}:
  *   put:
  *     summary: Block a user
  *     description: Blocks a user account and sends an email notification. Requires admin privileges.
@@ -194,13 +193,11 @@ usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
  * @returns {Promise<Response>} - Promise resolving with the response object
  */
 
-usersRouter.put('/block/:id', isRoleAdmin, blockUser);
-usersRouter.get('/users', adminAuthJWT, UserController.getAllUsers);
+usersRouter.put('/users/block/:id', isRoleAdmin, blockUser);
 
-usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 /**
  * @swagger
- * /api/changepassword/:
+ * /api/users/changepassword/:
  *   patch:
  *     summary: User changes their password
  *     description: Change password with the current password
@@ -235,7 +232,7 @@ usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
  *         description: Internal server error
  */
 
-usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword);
+usersRouter.patch('/users/changepassword', userAuthJWT, UserController.changePassword);
 
 /**
  * @swagger
@@ -251,10 +248,7 @@ usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword)
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               phone: 
- *                 type: string
+ *              $ref: '#/components/schemas/User'
  *     responses:
  *       '200':
  *         description: Information updated successfully
@@ -272,14 +266,77 @@ usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword)
  *         description: Internal server error
  */
 
-
 usersRouter.patch('/users/update', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.get('/reset', UserController.resetPassword);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
-usersRouter.put('/block/:id', isRoleAdmin, blockUser);
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get all users (Admin only)
+ *     description: Retrieves a list of all users in the system. This endpoint is restricted to users with the 'admin' role only.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Users Retrieved succesfully
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       '401':
+ *         description: Unauthorized - No token provided or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '403':
+ *         description: Forbidden - User does not have admin role
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *
+ * components:
+ *   schemas:
+ *     Error:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 /**
  * @swagger
@@ -305,7 +362,7 @@ usersRouter.put('/block/:id', isRoleAdmin, blockUser);
 usersRouter.post('/users/logout', userAuthJWT, UserController.logout);
 /**
  * @swagger
- * /api/factor:
+ * /api/users/factor:
  *   post:
  *     summary: Verify two-factor authentication code
  *     tags: [Users]
@@ -346,16 +403,16 @@ usersRouter.post('/users/logout', userAuthJWT, UserController.logout);
  * @returns {Promise<void>} A Promise that resolves when the 2FA verification operation is complete.
  */
 
-usersRouter.post('/factor', verifyTwoFactor);
+usersRouter.post('/users/factor', verifyTwoFactor);
 
 /**
  * @swagger
- * /api/users/products/{productId}:
+ * /api/product/{productId}:
  *   get:
- *     summary: Get a specific product for a buyer
+ *     summary: Get a specific available product
  *     description: Retrieves details of a specific available product
  *     tags:
- *       - Users
+ *       - Products
  *     parameters:
  *       - in: path
  *         name: productId
@@ -397,76 +454,72 @@ usersRouter.post('/factor', verifyTwoFactor);
  *               $ref: '#/components/schemas/Error'
  */
 
-usersRouter.get('/users/products/:productId', validateBuyerProductRequest, BuyerRequestInstance.getBuyerProduct);
+usersRouter.get('/product/:productId', BuyerRequestInstance.getBuyerProduct);
+usersRouter.get('/user', userAuthJWT, getUserCredentials);
+
 /**
  * @swagger
- * /api/changepassword:
- *   patch:
- *     summary: Change user's password
- *     tags: [Users]
+ * /api/user:
+ *   get:
+ *     summary: Get current user's credentials
+ *     description: Retrieves the credentials of the currently authenticated user.
+ *     tags:
+ *       - Users
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ChangePasswordRequest'
+ *       - cookieAuth: []
  *     responses:
  *       '200':
- *         description: Password changed successfully
+ *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
+ *               $ref: '#/components/schemas/User'
  *       '401':
  *         description: Unauthorized
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       '404':
- *         description: User not found
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Authentication required. Please log in.'
+ *       '403':
+ *         description: Forbidden
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
+ *             examples:
+ *               invalidToken:
+ *                 value:
+ *                   error: 'Failed to authenticate token, Please Login again'
+ *               notVerified:
+ *                 value:
+ *                   error: 'You are not Verified please verify your email at /verify'
  *       '500':
- *         description: Internal server error
+ *         description: Internal Server Error
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  *
  * components:
- *   schemas:
- *     ChangePasswordRequest:
- *       type: object
- *       required:
- *         - newPassword
- *         - oldPassword
- *       properties:
- *         newPassword:
- *           type: string
- *         oldPassword:
- *           type: string
- *
- *     SuccessResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *
- *     ErrorResponse:
- *       type: object
- *       properties:
- *         error:
- *           type: string
- *
  *   securitySchemes:
  *     bearerAuth:
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
+ *     cookieAuth:
+ *       type: apiKey
+ *       in: cookie
+ *       name: jwt
+ *
+ *   schemas:
+ *     Error:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
  */
-usersRouter.patch('/changepassword', userAuthJWT, UserController.changePassword);
+
+usersRouter.get('/');

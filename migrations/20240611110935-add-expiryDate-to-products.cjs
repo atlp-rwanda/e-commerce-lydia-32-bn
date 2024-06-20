@@ -11,5 +11,5 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.removeColumn('products', 'expiryDate');
-  }
+  },
 };

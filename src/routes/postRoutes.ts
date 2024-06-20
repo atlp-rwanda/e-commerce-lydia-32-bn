@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { createMessage, viewAllMessage } from '../controllers/postController/messageController.js';
+import { sendMessages, getPastMessages } from '../controllers/chatController/chat-controller.js';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 
 const postRoutes = Router();
 
-postRoutes.get('/post', viewAllMessage);
-postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
+postRoutes.get('/post', getPastMessages);
+postRoutes.post('/post/add', isPasswordNotExpired, isLoggedIn, sendMessages);
 
 /**
  * @swagger
@@ -14,7 +14,7 @@ postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
  *   get:
  *     summary: Get all posts
  *     description: Retrieves all posts from the database.
- *     tags: [Posts]
+ *     tags: [ChatApp]
  *     responses:
  *       200:
  *         description: Successful response
@@ -44,6 +44,8 @@ postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
  *           type: string
  *         name:
  *           type: string
+ *         room:
+ *           type: string
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -65,14 +67,13 @@ postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
  * @throws {Error} - If there is an error retrieving posts
  */
 
-
 /**
  * @swagger
  * /api/post/add:
  *   post:
  *     summary: Create a new post
  *     description: Creates a new post in the database. Requires authentication.
- *     tags: [Posts]
+ *     tags: [ChatApp]
  *     requestBody:
  *       required: true
  *       content:
@@ -118,6 +119,8 @@ postRoutes.post('/post/add',isPasswordNotExpired, isLoggedIn, createMessage);
  *         content:
  *           type: string
  *         name:
+ *           type: string
+ *         room:
  *           type: string
  *         createdAt:
  *           type: string

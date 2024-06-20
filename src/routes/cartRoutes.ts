@@ -6,16 +6,16 @@ import {
   deleteCartItem,
   updateCartItem,
 } from '../controllers/cartController/cartControllers.js';
-import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
+import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 
 const cartRoutes = Router();
 
-cartRoutes.get('/cart', isLoggedIn,isPasswordNotExpired, viewUserCart);
-cartRoutes.post('/cart/add', isLoggedIn,isPasswordNotExpired, addItemToCart);
-cartRoutes.post('/cart/update/:cartItemId',isPasswordNotExpired, isLoggedIn, updateCartItem);
-cartRoutes.delete('/cart/delete/:cartItemId',isPasswordNotExpired, isLoggedIn, deleteCartItem);
-cartRoutes.delete('/cart/delete', isLoggedIn,isPasswordNotExpired, deleteCart);
+cartRoutes.get('/cart', isLoggedIn, isPasswordNotExpired, viewUserCart);
+cartRoutes.post('/cart/add', isLoggedIn, isPasswordNotExpired, addItemToCart);
+cartRoutes.post('/cart/update/:cartItemId', isPasswordNotExpired, isLoggedIn, updateCartItem);
+cartRoutes.delete('/cart/delete/:cartItemId', isPasswordNotExpired, isLoggedIn, deleteCartItem);
+cartRoutes.delete('/cart/delete', isLoggedIn, isPasswordNotExpired, deleteCart);
 
 /**
  * @swagger
@@ -227,6 +227,15 @@ cartRoutes.delete('/cart/delete', isLoggedIn,isPasswordNotExpired, deleteCart);
  *                 message:
  *                   type: string
  *                 error:
+ *                   type: string
+ *       '404':
+ *         description: you have no cart to delete
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
  *                   type: string
  *       '500':
  *         description: Internal Server Error

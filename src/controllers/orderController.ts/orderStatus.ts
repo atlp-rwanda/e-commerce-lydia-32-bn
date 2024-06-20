@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { getOrderByIdAndBuyerId, updateOrderStatus } from '../../services/orderService/orderService.js';
-import { io } from '../../server.js';
 import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
 
 class OrderStatusController {
@@ -35,11 +34,6 @@ class OrderStatusController {
       if (!updatedOrder) {
         return res.status(404).json({ message: 'Order not found' });
       }
-
-      io.emit('orderStatusUpdate', {
-        orderId: updatedOrder.id,
-        orderStatus: updatedOrder.status,
-      });
 
       return res.status(200).json({
         message: 'Order status updated successfully',
