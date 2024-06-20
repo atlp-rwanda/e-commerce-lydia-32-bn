@@ -26,19 +26,8 @@ declare global {
 }
 
 const userAuthJWT = (req: Request, res: Response, next: NextFunction) => {
-  let token: string | undefined;
 
-  const authorizationHeader = req.headers.authorization;
-
-  if (authorizationHeader) {
-    const parts = authorizationHeader.split(' ');
-    if (parts.length === 2 && parts[0] === 'Bearer') {
-      token = parts[1];
-    }
-  }
-  if (!token) {
-    token = req.cookies.jwt;
-  }
+ let token = req.cookies.jwt;
   if (!token) {
     return res.status(401).json({ error: 'Authentication required. Please log in.' });
   }
