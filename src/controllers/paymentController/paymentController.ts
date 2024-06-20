@@ -69,7 +69,7 @@ class PaymentController {
               vendorId: product!.userId,
             },
           },
-          unit_amount: Math.round(product!.price * 100),
+          unit_amount: Math.round(product!.price),
         },
         quantity: product!.orderQuantity,
       }));
