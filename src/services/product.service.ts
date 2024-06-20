@@ -77,16 +77,48 @@ export class ProductService {
 
   async updateProduct(productId: number, updates: Partial<Product>): Promise<Product | null> {
     try {
+      let updatedProduct: any;
       const product = await Product.findByPk(productId);
       if (!product) {
         throw new Error('Product not found');
       }
-      const updatedProduct = await product.update(updates);
+      const { productName, description, productCategory, price, quantity, images, dimensions } = updates;
+
+      if (productName) {
+        updatedProduct = await product.update({ productName });
+      }
+      if (description) {
+        updatedProduct = await product.update({ description });
+      }
+      if (productCategory) {
+        updatedProduct = await product.update({ productCategory });
+      }
+      if (price) {
+        updatedProduct = await product.update({ price });
+      }
+      if (quantity) {
+        updatedProduct = await product.update({ quantity });
+      }
+      if (images) {
+        updatedProduct = await product.update({ images });
+      }
+      if (dimensions) {
+        updatedProduct = await product.update({ dimensions });
+      }
+      // const updatedProduct = await product.update(updates);
 
       notificationEmitter.removeAllListeners('productUpdated');
       notificationEmitter.emit('productUpdated', product);
 
-      return updatedProduct;
+      const { dataValues } = updatedProduct;
+      const { userId, ...rest } = dataValues;
+
+      const formattedProduct = {
+        ...rest,
+        sellerId: userId,
+      };
+
+      return formattedProduct;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Error updating product: ${error.message}`);
@@ -145,6 +177,7 @@ export class ProductService {
     }
   }
 
+  // @ts-ignore
   async getProductByFields(fields: Partial<ProductAttributes>): Promise<ProductAttributes | null> {
     try {
       const product = await Product.findOne({
@@ -152,7 +185,25 @@ export class ProductService {
           [Op.and]: fields,
         },
       });
-      return product ? (product.toJSON() as ProductAttributes) : null;
+      if (product) {
+        const formattedProduct = {
+          images: product.dataValues.images,
+          productId: product.dataValues.productId,
+          sellerId: product.dataValues.userId,
+          productName: product.dataValues.productName,
+          description: product.dataValues.description,
+          productCategory: product.dataValues.productCategory,
+          price: product.dataValues.price,
+          quantity: product.dataValues.quantity,
+          dimensions: product.dataValues.dimensions,
+          isAvailable: product.dataValues.isAvailable,
+          createdAt: product.dataValues.createdAt,
+          updatedAt: product.dataValues.updatedAt,
+        };
+        // @ts-ignore
+        return formattedProduct;
+      }
+      // return product ? (product.toJSON() as ProductAttributes) : null;
     } catch (error: any) {
       throw new Error(`Error fetching product by fields: ${error.message}`);
     }

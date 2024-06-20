@@ -15,7 +15,15 @@ export class userService {
       throw new Error(`Validation failed: ${validationErrors.join(', ')}`);
     }
     try {
-      const user = await User.create(userDetails);
+      const expirationPeriod = 30 * 24 * 60;
+      const passwordExpiresAt = new Date();
+      passwordExpiresAt.setMinutes(passwordExpiresAt.getMinutes() + expirationPeriod);
+
+      const user = await User.create({
+        ...userDetails,
+        lastPasswordChange: new Date(),
+        passwordExpiresAt,
+      });
       return user.toJSON() as UserAttributes;
     } catch (error: any) {
       throw new Error(`Error creating user: ${error.message}`);
@@ -57,21 +65,66 @@ export class userService {
 
   async updateUserInfo(userId: number, updates: Partial<UserAttributes>): Promise<UserAttributes | null> {
     try {
-      const validateUpdates = validateUserupdates(updates);
-
       const user = await User.findByPk(userId);
-      if (user) {
-        const userData = user.toJSON() as UserAttributes;
-        if (!userData.isverified) {
-          throw new Error('Error updating user: user not verified');
-        }
-        if (validateUpdates.length > 0) {
-          // throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
-        }
-        await user.update(updates);
-        return user.toJSON() as UserAttributes;
+      if (!user) {
+        throw new Error('User not found');
       }
-      return null;
+
+      const userData = user.toJSON() as UserAttributes;
+      if (!userData.isverified) {
+        throw new Error('Error updating user: user not verified');
+      }
+
+      const validateUpdates = validateUserupdates(updates);
+      if (validateUpdates.length > 0) {
+        throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
+      }
+
+      const { firstname, othername, email, phone, password, street, city, state, postal_code, country } = updates;
+
+      let updatedUser: any;
+
+      if (firstname) {
+        updatedUser = await user.update({ firstname });
+      }
+      if (othername) {
+        updatedUser = await user.update({ othername });
+      }
+      if (email) {
+        const existingEmail = await User.findOne({
+          where: {
+            email,
+          },
+        });
+        if (existingEmail) {
+          throw new Error('Email already exists');
+        }
+        updatedUser = await user.update({ email });
+      }
+      if (phone) {
+        updatedUser = await user.update({ phone });
+      }
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        updatedUser = await user.update({ password: hashedPassword });
+      }
+      if (street) {
+        updatedUser = await user.update({ street });
+      }
+      if (city) {
+        updatedUser = await user.update({ city });
+      }
+      if (state) {
+        updatedUser = await user.update({ state });
+      }
+      if (postal_code) {
+        updatedUser = await user.update({ postal_code });
+      }
+      if (country) {
+        updatedUser = await user.update({ country });
+      }
+
+      return updatedUser.toJSON() as UserAttributes;
     } catch (error: any) {
       throw new Error(`Error updating user: ${error.message}`);
     }
@@ -121,28 +174,28 @@ export class userService {
       const hashedPassword = await bcrypt.hash(newPassword, salt);
       const { error } = passwordValidation.validate({ password: newPassword });
       const user = await User.findByPk(userId);
-  
+
       if (user) {
         const userData = user.toJSON();
         const match = await bcrypt.compare(oldPassword, userData.password);
-  
+
         if (match) {
           if (error) {
             throw new Error(`Validation:${error.message}`);
           }
-          
+
           // Set password expiration period to 30 days
           const expirationPeriod = 30 * 24 * 60; // 30 days in minutes
           const passwordExpiresAt = new Date();
           passwordExpiresAt.setMinutes(passwordExpiresAt.getMinutes() + expirationPeriod);
-  
+
           await user.update({
             password: hashedPassword,
             lastPasswordChange: new Date(),
             passwordExpiresAt,
             isBlocked: false,
           });
-  
+
           const content = `
             <p>Hi ${userData.firstname},</p>
             <div>Congratulations! Your password has been successfully changed.</div>
@@ -151,7 +204,7 @@ export class userService {
             <div>Best regards,</div>
             <div>The E-Commerce Lydia Team</div>
           `;
-  
+
           sendEmailMessage(userData.email, 'Password Changed', content);
           return { code: 200, message: 'Password changed successfully' };
         }
@@ -161,7 +214,7 @@ export class userService {
       throw new Error(`Failed to change password: ${error.message}`);
     }
   }
-  
+
   async getUsersWithExpiredPasswords(): Promise<UserAttributes[]> {
     try {
       const currentDate = new Date();
@@ -179,6 +232,5 @@ export class userService {
     }
   }
 }
-
 
 export const UserService = new userService();

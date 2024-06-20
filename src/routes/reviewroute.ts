@@ -1,8 +1,8 @@
-import express from "express";
-import {reviewControllers} from "../controllers/reviewController/review.controller.js";
-import { isLoggedIn } from "../middleware/authMiddleware.js";
-import { BuyerMiddleware} from "../middleware/buyerMiddleware.js";
-import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
+import express from 'express';
+import { reviewControllers } from '../controllers/reviewController/review.controller.js';
+import { isLoggedIn } from '../middleware/authMiddleware.js';
+import { BuyerMiddleware } from '../middleware/buyerMiddleware.js';
+import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
 
 export const reviewRouter = express.Router();
 /**
@@ -64,5 +64,4 @@ export const reviewRouter = express.Router();
  *
  */
 
- reviewRouter.post('/review/create',isLoggedIn,isPasswordNotExpired, BuyerMiddleware, reviewControllers.addReview)
- 
+reviewRouter.post('/review/create', isLoggedIn, isPasswordNotExpired, BuyerMiddleware, reviewControllers.addReview);

@@ -24,16 +24,27 @@ export interface ProductCreationAttributes
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
   public productId!: number;
+
   public userId!: number;
+
   public productName!: string;
+
   public description!: string;
+
   public productCategory!: string;
+
   public price!: number;
+
   public quantity!: number;
+
   public images!: string;
+
   public dimensions?: string;
+
   public isAvailable?: boolean;
+
   public createdAt!: Date;
+
   public updatedAt!: Date;
 
   public expiryDate!: Date;

@@ -1,8 +1,8 @@
-import express from "express";
-import PaymentController from '../controllers/paymentController/paymentController.js'
-import { isBuyer } from "../middleware/isBuyerMiddleware.js";
-import {isPasswordNotExpired} from '../middleware/isPasswordExpired.js'
-import { userAuthJWT } from "../middleware/verfication.middleware.js";
+import express from 'express';
+import PaymentController from '../controllers/paymentController/paymentController.js';
+import { isBuyer } from '../middleware/isBuyerMiddleware.js';
+import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
+import { userAuthJWT } from '../middleware/verfication.middleware.js';
 
 export const paymentRouter = express.Router();
 

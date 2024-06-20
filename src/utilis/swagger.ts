@@ -38,7 +38,6 @@ const options: swaggerJsdoc.Options = {
             email: { type: 'string' },
             phone: { type: 'string' },
             password: { type: 'string' },
-            usertype: { type: 'boolean' },
             street: { type: 'string' },
             city: { type: 'string' },
             state: { type: 'string' },

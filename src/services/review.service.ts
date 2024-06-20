@@ -35,9 +35,7 @@ class ReviewServices {
 
       for (const order of orders) {
         const products: any[] =
-          typeof order.dataValues.items === 'string'
-            ? JSON.parse(order.dataValues.items)
-            : order.dataValues.items;
+          typeof order.dataValues.items === 'string' ? JSON.parse(order.dataValues.items) : order.dataValues.items;
 
         if (!products || !Array.isArray(products)) {
           continue;

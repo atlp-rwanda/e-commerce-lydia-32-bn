@@ -6,11 +6,11 @@ module.exports = {
     await queryInterface.addColumn('users', 'passwordExpiresAt', {
       type: Sequelize.DATE,
       allowNull: false,
-      defaultValue: Sequelize.fn('NOW')
+      defaultValue: Sequelize.fn('NOW'),
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.removeColumn('users', 'passwordExpiresAt');
-  }
+  },
 };

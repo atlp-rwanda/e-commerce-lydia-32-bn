@@ -27,7 +27,7 @@ class notificationController {
     }
 
     const userId = req.user.id;
-    const id = req.params.id;
+    const { id } = req.params;
 
     try {
       const notification = await notificationService.getNotificationByIdAndUserId(Number(id), userId);
@@ -40,7 +40,7 @@ class notificationController {
 
   updateReadStatus = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = req.params.id;
+      const { id } = req.params;
 
       const notification = await Notification.findByPk(Number(id));
 

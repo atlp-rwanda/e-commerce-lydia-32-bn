@@ -35,7 +35,7 @@ class userController {
 
       const token = generateToken(res, user.id, email, firstname);
 
-      const verificationUrl = `${process.env.FRONTEND_URL}/api/verify?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/users/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>
@@ -101,8 +101,8 @@ class userController {
 
   changePassword = async (req: Request, res: Response) => {
     try {
-      const { newPassword, oldPassword} = req.body;
-      const userId = parseInt(req.userId as string)
+      const { newPassword, oldPassword } = req.body;
+      const userId = parseInt(req.userId as string);
       const user = await UserService.changePassword(userId, oldPassword, newPassword);
 
       if (user) {
@@ -140,13 +140,12 @@ class userController {
   updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
       const updates = req.body;
-      const userId = parseInt(req.userId as string)
+      const userId = parseInt(req.userId as string);
       const { userId: _, email, password, ...validUpdates } = updates;
 
-      const user = await UserService.updateUserInfo(userId, validUpdates);
+      const user = await UserService.updateUserInfo(userId, updates);
       if (user) {
         return res.status(200).json({ message: 'User updated successfully', user });
-        res.status(200).json({ message: 'User updated successfully:', user });
       }
       return res.status(404).json({ error: 'User not found' });
     } catch (error: any) {
