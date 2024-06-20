@@ -47,7 +47,13 @@ export const paymentRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-paymentRouter.post('/payment/pay/:orderId',isPasswordNotExpired, userAuthJWT, isBuyer, PaymentController.makePaymentSession);
+paymentRouter.post(
+  '/payment/pay/:orderId',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  PaymentController.makePaymentSession,
+);
 
 /**
  * @swagger
@@ -63,7 +69,7 @@ paymentRouter.post('/payment/pay/:orderId',isPasswordNotExpired, userAuthJWT, is
  *           type: string
  *         required: true
  *         description: The Session Id for the payment.
-*       - in: path
+ *       - in: path
  *         name: orderId
  *         schema:
  *           type: string
@@ -87,7 +93,13 @@ paymentRouter.post('/payment/pay/:orderId',isPasswordNotExpired, userAuthJWT, is
  *       '500':
  *         description: Internal server error
  */
-paymentRouter.get('/payment/success/:orderId', isPasswordNotExpired,userAuthJWT, isBuyer, PaymentController.paymentSuccess);
+paymentRouter.get(
+  '/payment/success/:orderId',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  PaymentController.paymentSuccess,
+);
 
 /**
  * @swagger
@@ -127,6 +139,12 @@ paymentRouter.get('/payment/success/:orderId', isPasswordNotExpired,userAuthJWT,
  *       '500':
  *         description: Internal server error
  */
-paymentRouter.get('/payment/cancel/:orderId',isPasswordNotExpired, userAuthJWT, isBuyer, PaymentController.paymentCancel);
+paymentRouter.get(
+  '/payment/cancel/:orderId',
+  isPasswordNotExpired,
+  userAuthJWT,
+  isBuyer,
+  PaymentController.paymentCancel,
+);
 
 export default paymentRouter;

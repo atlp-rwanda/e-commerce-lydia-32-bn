@@ -12,18 +12,13 @@ import { OrderStatusControllerInstance } from '../orderController.ts/orderStatus
 import sendEmailMessage from '../../helpers/sendEmail.js';
 import { OrderStatus } from '../../utilis/orderStatusConstants.js';
 
-
 dotenv.config();
 
 class PaymentController {
   async makePaymentSession(req: Request, res: Response) {
-    let { currency } = req.body;
-    const userId = req.userId;
+    const { currency } = req.body;
+    const { userId } = req;
     const orderId = Number(req.params.orderId);
-   // orderId = Number(orderId);
-    console.log('Order ID ', req.params.orderId);
-    console.log('UserId ', userId);
-    console.log('Order ', orderId);
     if (!userId || isNaN(orderId)) {
       return res.status(400).json({ message: 'Invalid userId or orderId' });
     }
@@ -37,11 +32,11 @@ class PaymentController {
     const cancel_url = `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`;
 
     try {
-      const orderData = await getOrderByIdAndBuyerId(String(orderId),Number(userId));
+      const orderData = await getOrderByIdAndBuyerId(String(orderId), Number(userId));
       if (!orderData) {
         return res.status(404).json({ message: 'Order not found' });
       }
-      if (orderData.dataValues.status==='Paid') {
+      if (orderData.dataValues.status === 'Paid') {
         return res.status(404).json({ message: 'Order Payment already done !' });
       }
 
@@ -54,9 +49,8 @@ class PaymentController {
               ...productDetail.dataValues,
               orderQuantity: product.quantity,
             };
-          } else {
-            return null;
           }
+          return null;
         }),
       ).then((results) => results.filter((result) => result !== null));
 
@@ -90,8 +84,7 @@ class PaymentController {
       await PaymentService.createPayment(
         metadata.userId,
         metadata.orderId,
-        //parseFloat((session.amount_total ?? 0) / 100).toFixed(2),
-        (session.amount_total ?? 0) / 100, // amount in original currency
+        (session.amount_total ?? 0) / 100, 
         session.id,
         currency || 'usd',
       );
@@ -107,10 +100,7 @@ class PaymentController {
   async paymentSuccess(req: Request, res: Response) {
     const orderId = req.params.orderId as string;
     const sessionId = req.query.sessionId as string;
-    const userId = req.userId;
-    console.log('OrderId ', orderId);
-    console.log('UserId ', userId);
-    console.log('SessionId ', sessionId);
+    const { userId } = req;
 
     if (!userId || !orderId || !sessionId) {
       return res.status(400).json({ message: 'Missing required parameters' });
@@ -123,23 +113,16 @@ class PaymentController {
       }
 
       const session = await StripeConfig.checkPaymentStatus(sessionId);
-      console.log(session);
       if (session.payment_status === 'paid') {
-        await PaymentService.updatePaymentStatus(
-          Number(userId),
-          Number(orderId),
-          sessionId,
-          PaymentStatus.Completed,
-        );
+        await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), sessionId, PaymentStatus.Completed);
 
         const orderData = await Order.findByPk(Number(orderId));
         const products = orderData?.dataValues?.items ?? [];
         const buyer = await User.findByPk(orderData?.dataValues?.userId);
-       // console.log('Order data ', orderData)
         if (buyer && orderData) {
-          const toDate = new Date(); // Assuming toDate is available in your orderData or can be fetched
+          const toDate = new Date(); 
           const shippingDate = addDays(toDate, 15);
-         const emailContent = `
+          const emailContent = `
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -164,12 +147,16 @@ class PaymentController {
             </ul>
             <h2>Items Purchased:</h2>
             <ul>
-              ${orderData?.dataValues?.items.map(item => `
+              ${orderData?.dataValues?.items
+                .map(
+                  (item) => `
               <li>
                 <strong>Product Name:</strong> ${item.productName}<br>
                 <strong>Quantity:</strong> ${item.quantity}<br>
                 <strong>Price:</strong> ${item.price} USD
-              </li>`).join('')}
+              </li>`,
+                )
+                .join('')}
             </ul>
             <h2>Shipping Information:</h2>
             <ul>
@@ -192,23 +179,18 @@ class PaymentController {
           </body>
           </html>
           `;
-           console.log('Email  ', buyer.dataValues.email);
-          await sendEmailMessage(buyer.dataValues.email, "Your Order Has Been Placed Successfully!", emailContent);
+          await sendEmailMessage(buyer.dataValues.email, 'Your Order Has Been Placed Successfully!', emailContent);
         }
 
         // Notify product owners
         await Promise.all(
           products.map(async (product: { productId: number; quantity: number }) => {
             const productDetail = await productService.getProductById(product.productId);
-           // console.log('Product detail ', productDetail)
             if (productDetail) {
               const user = await User.findByPk(productDetail.dataValues.userId);
-              console.log('Seller ', productDetail.dataValues.userId);
-              console.log('Buyer ', buyer);
               if (user && buyer) {
                 const userEmail = user.dataValues.email;
-                console.log('Seller Email ', userEmail);
-                 const content = `
+                const content = `
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>
@@ -249,16 +231,19 @@ class PaymentController {
                 </body>
                 </html>
                 `;
-                 await sendEmailMessage(userEmail, `Product ${productDetail.dataValues.productName} was ordered`, content);
+                await sendEmailMessage(
+                  userEmail,
+                  `Product ${productDetail.dataValues.productName} was ordered`,
+                  content,
+                );
               }
             }
-          })
+          }),
         );
         const orderUpdateResponse = await OrderStatusControllerInstance.updateOrderStatus(
           { params: { orderId: String(orderId) }, body: { status: OrderStatus.Paid } } as unknown as Request,
           res,
         );
-        //res.status(200).json({ message: 'Payment successful and order updated' });
       } else {
         return res.status(400).json({ message: 'Payment not successful' });
       }
@@ -272,7 +257,7 @@ class PaymentController {
   async paymentCancel(req: Request, res: Response) {
     const orderId = req.params.orderId as string;
     const sessionId = req.query.sessionId as string;
-    const userId = req.userId;
+    const { userId } = req;
 
     if (!userId || !orderId || !sessionId) {
       return res.status(400).json({ message: 'Missing required parameters' });
@@ -285,12 +270,7 @@ class PaymentController {
         return res.status(404).json({ message: 'Payment not found' });
       }
 
-      await PaymentService.updatePaymentStatus(
-        Number(userId),
-        Number(orderId),
-        sessionId,
-        PaymentStatus.Canceled,
-      );
+      await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), sessionId, PaymentStatus.Canceled);
 
       await StripeConfig.deleteSession(sessionId);
       return res.status(200).json({ message: 'Payment canceled' });

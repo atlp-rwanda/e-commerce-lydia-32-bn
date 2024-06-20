@@ -128,7 +128,7 @@ export class ProductService {
     }
   }
 
-    async updateProductQuantity(productId: number, quantity: number): Promise<Product | null> {
+  async updateProductQuantity(productId: number, quantity: number): Promise<Product | null> {
     try {
       const product = await Product.findByPk(productId);
       if (!product) {
@@ -149,6 +149,7 @@ export class ProductService {
       }
     }
   }
+
   async deleteProduct(productId: number): Promise<void> {
     try {
       const product = await Product.findByPk(productId);

@@ -101,7 +101,7 @@ class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implem
           onUpdate: 'CASCADE',
         },
         amount: {
-          type: new DataTypes.FLOAT,
+          type: new DataTypes.FLOAT(),
           allowNull: false,
         },
         currency: {
