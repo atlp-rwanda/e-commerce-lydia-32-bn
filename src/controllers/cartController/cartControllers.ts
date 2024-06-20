@@ -26,7 +26,7 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
         message: "Quantity can't exceed product stock",
       });
     }
-    if (quantity <= 0) {
+    if (quantity <= 0 || !quantity) {
       return res.status(400).json({
         message: 'Invalid product quantity',
       });
