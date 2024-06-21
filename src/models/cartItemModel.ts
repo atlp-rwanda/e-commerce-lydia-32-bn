@@ -52,6 +52,17 @@ CartItem.init(
   {
     sequelize,
     modelName: 'cartItems',
+    hooks: {
+      afterCreate: (cartItem: CartItem) => {
+        notificationEmitter.emit('cartitemAdded', cartItem);
+      },
+      afterUpdate: (cartItem: CartItem) => {
+        notificationEmitter.emit('cartitemUpdated', cartItem);
+      },
+      afterDestroy: (cartItem: CartItem) => {
+        notificationEmitter.emit('cartitemDeleted', cartItem);
+      },
+    },
   },
 );
 

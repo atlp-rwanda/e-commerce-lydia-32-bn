@@ -15,9 +15,6 @@ const options: swaggerJsdoc.Options = {
         url: 'http://localhost:3000',
       },
       {
-        url: 'https://e-commerce-lydia-32-bn.onrender.com',
-      },
-      {
         url: 'https://team-lydia-demo.onrender.com',
       },
     ],

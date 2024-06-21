@@ -20,6 +20,7 @@ import orderRoutes from './routes/orderRoute.js';
 import './cronjobs/expiredProductsCron.js';
 import { startCronJob } from '../src/Jobs/passwordExpirationJob.js';
 import chatApp from './utilis/Chat/chat.js';
+import './handles/notifications.service.js';
 
 dotenv.config();
 

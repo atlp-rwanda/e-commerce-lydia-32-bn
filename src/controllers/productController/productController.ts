@@ -78,7 +78,8 @@ class ProductController {
         return;
       }
 
-      if (product.userId !== sellerId) {
+      //@ts-ignore
+      if (product.sellerId !== sellerId) {
         res.status(403).json({ message: 'You do not own this product, therefore you cannot update it' });
         return;
       }
