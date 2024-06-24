@@ -1,6 +1,5 @@
-import { Model } from 'sequelize';
-import CartItem, { CartItemAttributes } from '../models/cartItemModel.js';
-import Cart, { CartAttributes } from '../models/cartModel.js';
+import CartItem from '../models/cartItemModel.js';
+import Cart from '../models/cartModel.js';
 import Product from '../models/productModel.js';
 import { UserAttributes } from '../models/userModel.js';
 
@@ -175,7 +174,6 @@ export const updateCartItem = async (cartItemId: number, quantity: number) => {
 
     await cartItem.update({ quantity });
 
-    // Return the updated cartItem
     return await CartItem.findByPk(cartItemId);
   } catch (error: any) {
     console.error('Error updating cart item:', error.message);

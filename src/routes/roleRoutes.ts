@@ -30,7 +30,7 @@ export const rolesRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/create', RoleController.createRole);
+rolesRouter.post('/roles/create', isRoleAdmin, RoleController.createRole);
 
 /**
  * @swagger
@@ -316,4 +316,4 @@ rolesRouter.post('/roles/assign/:id', isRoleAdmin, RoleController.assignRoleToUs
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.delete('/permissions/delete/:id', RoleController.deletePermission);
+rolesRouter.delete('/permissions/delete/:id', isRoleAdmin, RoleController.deletePermission);
