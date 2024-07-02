@@ -80,7 +80,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
 
     generateToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
 
-    return res.status(200).json({ message: 'login successfully' });
+    return res.status(200).json({ message: 'login successfully', user });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'server error' });

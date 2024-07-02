@@ -19,6 +19,7 @@ export const authSellerRole = async (req: AuthenticatedRequest, res: Response, n
     const decodedToken = jwt.verify(token, process.env.VERIFICATION_JWT_SECRET as string) as JwtPayload;
     const userId = decodedToken.userId ? decodedToken.userId : null;
 
+    console.log('my userId is :', userId)
     const user = (await User.findByPk(userId)) as any;
     const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 

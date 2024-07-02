@@ -30,7 +30,7 @@ export const rolesRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/create', RoleController.createRole);
+rolesRouter.post('/roles/create',isRoleAdmin, RoleController.createRole);
 
 /**
  * @swagger

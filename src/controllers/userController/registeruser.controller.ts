@@ -35,7 +35,7 @@ class userController {
 
       const token = generateToken(res, user.id, email, firstname);
 
-      const verificationUrl = `${process.env.FRONTEND_URL}/api/users/verify?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>
@@ -47,7 +47,7 @@ class userController {
         `;
       sendEmailMessage(user.email, subject, content);
 
-      return res.status(201).json({ message: 'Signup was successfull, Verification Email sent', token });
+      return res.status(201).json({ message: 'Signup was successfull, Verification Email sent', user });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
