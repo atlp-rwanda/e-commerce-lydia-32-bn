@@ -4,6 +4,7 @@ import CartItem from '../../models/cartItemModel.js'; // Import CartItem model
 import Product from '../../models/productModel.js';
 import { OrderStatus } from '../../utilis/orderStatusConstants.js';
 import sendEmailMessage from '../../helpers/sendEmail.js';
+import notificationEmitter from '../../utilis/eventEmitter.js';
 
 interface AddressData {
   country: string;
@@ -90,24 +91,28 @@ export const addToOrder = async (currentUser: any, payment: any, address: Addres
 
     await CartItem.destroy({ where: { cartId: cart.dataValues.id } });
     const myOrder = {
-      id: order.dataValues.id,
+      orderId: order.dataValues.id,
       buyerId: order.dataValues.userId,
       items: cartData?.items,
       totalAmount: order.dataValues.totalAmount,
       payment: order.dataValues.payment,
       address: order.dataValues.address,
     };
-    const userEmail = currentUser.email;
-    const subject = 'Order Confirmation';
-    const content = `
-      <h1>Order Confirmation</h1>
-      <p>Thank you for your order!</p>
-      <p>Order ID: ${myOrder.id}</p>
-      <p>Total Amount: ${myOrder.totalAmount}</p>
-      <!-- Add any additional order details you want to include -->
-    `;
+    // const userEmail = currentUser.email;
+    // const subject = 'Order Confirmation';
+    // const content = `
+    //   <h1>Order Confirmation</h1>
+    //   <p>Thank you for your order!</p>
+    //   <p>Order ID: ${myOrder.orderId}</p>
+    //   <p>Total Amount: ${myOrder.totalAmount}</p>
+    //   <!-- Add any additional order details you want to include -->
+    // `;
 
-    sendEmailMessage(userEmail, subject, content);
+    // sendEmailMessage(userEmail, subject, content);
+
+    notificationEmitter.removeAllListeners('orderCreated');
+    notificationEmitter.emit('orderCreated', myOrder);
+
     return myOrder;
   } catch (error: any) {
     console.error('Error from add to order:', error.message);
@@ -213,6 +218,9 @@ export const cancelOrder = async (id: number, user: any) => {
     }
 
     await order.destroy();
+    notificationEmitter.removeAllListeners('orderCancelled');
+    notificationEmitter.emit('orderCancelled', order);
+
     return {
       id: order.dataValues.id,
       buyerId: user.id,

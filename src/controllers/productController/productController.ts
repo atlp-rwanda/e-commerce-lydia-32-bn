@@ -77,6 +77,7 @@ class ProductController {
         res.status(404).json({ message: 'Product not found' });
         return;
       }
+
       //@ts-ignore
       if (product.sellerId !== sellerId) {
         res.status(403).json({ message: 'You do not own this product, therefore you cannot update it' });

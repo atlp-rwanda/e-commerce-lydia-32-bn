@@ -24,7 +24,7 @@ export const authSellerRole = async (req: AuthenticatedRequest, res: Response, n
     const userRole = (await Role.findByPk(user.dataValues.roleId)) as any;
 
     if (!user || userRole.dataValues.name !== 'seller') {
-      res.status(403).json({ message: 'Only sellers can create products' });
+      res.status(403).json({ message: 'Only sellers can access this route' });
       return;
     }
 
