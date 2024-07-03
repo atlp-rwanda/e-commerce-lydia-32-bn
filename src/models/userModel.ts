@@ -10,7 +10,7 @@ export interface UserAttributes {
   phone: string;
   password: string;
   lastPasswordChange: Date;
-  passwordExpiresAt: Date;
+  passwordExpiresAt: Date | null;
   street: string | null;
   city: string | null;
   state: string | null;
@@ -40,7 +40,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 
   public lastPasswordChange!: Date;
 
-  public passwordExpiresAt!: Date;
+  public passwordExpiresAt!: Date | null;
 
   public street!: string | null;
 

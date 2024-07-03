@@ -35,7 +35,7 @@ class userController {
 
       const token = generateToken(res, user.id, email, firstname);
 
-      const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/user/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>

@@ -34,8 +34,6 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         phone: '',
         password: await bcrypt.hash(defaultPassword, 10),
         lastPasswordChange: new Date(),
-        // @ts-ignore
-        passwordExpiresAt: new Date(new Date().getTime() + PASSWORD_EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
         isverified: false,
         isBlocked: false,
         hasTwoFactor: false,
@@ -48,7 +46,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         NewUser.dataValues.email,
         NewUser.dataValues.firstname,
       );
-      const verificationUrl = `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/user/verify?token=${verificationToken}`;
       const subject = 'Email Verification';
       const content = `
         <p>Hi ${userName},</p>
