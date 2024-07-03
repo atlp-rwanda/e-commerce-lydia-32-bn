@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 class LoginController {
   async login(req: Request, res: Response): Promise<void> {
     try {
-      const { token, user } = req.body;
+      const { user } = req.body;
       res.clearCookie('loggedOut');
       res.status(200).json({ message: 'Login successful', user });
     } catch (error: any) {
