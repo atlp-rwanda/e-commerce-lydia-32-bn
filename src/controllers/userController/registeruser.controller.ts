@@ -215,7 +215,7 @@ class userController {
 
   resetPassword = async (req: Request, res: Response): Promise<void> => {
     try {
-      const token = req.body.token as string;
+      const token = req.query.token as string;
 
       if (!token) {
         res.status(400).json({ error: 'Token is required to verify email.' });

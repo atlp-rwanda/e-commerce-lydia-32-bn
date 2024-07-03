@@ -270,7 +270,7 @@ usersRouter.patch('/users/update', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
-usersRouter.get('/reset', UserController.resetPassword);
+usersRouter.post('/reset', UserController.resetPassword);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 
 /**
