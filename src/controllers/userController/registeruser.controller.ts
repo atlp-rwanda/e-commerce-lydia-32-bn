@@ -47,7 +47,7 @@ class userController {
         `;
       sendEmailMessage(user.email, subject, content);
 
-      return res.status(201).json({ message: 'Signup was successfull, Verification Email sent', user });
+      return res.status(201).json({ message: 'Signup was successfull, Verification Email sent' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }

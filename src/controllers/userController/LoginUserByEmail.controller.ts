@@ -21,6 +21,28 @@ export const loginByGoogle = async (req: Request, res: Response) => {
         });
       }
 
+      if (user.dataValues.isBlocked === true) {
+        return res.status(200).json({ message: 'Your account is blocked, check your email'});
+      }
+
+      if (user.dataValues.roleId === 2) {
+        await user.update({ hasTwoFactor: true });
+        const twoFactorCode = Math.floor(10000 + Math.random() * 90000).toString();
+        const [updatedRows, [updatedUser]] = await User.update(
+          { twoFactorSecret: twoFactorCode },
+          { where: { id: user.dataValues.id }, returning: true },
+        );
+
+        if (updatedRows === 1) {
+          const text = `Your 2FA code is: ${twoFactorCode}`;
+          sendEmailMessage(user.dataValues.email, '2FA Code', text);
+          res.status(200).json({ message: '2FA code sent to your email' });
+        } else {
+           res.status(500).json({ error: 'Failed to update user' });
+        }
+        return;
+      }
+
       generateToken(res, user.dataValues.id, user.dataValues.email, user.dataValues.firstname);
       return res.status(200).json({ message: 'login successfully', user });
     } else {
