@@ -7,9 +7,9 @@ export interface UserAttributes {
   firstname: string;
   othername: string;
   email: string;
-  phone: string;
+  phone: string | null;
   password: string;
-  lastPasswordChange: Date;
+  lastPasswordChange: Date | null;
   passwordExpiresAt: Date | null;
   street: string | null;
   city: string | null;
@@ -34,11 +34,11 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 
   public email!: string;
 
-  public phone!: string;
+  public phone!: string | null;
 
   public password!: string;
 
-  public lastPasswordChange!: Date;
+  public lastPasswordChange!: Date | null;
 
   public passwordExpiresAt!: Date | null;
 
