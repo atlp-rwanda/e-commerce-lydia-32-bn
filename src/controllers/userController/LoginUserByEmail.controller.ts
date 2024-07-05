@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import User from '../../models/userModel.js';
 import sendEmailMessage from '../../helpers/sendEmail.js';
+import { UserService } from '../../services/registeruser.service.js';
 import { generateToken } from '../../utilis/generateToken.js';
 
 export const loginByGoogle = async (req: Request, res: Response) => {
@@ -67,12 +68,15 @@ export const registerByGoogle = async (req: Request, res: Response) => {
       const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`);
 
       const getPayLoad = await response.json();
-      const user = await User.findOne({ where: { email: getPayLoad?.email } });
-
-      if(user) {
-        return res.status(401).json({
-          message: 'Email is taken'
-        });
+     
+      const user = await UserService.getUserByEmail(getPayLoad?.email);
+      
+      if (user) {
+        if (user.isverified) {
+          return res.status(400).json({ message: 'Email already in use' });
+        } else {
+          await UserService.deleteUser(user.id);
+        }
       }
 
       const userNameRes = await fetch('https://people.googleapis.com/v1/people/me?personFields=names', {
@@ -95,7 +99,7 @@ export const registerByGoogle = async (req: Request, res: Response) => {
         isverified: false,
         isBlocked: false,
         hasTwoFactor: false,
-        roleId: 1,
+        roleId: 3,
       });
       
       const verificationToken = jwt.sign(
