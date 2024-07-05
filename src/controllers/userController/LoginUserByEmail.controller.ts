@@ -114,7 +114,7 @@ export const registerByGoogle = async (req: Request, res: Response) => {
         },
       )
 
-      const verificationUrl = `${process.env.FRONTEND_URL}/api/user/verify?token=${verificationToken}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/users/verify?token=${verificationToken}`;
       const subject = 'Email Verification';
       const content = `
         <p>Hi ${userName},</p>
