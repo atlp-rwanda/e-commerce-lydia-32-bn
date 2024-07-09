@@ -91,6 +91,20 @@ Order.init(
   {
     sequelize,
     modelName: 'orders',
+    hooks: {
+      afterCreate: (order: Order) => {
+        notificationEmitter.emit('orderCreated', order);
+        console.log(`Order created: ${order.dataValues.id}`);
+      },
+      afterUpdate: (order: Order) => {
+        notificationEmitter.emit('orderUpdated', order);
+        console.log(`Order updated: ${order.dataValues.id}`);
+      },
+      afterDestroy: (order: Order) => {
+        notificationEmitter.emit('orderCancelled', order);
+        console.log(`Order canceled: ${order.dataValues.id}`);
+      },
+    },
   },
 );
 

@@ -11,6 +11,7 @@ import User from '../../models/userModel.js';
 import { OrderStatusControllerInstance } from '../orderController.ts/orderStatus.js';
 import sendEmailMessage from '../../helpers/sendEmail.js';
 import { OrderStatus } from '../../utilis/orderStatusConstants.js';
+import notificationEmitter from '../../utilis/eventEmitter.js';
 
 dotenv.config();
 
@@ -69,7 +70,7 @@ class PaymentController {
               vendorId: product!.userId,
             },
           },
-          unit_amount: Math.round(product!.price * 100),
+          unit_amount: Math.round(product!.price),
         },
         quantity: product!.orderQuantity,
       }));
@@ -238,6 +239,10 @@ class PaymentController {
                 );
               }
             }
+
+            if (buyer && orderData) {
+              notificationEmitter.emit('paymentSuccess', buyer, orderData.dataValues, payment.dataValues);
+            }
           }),
         );
         const orderUpdateResponse = await OrderStatusControllerInstance.updateOrderStatus(
@@ -271,6 +276,12 @@ class PaymentController {
       }
 
       await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), sessionId, PaymentStatus.Canceled);
+
+      const user = await User.findByPk(Number(userId));
+      const orderData = await Order.findByPk(Number(orderId));
+      if (user && orderData) {
+        notificationEmitter.emit('paymentCanceled', user, orderData.dataValues);
+      }
 
       await StripeConfig.deleteSession(sessionId);
       return res.status(200).json({ message: 'Payment canceled' });

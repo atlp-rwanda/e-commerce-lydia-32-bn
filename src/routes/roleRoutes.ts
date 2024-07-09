@@ -2,6 +2,7 @@
 import express from 'express';
 import { isRoleAdmin } from '../middleware/checkAdminRoleMiddleware.js';
 import { RoleController } from '../controllers/rolesController/roleController.js';
+import { isLoggedIn } from '../middleware/authMiddleware.js';
 
 export const rolesRouter = express.Router();
 
@@ -30,7 +31,7 @@ export const rolesRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.post('/roles/create', RoleController.createRole);
+rolesRouter.post('/roles/create', isRoleAdmin, RoleController.createRole);
 
 /**
  * @swagger
@@ -75,6 +76,50 @@ rolesRouter.get('/roles', isRoleAdmin, RoleController.getAllRoles);
  *         description: Internal server error
  */
 rolesRouter.get('/roles/:id', isRoleAdmin, RoleController.getRoleById);
+
+/**
+ * @swagger
+ * /api/roles/request-seller:
+ *   post:
+ *     summary: Request to become a seller
+ *     description: Allows a logged-in user to request admin approval to become a seller.
+ *     tags: [Role]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Request sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Request to become a seller sent successfully.
+ *       400:
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+rolesRouter.post('/roles/request-seller', isLoggedIn, RoleController.requestTobeSeller);
 
 /**
  * @swagger
@@ -316,4 +361,4 @@ rolesRouter.post('/roles/assign/:id', isRoleAdmin, RoleController.assignRoleToUs
  *       '500':
  *         description: Internal server error
  */
-rolesRouter.delete('/permissions/delete/:id', RoleController.deletePermission);
+rolesRouter.delete('/permissions/delete/:id', isRoleAdmin, RoleController.deletePermission);

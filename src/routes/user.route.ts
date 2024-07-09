@@ -1,7 +1,7 @@
 import express from 'express';
 import { UserController } from '../controllers/userController/registeruser.controller.js';
 import { loginController } from '../controllers/userController/loginUser.js';
-import { loginByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
+import { loginByGoogle, registerByGoogle } from '../controllers/userController/LoginUserByEmail.controller.js';
 import { blockUser } from '../controllers/userController/blockUser.controller.js';
 import { isBlocked } from '../middleware/isBlockedMiddleware.js';
 import { userAuthJWT, adminAuthJWT } from '../middleware/verfication.middleware.js';
@@ -269,8 +269,9 @@ usersRouter.patch('/users/changepassword', userAuthJWT, UserController.changePas
 usersRouter.patch('/users/update', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
+usersRouter.post('/register/google', registerByGoogle)
 usersRouter.post('/forgot', UserController.forgotPassword);
-usersRouter.get('/reset', UserController.resetPassword);
+usersRouter.post('/reset', UserController.resetPassword);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
 
 /**

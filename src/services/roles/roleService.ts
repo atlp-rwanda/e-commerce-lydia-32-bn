@@ -5,6 +5,7 @@ import Permission from '../../models/permissionModel.js';
 import RolePermission from '../../models/rolePermissionModel.js';
 import { rolePermissions, PermissionKey } from '../../utilis/roles/roles.util.js';
 import sequelize from '../../config/db.js';
+import sendEmailMessage from '../../helpers/sendEmail.js';
 
 class roleService {
   async assignRole(userId: number, roleId: number) {
@@ -181,6 +182,50 @@ class roleService {
       return false;
     } catch (error: any) {
       throw new Error(`Error deleting permission: ${error.message}`);
+    }
+  }
+
+  async requestToBeSeller(userId: number) {
+    try {
+      const user = await User.findByPk(userId);
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const userRoleId = await Role.findByPk(user.dataValues.roleId);
+
+      if (!userRoleId) {
+        throw new Error('Role not found');
+      }
+
+      const userRole = userRoleId.dataValues.name;
+
+      // Fetch admin email addresses
+      const admins = await User.findAll({ where: { roleId: 1 } });
+      const adminEmails = admins.map((admin) => admin.dataValues.email);
+
+      if (adminEmails.length === 0) {
+        throw new Error('No admins found to send the request to');
+      }
+
+      const sellerRequestEmail = `
+          <h3>User Seller Request</h3>
+          <p>User <strong>${user.dataValues.email}</strong> has requested to become a seller.
+          Make sure to check your email for further Updates.</p>
+          <p>Here are their details:</p>
+          <ul>
+            <li><strong>ID:</strong> ${user.dataValues.id}</li>
+            <li><strong>Name:</strong> ${user.dataValues.firstname} ${user.dataValues.othername}</li>
+            <li><strong>Email:</strong> ${user.dataValues.email}</li>
+            <li><strong>Role:</strong> ${userRole}</li>
+          </ul>
+        `;
+
+      // Send email to all admins
+      sendEmailMessage(adminEmails, 'Seller Role Request', sellerRequestEmail);
+    } catch (error: any) {
+      throw new Error(`Error sending role request: ${error.message}`);
     }
   }
 }
