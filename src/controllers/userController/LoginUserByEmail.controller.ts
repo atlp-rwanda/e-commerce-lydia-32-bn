@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import User from '../../models/userModel.js';
 import sendEmailMessage from '../../helpers/sendEmail.js';
 import { UserService } from '../../services/registeruser.service.js';
@@ -18,12 +18,12 @@ export const loginByGoogle = async (req: Request, res: Response) => {
     if (user) {
       if (user.dataValues.isverified === false) {
         return res.status(401).json({
-          message: 'Please verify your email address to log in.'
+          message: 'Please verify your email address to log in.',
         });
       }
 
       if (user.dataValues.isBlocked === true) {
-        return res.status(200).json({ message: 'Your account is blocked, check your email'});
+        return res.status(200).json({ message: 'Your account is blocked, check your email' });
       }
 
       if (user.dataValues.roleId === 2) {
@@ -39,7 +39,7 @@ export const loginByGoogle = async (req: Request, res: Response) => {
           sendEmailMessage(user.dataValues.email, '2FA Code', text);
           res.status(200).json({ message: '2FA code sent to your email' });
         } else {
-           res.status(500).json({ error: 'Failed to update user' });
+          res.status(500).json({ error: 'Failed to update user' });
         }
         return;
       }
@@ -48,29 +48,25 @@ export const loginByGoogle = async (req: Request, res: Response) => {
       return res.status(200).json({ message: 'login successfully', user });
     } else {
       return res.status(400).json({
-        message: 'User not Found'
+        message: 'User not Found',
       });
-    }  
-
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'server error' });
   }
 };
 
-
 export const registerByGoogle = async (req: Request, res: Response) => {
   try {
-
     const { accessToken } = req.body;
-    if(accessToken) {
-
+    if (accessToken) {
       const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`);
 
       const getPayLoad = await response.json();
-     
+
       const user = await UserService.getUserByEmail(getPayLoad?.email);
-      
+
       if (user) {
         if (user.isverified) {
           return res.status(400).json({ message: 'Email already in use' });
@@ -88,8 +84,6 @@ export const registerByGoogle = async (req: Request, res: Response) => {
       const userObjName = await userNameRes.json();
       const userName = userObjName.names[0]?.displayName;
       const defaultPassword = Math.random().toString(36).slice(-8);
-  
-
 
       const NewUser = await User.create({
         firstname: userName || 'DefaultFirstName',
@@ -101,20 +95,21 @@ export const registerByGoogle = async (req: Request, res: Response) => {
         hasTwoFactor: false,
         roleId: 3,
       });
-      
+
       const verificationToken = jwt.sign(
-        { 
-          userId: NewUser.dataValues.id, 
-          email: NewUser.dataValues.email, 
-          firstname: NewUser.dataValues.firstname 
+        {
+          userId: NewUser.dataValues.id,
+          email: NewUser.dataValues.email,
+          firstname: NewUser.dataValues.firstname,
+          isverified: NewUser.dataValues.isverified,
         },
-          process.env.VERIFICATION_JWT_SECRET || '',
+        process.env.VERIFICATION_JWT_SECRET || '',
         {
           expiresIn: '3d',
         },
-      )
+      );
 
-      const verificationUrl = `${process.env.FRONTEND_URL}/api/user/verify?token=${verificationToken}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/users/verify?token=${verificationToken}`;
       const subject = 'Email Verification';
       const content = `
         <p>Hi ${userName},</p>
@@ -126,14 +121,12 @@ export const registerByGoogle = async (req: Request, res: Response) => {
       `;
       sendEmailMessage(NewUser.dataValues.email, subject, content);
 
-
       return res.status(201).json({
         message: 'Check your email for verification',
       });
-
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'server error' });
   }
-}
+};

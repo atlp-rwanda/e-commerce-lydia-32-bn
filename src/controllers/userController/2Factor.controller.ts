@@ -43,7 +43,7 @@ export const verifyTwoFactor = async (req: Request, res: Response): Promise<void
 
       res.cookie('jwt', token, { httpOnly: true, path: '/', expires: expiryDate });
       res.clearCookie('loggedOut');
-      res.status(200).json({ message: 'Login successful', token });
+      res.status(200).json({ message: 'Login successful', token, user });
     } else {
       res.status(400).json({ error: 'Invalid 2FA code' });
     }
