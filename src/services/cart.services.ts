@@ -191,7 +191,7 @@ export const getCartProduct = async (productId: number, userId: number) => {
         {
           model: CartItem,
           as: 'items',
-          where: { productId }
+          where: { productId },
         },
       ],
     });
