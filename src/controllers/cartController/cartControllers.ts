@@ -14,7 +14,6 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
     }
     const product = await Product.findByPk(productId);
     const productInCart = await cartService.getCartProduct(currentUser.id, productId);
-
     if (productId === undefined) {
       return res.status(404).json({
         message: 'productId is required',
@@ -32,7 +31,7 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
         message: 'Product not found',
       });
     }
-    if (!productInCart) {
+    if (productInCart) {
       return res.status(400).json({
         message: 'Product Already In Your Cart. Please Consider updating quantities !',
       });
