@@ -183,6 +183,29 @@ export const updateCartItem = async (cartItemId: number, quantity: number) => {
   }
 };
 
+export const getCartProduct = async (productId: number, userId: number) => {
+  try {
+    const userCart = await Cart.findOne({
+      where: { userId },
+      include: [
+        {
+          model: CartItem,
+          as: 'items',
+          where: { productId }
+        },
+      ],
+    });
+
+    if (!userCart || userCart.items.length === 0) {
+      return null;
+    }
+
+    return userCart.items[0];
+  } catch (error: any) {
+    console.error('Error fetching cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
 export const deleteCartItem = async (cartItemId: number) => {
   console.log(`deleteCartItem called with cartItemId: ${cartItemId}`);
 
