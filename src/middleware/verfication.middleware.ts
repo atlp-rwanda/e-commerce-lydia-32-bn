@@ -49,7 +49,8 @@ const userAuthJWT = (req: Request, res: Response, next: NextFunction) => {
       // @ts-ignore
       req.user = user.dataValues;
 
-      if (!isverified) {
+      console.log(isverified)
+      if (isverified === false) {
         return res.status(403).json({ error: 'You are not Verified please verify your email at /verify' });
       }
 
