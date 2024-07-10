@@ -20,7 +20,12 @@ class userController {
       // Check if the email already exists
       const existingUser = await UserService.getUserByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ message: 'Email already in use' });
+        if (existingUser.isverified) {
+          return res.status(400).json({ message: 'Email already in use' });
+        } else {
+          // Delete the existing unverified user
+          await UserService.deleteUser(existingUser.id);
+        }
       }
 
       // Hash the password
@@ -35,7 +40,7 @@ class userController {
 
       const token = generateToken(res, user.id, email, firstname);
 
-      const verificationUrl = `${process.env.FRONTEND_URL}/api/user/verify?token=${token}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/api/users/verify?token=${token}`;
       const subject = 'Email Verification';
       const content = `
           <p>Hi ${user.firstname},</p>
@@ -53,49 +58,62 @@ class userController {
     }
   };
 
-  verifyUser = async (req: Request, res: Response): Promise<Response> => {
+  verifyUser = async (req: Request, res: Response): Promise<void> => {
+    const verifiedurl = process.env.VERIFIED_URL;
+    const verifyFailedurl = process.env.VERIFY_FAILED_URL;
+
     try {
       const token = req.query.token as string;
 
       if (!token) {
-        return res.status(400).json({ error: 'No token provided' });
+        res.redirect(`${verifyFailedurl}?message=${encodeURIComponent('No token provided')}`);
+        return;
       }
 
       const decodedToken = verifyToken(token);
 
       if (!decodedToken) {
-        return res.status(400).json({ error: 'Invalid token or expired.' });
+        res.redirect(`${verifyFailedurl}?message=${encodeURIComponent('Invalid token or expired.')}`);
+        return;
       }
 
       const { userId } = decodedToken;
       const user = await UserService.getUserById(userId);
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        res.redirect(`${verifyFailedurl}?message=${encodeURIComponent('User not found')}`);
+        return;
       }
 
       if (user.isverified) {
-        return res.status(400).json({ error: 'User is already verified' });
+        res.redirect(
+          `${verifiedurl}?message=${encodeURIComponent('Your email is already verified. You can now log in to your account.')}`,
+        );
+        return;
       }
 
-      const updatedUser = await UserService.updateUser(userId, { isverified: true });
-      res.json({ message: 'User verified successfully' });
+      await UserService.updateUser(userId, { isverified: true });
 
-      const subject = 'Successfull Email Verification';
+      const subject = 'Successful Email Verification';
       const content = `
-            <p>Hi ${user.firstname},</p>
-            <div>Congratulations! Your email address has been successfully verified.</div>
-            <div>You can now fully enjoy all the features of our platform.</div>
-            <div>If you have any questions or need further assistance, feel free to contact our support team.</div>
-            <div>Best regards,</div>
-            <div>The E-Commerce Lydia Team</div>
-          `;
+        <p>Hi ${user.firstname},</p>
+        <div>Congratulations! Your email address has been successfully verified.</div>
+        <div>You can now fully enjoy all the features of our platform.</div>
+        <div>If you have any questions or need further assistance, feel free to contact our support team.</div>
+        <div>Best regards,</div>
+        <div>The E-Commerce Lydia Team</div>
+      `;
 
       sendEmailMessage(user.email, subject, content);
 
-      return res;
+      res.redirect(
+        `${verifiedurl}?message=${encodeURIComponent('Your email has been successfully verified. You can now log in to your account.')}`,
+      );
     } catch (error: any) {
-      return res.status(500).json({ error: error.message });
+      console.error('Verification error:', error);
+      res.redirect(
+        `${verifyFailedurl}?message=${encodeURIComponent('An error occurred during verification. Please try again later.')}`,
+      );
     }
   };
 

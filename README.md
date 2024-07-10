@@ -2,7 +2,7 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/atlp-rwanda/e-commerce-lydia-32-bn/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/atlp-rwanda/e-commerce-lydia-32-bn/tree/develop)
 
-[<span style="color: black; font-weight: bold; font-size: x-large;">Swagger Documentation</span>](https://e-commerce-lydia-32-bn.onrender.com/docs)
+[<span style="color: black; font-weight: bold; font-size: x-large;">Swagger Documentation</span>](https://team-lydia-demo.onrender.com/docs/)
 
 # E-Commerce Backend Application
 

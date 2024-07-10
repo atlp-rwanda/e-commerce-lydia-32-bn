@@ -6,6 +6,8 @@ import { UserService } from '../../services/registeruser.service.js';
 import RolePermission from '../../models/rolePermissionModel.js';
 import Permission from '../../models/permissionModel.js';
 import { validateRolePermissionCreation } from '../../validations/rolesPermissionsValidations.js';
+import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
+import sendEmailMessage from '../../helpers/sendEmail.js';
 
 class roleController {
   async createRole(req: Request, res: Response) {
@@ -183,6 +185,34 @@ class roleController {
       }
 
       const updatedUser = await UserService.updateUser(userId, { roleId });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      const updatedUserRoleId = updatedUser.roleId;
+
+      if (!updatedUserRoleId) {
+        return res.status(404).json({ message: 'Role not found' });
+      }
+      const upadtedUserRole = await Role.findByPk(updatedUserRoleId);
+
+      if (!upadtedUserRole) {
+        return res.status(404).json({ message: 'Role not found' });
+      }
+
+      const sellerRequestEmail = `
+      <h3>User Role changed</h3>
+      <p>Your <strong>${updatedUser.roleId}</strong> role has been changed to ${upadtedUserRole.dataValues.name} by the Admin.</p>
+      <div style="text-align: center; padding: 20px; background-color: #f4f4f4; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-size: 0.9em; color: #666;">
+          <p>If you did not request this action or have further concerns, please contact us immediately at <a href="mailto:support@example.com">support@example.com</a>.</p>
+          <p>&copy; 2024 E-commerce team. All rights reserved.</p>
+      </div>
+    `;
+
+      // Send email to all admins
+      sendEmailMessage(updatedUser.email, 'Role Updated', sellerRequestEmail);
+
       return res.status(200).json({ message: 'Role assigned to user successfully' });
     } catch (error: any) {
       return res.status(500).json({ message: `Error assigning role to user: ${error.message}` });
@@ -218,6 +248,26 @@ class roleController {
       return res.status(404).json({ error: 'Permission not found' });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
+    }
+  };
+
+  requestTobeSeller = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const currentUser = req.user;
+      if (!currentUser) {
+        throw new Error('User not found');
+      }
+
+      const userId = currentUser.id;
+
+      if (!userId) {
+        res.status(401).json({ error: 'User is not logged in' });
+        return;
+      }
+      await RoleService.requestToBeSeller(Number(userId));
+      res.status(200).json({ message: 'Request sent to the admin successfully' });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   };
 }

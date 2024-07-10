@@ -85,7 +85,6 @@ export const addToCart = async (quantity: number, product: Product, user: UserAt
 
     if (!cart) {
       cart = await Cart.create({ userId: user.id });
-      console.log(cart);
     }
 
     let cartItem = await CartItem.findOne({
@@ -181,6 +180,25 @@ export const updateCartItem = async (cartItemId: number, quantity: number) => {
   }
 };
 
+export const getCartProduct = async (userId: number, productId: number) => {
+  try {
+    const cart = await Cart.findOne({ where: { userId } });
+    if (!cart) {
+      return null;
+    }
+    const cartId = cart.get('id');
+      const cartItem = await CartItem.findOne({
+        where: { cartId, productId },
+      })
+      if(!cartItem) {
+          return null;
+        }
+       return cartItem;
+  } catch (error: any) {
+    console.error('Error fetching cart item:', error.message);
+    throw new Error(error.message);
+  }
+};
 export const deleteCartItem = async (cartItemId: number) => {
   console.log(`deleteCartItem called with cartItemId: ${cartItemId}`);
 
