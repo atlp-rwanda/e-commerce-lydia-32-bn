@@ -39,6 +39,7 @@ class LoginController {
           id: user.id,
           email: user.email,
           firstname: user.firstname,
+          roleId: user.roleId
 
         },
         isPasswordExpired
