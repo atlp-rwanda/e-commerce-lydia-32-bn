@@ -9,6 +9,8 @@ const searchSchema = Joi.object({
   minPrice: Joi.number().optional(),
   maxPrice: Joi.number().optional(),
   category: Joi.string().optional(),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(2),
 }).unknown(false);
 
 const validateSearchProduct = async (req: Request, res: Response, next: NextFunction) => {

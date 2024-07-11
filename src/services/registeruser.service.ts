@@ -75,11 +75,6 @@ export class userService {
         throw new Error('Error updating user: user not verified');
       }
 
-      const validateUpdates = validateUserupdates(updates);
-      if (validateUpdates.length > 0) {
-        throw new Error(`Validation failed: ${validateUpdates.join(', ')}`);
-      }
-
       const { firstname, othername, email, phone, password, street, city, state, postal_code, country } = updates;
 
       let updatedUser: any;
