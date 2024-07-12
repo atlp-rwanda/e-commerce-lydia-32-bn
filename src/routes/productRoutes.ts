@@ -252,18 +252,62 @@ productRouter.delete(
  *         schema:
  *           type: string
  *         description: Category of the product
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 2
+ *         description: Number of items per page
  *     responses:
  *       '200':
  *         description: A list of products that match the search criteria
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Products fetched successfully
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *                 total:
+ *                   type: integer
+ *                   description: Total number of products matching the search criteria
+ *                 currentPage:
+ *                   type: integer
+ *                   description: Current page number
+ *                 totalPages:
+ *                   type: integer
+ *                   description: Total number of pages
  *       '400':
- *         description: Bad request - Invalid search parameters
+ *         description: Bad request - Invalid search parameters or no matching products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  *       '500':
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  */
-productRouter.get('/product/search', ProductControllerInstance.searchProduct);
+productRouter.get('/product/search', validateSearchProduct, ProductControllerInstance.searchProduct);

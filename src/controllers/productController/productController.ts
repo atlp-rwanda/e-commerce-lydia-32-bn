@@ -119,50 +119,59 @@ class ProductController {
     }
   }
 
-  async searchProduct(req: Request, res: Response): Promise<void> {
-    const { name, minPrice, maxPrice, category } = req.query;
+  
+async searchProduct(req: Request, res: Response): Promise<void> {
+  const { name, minPrice, maxPrice, category, page, limit } = req.query;
 
-    try {
-      const searchCriteria: any = {};
+  try {
+    const searchCriteria: any = {};
+    const pageNumber = Number(page) || 1;
+    const itemsPerPage = Number(limit) || 4;
 
-      if (!name && !minPrice && !maxPrice && !category) {
-        res.status(400).json({ error: 'Please provide a search parameter' });
-
-        return;
-      }
-
-      if (name) {
-        searchCriteria.productName = { [Op.iLike]: `%${name}%` };
-      }
-
-      if (minPrice) {
-        searchCriteria.price = { ...searchCriteria.price, [Op.gte]: Number(minPrice) };
-      }
-
-      if (maxPrice) {
-        searchCriteria.price = { ...searchCriteria.price, [Op.lte]: Number(maxPrice) };
-      }
-
-      if (category) {
-        searchCriteria.productCategory = category;
-      }
-
-      const products = await Product.findAll({
-        where: searchCriteria,
-      });
-
-      if (products.length === 0) {
-        res.status(400).json({ error: 'there are no products that match your search criteria' });
-
-        return;
-      }
-
-      res.status(200).json({ message: 'Products fetched successfully', products });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-      console.log(error);
+    if (!name && !minPrice && !maxPrice && !category) {
+      res.status(400).json({ error: 'Please provide a search parameter' });
+      return;
     }
+
+    if (name) {
+      searchCriteria.productName = { [Op.iLike]: `%${name}%` };
+    }
+
+    if (minPrice) {
+      searchCriteria.price = { ...searchCriteria.price, [Op.gte]: Number(minPrice) };
+    }
+
+    if (maxPrice) {
+      searchCriteria.price = { ...searchCriteria.price, [Op.lte]: Number(maxPrice) };
+    }
+
+    if (category) {
+      searchCriteria.productCategory = category;
+    }
+
+    const { count, rows: products } = await Product.findAndCountAll({
+      where: searchCriteria,
+      limit: itemsPerPage,
+      offset: (pageNumber - 1) * itemsPerPage,
+    });
+
+    if (products.length === 0) {
+      res.status(400).json({ error: 'There are no products that match your search criteria' });
+      return;
+    }
+
+    res.status(200).json({
+      message: 'Products fetched successfully',
+      products,
+      total: count,
+      currentPage: pageNumber,
+      totalPages: Math.ceil(count / itemsPerPage),
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+    console.log(error);
   }
+}
 }
 
 export const ProductControllerInstance = new ProductController();

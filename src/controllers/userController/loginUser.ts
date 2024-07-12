@@ -35,13 +35,7 @@ class LoginController {
 
       res.status(200).json({
         message: 'Login successful',
-        user: {
-          id: user.id,
-          email: user.email,
-          firstname: user.firstname,
-          roleId: user.roleId
-
-        },
+        user,
         isPasswordExpired
       });
     } catch (error: any) {
