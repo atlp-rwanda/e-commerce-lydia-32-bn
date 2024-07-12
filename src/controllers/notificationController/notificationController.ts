@@ -14,7 +14,7 @@ class notificationController {
 
     try {
       const notifications = await notificationService.getNotificationsForUser(userId);
-      res.json(notifications);
+      res.status(200).json({ notifications });
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
     }
@@ -31,7 +31,7 @@ class notificationController {
 
     try {
       const notification = await notificationService.getNotificationByIdAndUserId(Number(id), userId);
-      res.status(200).json(notification);
+      res.status(200).json({ notification });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
       console.log(error);
