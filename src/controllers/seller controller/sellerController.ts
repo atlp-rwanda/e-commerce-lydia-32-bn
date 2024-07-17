@@ -78,13 +78,7 @@ class SellerController {
       const productServiceInstance = new SellerService();
       const products = (await productServiceInstance.getProductsBySellerId(userId)) as any;
 
-      // Pagination
-      const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
-      const offset = (page - 1) * limit;
-      const totalProducts = products.length;
-
-      const paginatedProducts = products.map((product: Product): ProductWithSeller => {
+      const productsWithSeller = products.map((product: Product): ProductWithSeller => {
         const {
           productId,
           userId,
@@ -122,34 +116,13 @@ class SellerController {
         };
       });
 
-      const productsWithSeller = paginatedProducts.slice(offset, offset + limit);
-
-      const response: PaginationResponse = {
-        message: 'Products fetched successfully',
-        products: productsWithSeller,
-        totalItems: totalProducts,
-        currentPage: page,
-        totalPages: Math.ceil(totalProducts / limit),
-      };
-
-      if (page < Math.ceil(totalProducts / limit)) {
-        response.next = {
-          page: page + 1,
-          limit,
-        };
-      }
-
-      if (page > 1) {
-        response.previous = {
-          page: page - 1,
-          limit,
-        };
-      }
-
       if (productsWithSeller.length === 0) {
         res.status(200).json({ message: 'No products found for this seller', products: [] });
       } else {
-        res.status(200).json(response);
+        res.status(200).json({
+          message: 'Products fetched successfully',
+          products: productsWithSeller,
+        });
       }
     } catch (error) {
       res.status(500).json({ message: 'Internal server error', error });

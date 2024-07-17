@@ -13,7 +13,7 @@ notificationEmitter.on('productAdded', async (product: ProductAttributes) => {
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const message = `New product '${product.dataValues.productName}' has been created.`;
+      const message = `New product '${product.dataValues.productName}' created.`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -54,7 +54,7 @@ notificationEmitter.on('productUpdated', async (product: ProductAttributes) => {
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const message = `Ypur product '${product.dataValues.productName}' has been updated.`;
+      const message = `Ypur product '${product.dataValues.productName}' was updated.`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -95,7 +95,7 @@ notificationEmitter.on('productUnavailable', async (product: ProductAttributes) 
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const unavailableMessage = `Your product "${product.dataValues.productName}" is unavailable to buyers.`;
+      const unavailableMessage = `Your product "${product.dataValues.productName}" is unavailable`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -147,7 +147,7 @@ notificationEmitter.on('productAvailable', async (product: ProductAttributes) =>
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
       console.log('Processing productAvailable event');
-      const availableMessage = `Your product "${product.dataValues.productName}" is available for buyers.`;
+      const availableMessage = `Your product "${product.dataValues.productName}" is available`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -196,7 +196,7 @@ notificationEmitter.on('productDeleted', async (product: ProductAttributes) => {
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const message = `Your product '${product.dataValues.productName}' has been deleted.`;
+      const message = `Your product '${product.dataValues.productName}' was deleted.`;
       const emailMessage = `      <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
         <div style="text-align: center; padding: 20px; background-color: #D44B48; color: #ffffff; border-top-left-radius: 8px; border-top-right-radius: 8px;">
@@ -235,18 +235,6 @@ notificationEmitter.on('productDeleted', async (product: ProductAttributes) => {
     console.error(`Error processing productDeleted event: ${error.message}`);
   }
 });
-
-// notificationEmitter.on('orderPlaced', (orderDetails) => {
-//   console.log('orderPlaced event received for product ID:');
-
-//   try {
-//     const { sellerEmail, productName, quantity } = orderDetails;
-//     const message = `The product ${productName} has been ordered. Quantity: ${quantity}.`;
-//     sendEmailMessage(sellerEmail, 'New Order Notification', message);
-//   } catch (error: any) {
-//     log.error(`Error processing productDeleted event: ${error.message}`);
-//   }
-// });
 
 // Event listener for order created
 
@@ -362,36 +350,6 @@ notificationEmitter.on('orderCreated', async (order: OrderAttributes) => {
   }
 });
 
-// // Event listener for order updated
-// notificationEmitter.on('orderUpdated', async (order: OrderAttributes) => {
-//   console.log(`Order created event received for order ID: ${order.dataValues.id}`);
-//   try {
-//     const products = order?.dataValues?.items ?? [];
-//     products.map(async (product: { productId: number; quantity: number }) => {
-//       const sellerProduct = await User.findByPk(product.productId);
-//       const seller = await User.findByPk(sellerProduct?.dataValues.id);
-//       if (seller) {
-//         const message = `Your order with ID ${order.dataValues.id} has been updated.`;
-//         const emailMessage = `
-//         <h1>Order Update</h1>
-//         <p>Your order with ID ${order.dataValues.id} has been updated.</p>
-//         <p>New Status: ${order.dataValues.id}</p>
-//         <!-- Add any additional order details you want to include -->
-//       `;
-
-//         await Notification.create({ userId: seller.dataValues.id, message, readstatus: false });
-//         console.log(`Notification created for user: ${seller.dataValues.id}`);
-
-//         sendEmailMessage(seller.dataValues.email, 'Order Update', emailMessage);
-//       } else {
-//         console.error(`Seller ${sellerProduct?.dataValues.id} not found for orderUpdated event.`);
-//       }
-//     });
-//   } catch (error) {
-//     log.error(`Error processing orderUpdated event: ${error.message}`);
-//   }
-// });
-
 // Event listener for order cancelled
 notificationEmitter.on('orderCancelled', async (order: OrderAttributes) => {
   console.log(`Order canceled event received for order ID: ${order.dataValues.id}`);
@@ -413,7 +371,7 @@ notificationEmitter.on('orderCancelled', async (order: OrderAttributes) => {
       const seller = await User.findByPk(sellerId);
       const buyer = await User.findByPk(buyerId);
       if (seller && buyer) {
-        const sellerMessage = `Order with your product ${sellerProduct.dataValues.productName} has been cancelled.`;
+        const sellerMessage = `Order with your product ${sellerProduct.dataValues.productName} was cancelled.`;
         const buyerMessage = `Order ${order.dataValues.id} cancelled succesfully.`;
         const sellerEmailMessage = `
         <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
@@ -518,7 +476,7 @@ notificationEmitter.on('cartitemAdded', async (cartItem: CartItemAttributes) => 
     const user = await User.findByPk(userID);
 
     if (user) {
-      const message = `A new item "${product.dataValues.productName}" has been added to your cart.`;
+      const message = `A new item "${product.dataValues.productName}" added to cart.`;
       await Notification.create({ userId: user.dataValues.id, message, readstatus: false });
 
       const emailContent = `<p>Hello ${user.dataValues.firstname},</p><p>${message}</p>`;
@@ -532,68 +490,6 @@ notificationEmitter.on('cartitemAdded', async (cartItem: CartItemAttributes) => 
     console.error(`Error processing cartitemAdded event: ${error.message}`);
   }
 });
-
-// notificationEmitter.on('cartitemUpdated', async (cartItem: CartItem, cart: CartAttributes) => {
-//   console.log(`cartitemUpdated event received for item ID: ${cartItem.dataValues.id}`);
-//   const cartId = cartItem.dataValues.cartId;
-//   if (!cartId) {
-//     throw new Error('bsbbsbs');
-//   }
-
-//   const carts = await Cart.findByPk(cartId);
-//   console.log(`THI SI IS THE CART =>>>>>>>>>>>>>>>>> ${JSON.stringify(carts)}`);
-
-//   const cart1 = cart.id;
-//   console.log(`THI IS IS THE CART ID =>>>>>>>>>>>>>>>>>${cart1.}`);
-//   const buyers = await User.findByPk(cart.userId);
-//   console.log(`=>>>>>>>>>>>>>>>>> ${buyers}`);
-
-//   try {
-//     const product = await Product.findByPk(cartItem.dataValues.productId);
-
-//     if (!product) {
-//       throw new Error('Product Not found');
-//     }
-//     const user = await User.findByPk(product.dataValues.userId);
-
-//     if (user) {
-//       const message = `A cart item "${product.dataValues.productName}" quantity has been updated in the buyer's cart.`;
-//       await Notification.create({ userId: user.dataValues.id, message, readstatus: false });
-
-//       const emailContent = `<p>Hello ${user.dataValues.firstname},</p><p>${message}</p>`;
-//       sendEmailMessage(user.dataValues.email, 'Cart Item Updated', emailContent);
-
-//       console.log(`Notification sent to user ${user.dataValues.email}: ${message}`);
-//     } else {
-//       console.error(`User with ID ${product.dataValues.userId} not found for cartitemUpdated event.`);
-//     }
-//   } catch (error: any) {
-//     console.error(`Error processing cartitemUpdated event: ${error.message}`);
-//   }
-// });
-
-// notificationEmitter.on('cartitemDeleted', async (cartItem: CartItem) => {
-//   console.log(`cartItemUpdated event received for item ID: ${cartItem.dataValues.id}`);
-
-//   try {
-//     const product = await Product.findByPk(cartItem.dataValues.productId);
-//     const user = await User.findByPk(product?.dataValues.userId);
-
-//     if (user) {
-//       const message = `An item "${product?.dataValues.productName}" has been deleted from the buyer's cart.`;
-//       await Notification.create({ userId: user.dataValues.id, message, readstatus: false });
-
-//       const emailContent = `<p>Hello ${user.dataValues.firstname},</p><p>${message}</p>`;
-//       sendEmailMessage(user.dataValues.email, 'Cart Item Deleted', emailContent);
-
-//       console.log(`Notification sent to user ${user.dataValues.email}: ${message}`);
-//     } else {
-//       console.error(`User with ID ${cartItem.dataValues.product?.userId} not found for cartitemDeleted event.`);
-//     }
-//   } catch (error: any) {
-//     console.error(`Error processing cartitemDeleted event: ${error.message}`);
-//   }
-// });
 
 //PAYMENT
 
