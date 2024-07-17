@@ -7,11 +7,13 @@ export interface AuthenticatedRequest extends Request {
 }
 
 export const isPasswordNotExpired = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  let token: string | undefined;
+  // let token: string | undefined;
   try {
-    if (req.cookies.jwt) {
-      token = req.cookies.jwt;
-    }
+    const cookiesToken = req.cookies.jwt;
+    const authHeader = req.headers.authorization;
+
+    const headersToken = authHeader && authHeader.split(' ')[1];
+    const token = cookiesToken || headersToken;
 
     if (!token) {
       return res.status(401).json({

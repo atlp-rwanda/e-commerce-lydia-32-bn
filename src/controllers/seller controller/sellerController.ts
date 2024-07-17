@@ -52,7 +52,11 @@ interface PaginationResponse {
 
 class SellerController {
   async getAllProductsBySeller(req: Request, res: Response): Promise<void> {
-    const token = req.cookies.jwt;
+    const cookiesToken = req.cookies.jwt;
+    const authHeader = req.headers.authorization;
+
+    const headersToken = authHeader && authHeader.split(' ')[1];
+    const token = cookiesToken || headersToken;
 
     if (!token) {
       res.status(401).json({ message: 'Unauthorized: Token is missing' });
