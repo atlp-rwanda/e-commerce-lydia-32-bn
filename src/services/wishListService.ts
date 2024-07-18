@@ -29,13 +29,22 @@ export class WishListService {
     }
   }
 
-  async getWishListByUserId(userId: number): Promise<WishList[]> {
+  async getWishListByUserId(userId: number): Promise<{ wishList: WishList[]; products: any[] }> {
     try {
       const wishList = await WishList.findAll({
         where: { userId },
-        // include: [{ model: Product, as: 'product' }],
       });
-      return wishList;
+
+      const productIds = wishList.map((item) => item.dataValues.productId);
+
+      const productsPromises = productIds.map(async (productId: number) => {
+        const product = await Product.findByPk(productId);
+        return product?.dataValues;
+      });
+
+      const products = await Promise.all(productsPromises);
+
+      return { wishList, products };
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Error retrieving wish list: ${error.message}`);
