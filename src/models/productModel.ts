@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import sequelize from '../config/db.js';
 import User from '../models/userModel.js';
 import notificationEmitter from '../utilis/eventEmitter.js';
+import WishList from './wishListModels.js';
 
 interface ProductAttributes {
   productId: number;
@@ -55,6 +56,10 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
       as: 'seller',
       onDelete: 'SET NULL',
       onUpdate: 'SET NULL',
+    });
+    Product.hasMany(WishList, {
+      foreignKey: 'productId',
+      as: 'wishlistItems',
     });
   }
 
