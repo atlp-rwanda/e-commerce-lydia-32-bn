@@ -493,76 +493,76 @@ notificationEmitter.on('cartitemAdded', async (cartItem: CartItemAttributes) => 
 
 //PAYMENT
 
-// Define event handlers
-notificationEmitter.on('paymentSuccess', async (user, order: OrderAttributes, payment) => {
-  console.log(`PAYMENT SUCCESS FOR PAYMENT FOR ORDER ${order.dataValues.id} STARTED`);
+//Define event handlers
+// notificationEmitter.on('paymentSuccess', async (uuser, order: OrderAttributes, payment) => {
+//   console.log(`PAYMENT SUCCESS FOR PAYMENT FOR ORDER ${order?.dataValues?.id} STARTED`);
 
-  try {
-    const buyerId = order.dataValues.userId;
+//   try {
+//     const buyerId = order?.dataValues?.userId;
 
-    const buyer = await User.findByPk(buyerId);
-    if (!buyer) {
-      throw new Error('User Not found');
-    }
+//     const buyer = await User.findByPk(buyerId);
+//     if (!buyer) {
+//       throw new Error('User Not found');
+//     }
 
-    const products = order.items ?? [];
-    const buyerMessage = `Your payment of ${order.totalAmount} was succesfull`;
-    products.map(async (product: { productId: number; quantity: number }) => {
-      const productDetail = await productService.getProductById(product.productId);
-      if (productDetail) {
-        const user = await User.findByPk(productDetail.dataValues.userId);
-        if (user && buyer) {
-          const buyerEmailMessage = `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Product Ordered</title>
-            <style>
-              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-              h1 { color: #d63384; }
-              ul { margin: 0; padding: 0 0 0 20px; }
-              li { margin: 10px 0; }
-            </style>
-          </head>
-          <body>
-            <h1>Dear ${buyer.dataValues.firstname},</h1>
-            <p>We are excited to inform you that your product, <strong>${productDetail.dataValues.productName}</strong>, has been successfully ordered!</p>
-            <h2>Order Details:</h2>
-            <ul>
-              <li><strong>Product Name:</strong> ${productDetail.dataValues.productName}</li>
-              <li><strong>Order Quantity:</strong> ${productDetail.dataValues.quantity}</li>
-              <li><strong>Order ID:</strong> ${order.id}</li>
-              <li><strong>Total Amount:</strong> ${order.totalAmount}</li>
-            </ul>
-            <h2>Buyer's Information:</h2>
-            <ul>
-              <li><strong>Name:</strong> ${buyer.dataValues.firstname}</li>
-              <li><strong>Email:</strong> ${buyer.dataValues.email}</li>
-              <li><strong>Shipping Address:</strong> ${buyer.dataValues.country}, ${buyer.dataValues.city}</li>
-            </ul>
-            <h2>Next Steps:</h2>
-            <p>Please prepare the product for shipment as soon as possible. Make sure to package it securely to ensure it reaches the buyer in perfect condition. Once the product is shipped, update the order status and provide the tracking information.</p>
-            <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>.</p>
-            <p>Thank you for your dedication and for being a valued part of our marketplace.</p>
-            <p>Best Regards,<br>
-            Andela Cohort 32 Team Lydia<br>
-            Sales Manager<br>
-            Andela</p>
-          </body>
-          </html>
-          `;
-        }
+//     const products = order.items ?? [];
+//     const buyerMessage = `Your payment of ${order.totalAmount} was succesfull`;
+//     products.map(async (product: { productId: number; quantity: number }) => {
+//       const productDetail = await productService.getProductById(product.productId);
+//       if (productDetail) {
+//         const user = await User.findByPk(productDetail.dataValues.userId);
+//         if (user && buyer) {
+//           const buyerEmailMessage = `
+//           <!DOCTYPE html>
+//           <html lang="en">
+//           <head>
+//             <meta charset="UTF-8">
+//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//             <title>Product Ordered</title>
+//             <style>
+//               body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+//               h1 { color: #d63384; }
+//               ul { margin: 0; padding: 0 0 0 20px; }
+//               li { margin: 10px 0; }
+//             </style>
+//           </head>
+//           <body>
+//             <h1>Dear ${buyer.dataValues.firstname},</h1>
+//             <p>We are excited to inform you that your product, <strong>${productDetail.dataValues.productName}</strong>, has been successfully ordered!</p>
+//             <h2>Order Details:</h2>
+//             <ul>
+//               <li><strong>Product Name:</strong> ${productDetail.dataValues.productName}</li>
+//               <li><strong>Order Quantity:</strong> ${productDetail.dataValues.quantity}</li>
+//               <li><strong>Order ID:</strong> ${order?.dataValues?.id}</li>
+//               <li><strong>Total Amount:</strong> ${order?.dataValues?.totalAmount}</li>
+//             </ul>
+//             <h2>Buyer's Information:</h2>
+//             <ul>
+//               <li><strong>Name:</strong> ${buyer?.dataValues?.firstname}</li>
+//               <li><strong>Email:</strong> ${buyer?.dataValues?.email}</li>
+//               <li><strong>Shipping Address:</strong> ${buyer?.dataValues?.country}, ${buyer?.dataValues?.city}</li>
+//             </ul>
+//             <h2>Next Steps:</h2>
+//             <p>Please prepare the product for shipment as soon as possible. Make sure to package it securely to ensure it reaches the buyer in perfect condition. Once the product is shipped, update the order status and provide the tracking information.</p>
+//             <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>.</p>
+//             <p>Thank you for your dedication and for being a valued part of our marketplace.</p>
+//             <p>Best Regards,<br>
+//             Andela Cohort 32 Team Lydia<br>
+//             Sales Manager<br>
+//             Andela</p>
+//           </body>
+//           </html>
+//           `;
+//         }
 
-        await Notification.create({ userId: buyer.dataValues.id, message: buyerMessage, readstatus: false });
-        sendEmailMessage(buyer.dataValues.email, 'Your Order Has Been Placed Successfully!', buyer);
-      }
-    });
-  } catch (error: any) {
-    throw new Error(error.message);
-  }
-});
+//         await Notification.create({ userId: buyer?.dataValues?.id, message: buyerMessage, readstatus: false });
+//         sendEmailMessage(buyer?.dataValues?.email, 'Your Order Has Been Placed Successfully!', buyer);
+//       }
+//     });
+//   } catch (error: any) {
+//     throw new Error(error.message);
+//   }
+// });
 
 notificationEmitter.on('paymentCanceled', async (user, order, payment) => {
   console.log(`PAYMENT CANCELLATION FOR PAYMENT FOR ORDER ${order.id} STARTED`);

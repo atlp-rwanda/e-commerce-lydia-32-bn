@@ -16,6 +16,7 @@ import notificationEmitter from '../../utilis/eventEmitter.js';
 dotenv.config();
 
 class PaymentController {
+
   async makePaymentSession(req: Request, res: Response) {
     const { currency } = req.body;
     const { userId } = req;
@@ -29,8 +30,8 @@ class PaymentController {
     }
 
     const baseUrl = process.env.FRONTEND_URL || '';
-    const success_url = `${baseUrl}/api/payment/success?userId=${user.dataValues.id}&orderId=${orderId}`;
-    const cancel_url = `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`;
+   // const success_url = `${baseUrl}/orderConfirmation?sessionId=${user.dataValues.id}&orderId=${orderId}`;
+    //const cancel_url = `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`;
 
     try {
       const orderData = await getOrderByIdAndBuyerId(String(orderId), Number(userId));
@@ -80,7 +81,12 @@ class PaymentController {
         orderId,
       };
 
-      const session = await StripeConfig.createStripeSession(lineItems, metadata, success_url, cancel_url);
+      const session = await StripeConfig.createStripeSession(
+        lineItems,
+        metadata,
+        `${baseUrl}/orderConfirmation/{CHECKOUT_SESSION_ID}/${orderId}`,
+        `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`
+      );
 
       await PaymentService.createPayment(
         metadata.userId,
@@ -100,7 +106,7 @@ class PaymentController {
 
   async paymentSuccess(req: Request, res: Response) {
     const orderId = req.params.orderId as string;
-    const sessionId = req.query.sessionId as string;
+    const sessionId = req.params.sessionId as string;
     const { userId } = req;
 
     if (!userId || !orderId || !sessionId) {
@@ -118,6 +124,9 @@ class PaymentController {
         await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), sessionId, PaymentStatus.Completed);
 
         const orderData = await Order.findByPk(Number(orderId));
+        if (!orderData) {
+          return res.status(404).json({ message: 'Order not found' });
+        }
         const products = orderData?.dataValues?.items ?? [];
         const buyer = await User.findByPk(orderData?.dataValues?.userId);
         if (buyer && orderData) {

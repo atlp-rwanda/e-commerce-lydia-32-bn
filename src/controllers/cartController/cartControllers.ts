@@ -16,13 +16,13 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
     const productInCart = await cartService.getCartProduct(currentUser.id, productId);
     if (productId === undefined) {
       return res.status(404).json({
-        message: 'productId is required',
+        message: 'ProductId is required',
       });
     }
 
     if (quantity === undefined) {
       return res.status(404).json({
-        message: 'quantity is required',
+        message: 'Quantity is required',
       });
     }
 

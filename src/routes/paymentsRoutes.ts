@@ -57,13 +57,13 @@ paymentRouter.post(
 
 /**
  * @swagger
- * /api/payment/success/{orderId}:
+ * /api/payment/success/{sessionId}/{orderId}:
  *   get:
  *     summary: Handle payment success
  *     description: Endpoint to handle successful payment.
  *     tags: [Payments]
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: sessionId
  *         schema:
  *           type: string
@@ -94,7 +94,7 @@ paymentRouter.post(
  *         description: Internal server error
  */
 paymentRouter.get(
-  '/payment/success/:orderId',
+  '/payment/success/:sessionId/:orderId',
   isPasswordNotExpired,
   userAuthJWT,
   isBuyer,
@@ -103,13 +103,13 @@ paymentRouter.get(
 
 /**
  * @swagger
- * /api/payment/cancel/{orderId}:
+ * /api/payment/cancel/{sessionId}/{orderId}:
  *   get:
  *     summary: Handle payment cancellation
  *     description: Endpoint to handle payment cancellation.
  *     tags: [Payments]
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: sessionId
  *         schema:
  *           type: string
@@ -140,7 +140,7 @@ paymentRouter.get(
  *         description: Internal server error
  */
 paymentRouter.get(
-  '/payment/cancel/:orderId',
+  '/payment/cancel/:sessionId/:orderId',
   isPasswordNotExpired,
   userAuthJWT,
   isBuyer,
