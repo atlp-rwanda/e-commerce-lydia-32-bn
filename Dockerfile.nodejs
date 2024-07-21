@@ -4,9 +4,8 @@ WORKDIR /app
 
 COPY package.json ./
 RUN yarn install
-RUN yarn build
 COPY . .
 
-EXPOSE 5000
 
-CMD yarn server
+EXPOSE 5000
+CMD yarn devstart
