@@ -19,7 +19,20 @@ class WishListController {
           if (!product) {
             res.status(404).json({ Error: 'Product not found' });
             return;
+          } else if(productId === userId){
+              console.log("Porduct userId:>",product.dataValues.userId)
+              console.log("user userId:>",userId);
+            
+            res.status(403).json({message: "Forbidden. You can't add your own product to wishlist."})
+            return;
           }
+        }
+        const product = await Product.findByPk(productId);
+        
+        
+        if(user?.id === product?.dataValues.userId){
+          res.status(403).json({message: "Forbidden. You can't add your own product to wishlist."})
+            return;
         }
         // Check if the product already exists in the user's wish list
         const existingWishListItem = await wishListService.getWishListProduct(userId, productId);
