@@ -17,14 +17,14 @@ export const addItemToWishList = async (req: Request, res: Response): Promise<vo
       if (user) {
         const roleName = await User.getRoleName(userId);
         console.log('User role name', roleName);
-        if (roleName === 'buyer') {
+        if (roleName) {
           const product = await Product.findByPk(productId);
           if (!product) {
             res.status(404).json({ Error: 'Product not found' });
             return;
           }
         } else {
-          res.status(400).json({ Error: 'Only  Buyers are allowed to add items to wishlist' });
+          res.status(400).json({ Error: 'Forbidden. Please login again to have access to this feature.' });
           return;
         }
         // Check if the product already exists in the user's wish list
@@ -37,7 +37,7 @@ export const addItemToWishList = async (req: Request, res: Response): Promise<vo
         const wishListItem = await wishListService.addProductToWishList(userId, productId);
         res.status(201).json(wishListItem);
       } else {
-        res.status(401).json({ Warning: 'Only Buyers are allowed to access this end-point' });
+        res.status(401).json({ Warning: 'Forbidden. Please login again to have access to this feature.' });
         return;
       }
     }

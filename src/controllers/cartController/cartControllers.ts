@@ -3,6 +3,7 @@ import * as cartService from '../../services/cart.services.js';
 import { UserAttributes } from '../../models/userModel.js';
 import Product, { ProductCreationAttributes } from '../../models/productModel.js';
 import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
+import { should } from 'chai';
 
 export const addItemToCart = async (req: AuthenticatedRequest, res: Response) => {
   const currentUser = req.user;
@@ -16,13 +17,13 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
     const productInCart = await cartService.getCartProduct(currentUser.id, productId);
     if (productId === undefined) {
       return res.status(404).json({
-        message: 'ProductId is required',
+        message: 'productId is required',
       });
     }
 
     if (quantity === undefined) {
       return res.status(404).json({
-        message: 'Quantity is required',
+        message: 'quantity is required',
       });
     }
 
@@ -31,6 +32,14 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
         message: 'Product not found',
       });
     }
+
+    if (product.dataValues.userId === currentUser.id) {
+      return res.status(406).json({
+        message: "You can't add your own product to cart",
+      })
+    }
+
+
     if (productInCart) {
       return res.status(400).json({
         message: 'Product Already In Your Cart. Please Consider updating quantities !',
@@ -46,11 +55,7 @@ export const addItemToCart = async (req: AuthenticatedRequest, res: Response) =>
         message: 'Invalid product quantity',
       });
     }
-    if (product.dataValues.userId === currentUser.id) {
-      res.status(403).json({
-        message: "You can't add your own product to cart",
-      });
-    }
+   
     const cart = await cartService.addToCart(quantity, product, currentUser);
     return res.status(201).json({ message: 'Item added to cart successfully', cart });
   } catch (error: any) {
