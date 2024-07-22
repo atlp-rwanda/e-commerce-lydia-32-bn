@@ -14,7 +14,7 @@ notificationEmitter.on('productAdded', async (product: ProductAttributes) => {
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const message = `New product '${product.dataValues.productName}' has been created.`;
+      const message = `New product '${product.dataValues.productName}' created.`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -55,7 +55,7 @@ notificationEmitter.on('productUpdated', async (product: ProductAttributes) => {
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const message = `Ypur product '${product.dataValues.productName}' has been updated.`;
+      const message = `Ypur product '${product.dataValues.productName}' was updated.`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -96,7 +96,7 @@ notificationEmitter.on('productUnavailable', async (product: ProductAttributes) 
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const unavailableMessage = `Your product "${product.dataValues.productName}" is unavailable to buyers.`;
+      const unavailableMessage = `Your product "${product.dataValues.productName}" is unavailable`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -148,7 +148,7 @@ notificationEmitter.on('productAvailable', async (product: ProductAttributes) =>
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
       console.log('Processing productAvailable event');
-      const availableMessage = `Your product "${product.dataValues.productName}" is available for buyers.`;
+      const availableMessage = `Your product "${product.dataValues.productName}" is available`;
       const emailMessage = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -197,7 +197,7 @@ notificationEmitter.on('productDeleted', async (product: ProductAttributes) => {
   try {
     const seller = await User.findByPk(product.dataValues.userId);
     if (seller) {
-      const message = `Your product '${product.dataValues.productName}' has been deleted.`;
+      const message = `Your product '${product.dataValues.productName}' was deleted.`;
       const emailMessage = `      <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
         <div style="text-align: center; padding: 20px; background-color: #D44B48; color: #ffffff; border-top-left-radius: 8px; border-top-right-radius: 8px;">
@@ -370,7 +370,7 @@ notificationEmitter.on('orderCancelled', async (order: OrderAttributes) => {
       const seller = await User.findByPk(sellerId);
       const buyer = await User.findByPk(buyerId);
       if (seller && buyer) {
-        const sellerMessage = `Order with your product ${sellerProduct.dataValues.productName} has been cancelled.`;
+        const sellerMessage = `Order with your product ${sellerProduct.dataValues.productName} was cancelled.`;
         const buyerMessage = `Order ${order.dataValues.id} cancelled succesfully.`;
         const sellerEmailMessage = `
         <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
@@ -475,7 +475,7 @@ notificationEmitter.on('cartitemAdded', async (cartItem: CartItemAttributes) => 
     const user = await User.findByPk(userID);
 
     if (user) {
-      const message = `A new item "${product.dataValues.productName}" has been added to your cart.`;
+      const message = `A new item "${product.dataValues.productName}" added to cart.`;
       await Notification.create({ userId: user.dataValues.id, message, readstatus: false });
 
       const emailContent = `<p>Hello ${user.dataValues.firstname},</p><p>${message}</p>`;

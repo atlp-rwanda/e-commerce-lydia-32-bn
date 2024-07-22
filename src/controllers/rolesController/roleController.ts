@@ -41,6 +41,19 @@ class roleController {
       return res.status(500).json({ error: error.message });
     }
   };
+  getRolePermission = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const rolePermissions = await RolePermission.findAll();
+    
+      return res.status(200).json({ 
+        message: 'rolePermission Retrieved successfully', 
+        rolePermissions
+      });
+    } catch (error: any) {
+      console.error('Error:', error);
+      return res.status(500).json({ error: error.message });
+    }
+  };
 
   getRoleById = async (req: Request, res: Response): Promise<Response> => {
     try {

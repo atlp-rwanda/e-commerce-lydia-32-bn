@@ -2,6 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { Sequelize } from 'sequelize';
 import process from 'process';
+import User from './userModel';
+import Product from './productModel';
+import WishList from './wishListModels';
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
@@ -29,6 +32,12 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
+
+export function initializeAssociations() {
+  User.associate({ Product, WishList });
+  Product.associate({ User, WishList });
+  WishList.associate({ User, Product });
+}
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

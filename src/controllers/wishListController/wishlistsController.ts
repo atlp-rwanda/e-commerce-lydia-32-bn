@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { wishListService } from '../../services/wishListService.js';
 import { UserService } from '../../services/registeruser.service.js';
 import Product from '../../models/productModel.js';
-import User from '../../models/userModel.js';
 
 class WishListController {
   public addItemToWishList = async (req: Request, res: Response): Promise<void> => {
@@ -30,7 +29,7 @@ class WishListController {
         }
         // Add product to wish list
         const wishListItem = await wishListService.addProductToWishList(userId, productId);
-        res.status(201).json({ 'Product added successfully to your wishList ': wishListItem });
+        res.status(201).json({ Message: 'Product added successfully to your wishList ', wishListItem });
       }
     } catch (error) {
       console.error(error);
@@ -46,35 +45,40 @@ class WishListController {
       // Check if user is authenticated
       if (!userId) {
         res.status(401).json({ Error: 'User not authenticated' });
-      } else {
-        const user = await UserService.getUserById(userId);
-        if (user) {
-          const existingWishListItem = await wishListService.getWishListItem(userId, itemId);
-          if (!existingWishListItem) {
-            res.status(400).json({ Warning: `Item with id ${itemId} is not found in your wishlist` });
-            return;
-          }
-          const wishListItem = await wishListService.removeProductFromWishList(userId, itemId);
-          res.status(200).json({ Success: 'Item successfully removed from wishlist' });
-        } else {
-          res.status(400).json({ Error: 'User not found !' });
-        }
+        return;
       }
+
+      const user = await UserService.getUserById(userId);
+      if (!user) {
+        res.status(404).json({ Error: 'User not found' });
+        return;
+      }
+
+      const existingWishListItem = await wishListService.getWishListItem(userId, itemId);
+      if (!existingWishListItem) {
+        res.status(404).json({ Warning: `Item with id ${itemId} is not found in your wishlist` });
+        return;
+      }
+
+      await wishListService.removeProductFromWishList(userId, itemId);
+      res.status(200).json({ Success: 'Item successfully removed from wishlist' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ Error: 'Error removing product to wish list' });
+      console.error('Error removing product from wish list:', error);
+      res.status(500).json({ Error: 'Error removing product from wish list' });
     }
   };
 
   public getWishListItemsByUser = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = Number(req.userId);
-      const wishListItems = await wishListService.getWishListByUserId(userId);
-      if (wishListItems.length == 0) {
+      const { wishList, products } = await wishListService.getWishListByUserId(userId);
+
+      if (wishList.length === 0) {
         res.status(400).json({ Message: 'Your Wishlist is empty !' });
         return;
       }
-      res.status(200).json(wishListItems);
+
+      res.status(200).json({ wishList, products });
     } catch (error) {
       console.error(error);
       res.status(500).json({ Error: 'Error retrieving your wish list items' });

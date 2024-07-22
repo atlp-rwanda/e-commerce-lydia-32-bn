@@ -16,7 +16,6 @@ import notificationEmitter from '../../utilis/eventEmitter.js';
 dotenv.config();
 
 class PaymentController {
-
   async makePaymentSession(req: Request, res: Response) {
     const { currency } = req.body;
     const { userId } = req;
@@ -30,7 +29,7 @@ class PaymentController {
     }
 
     const baseUrl = process.env.FRONTEND_URL || '';
-   // const success_url = `${baseUrl}/orderConfirmation?sessionId=${user.dataValues.id}&orderId=${orderId}`;
+    // const success_url = `${baseUrl}/orderConfirmation?sessionId=${user.dataValues.id}&orderId=${orderId}`;
     //const cancel_url = `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`;
 
     try {
@@ -85,7 +84,7 @@ class PaymentController {
         lineItems,
         metadata,
         `${baseUrl}/orderConfirmation/{CHECKOUT_SESSION_ID}/${orderId}`,
-        `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`
+        `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`,
       );
 
       await PaymentService.createPayment(
@@ -130,7 +129,7 @@ class PaymentController {
         const products = orderData?.dataValues?.items ?? [];
         const buyer = await User.findByPk(orderData?.dataValues?.userId);
         // Notify product owners
-         await Promise.all(
+        await Promise.all(
           products.map(async (product: { productId: number; quantity: number }) => {
             if (buyer && orderData) {
               notificationEmitter.emit('paymentSuccess', buyer, orderData.dataValues, payment.dataValues);
