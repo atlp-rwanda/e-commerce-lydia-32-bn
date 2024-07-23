@@ -57,7 +57,21 @@ class notificationController {
       res.status(500).json({ message: error.message });
       console.log(error);
     }
-  };
+  }
+   markAllAsRead = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.id;
+        const notifications = await notificationService.getNotificationsForUser(userId);
+
+        await Promise.all(
+            notifications.map(notification => notification.update({ readstatus: true }))
+        );
+
+        res.status(200).json({ message: 'All notifications marked as read.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to mark notifications as read.', error });
+    }}
+
 }
 
 export const NotificationController = new notificationController();

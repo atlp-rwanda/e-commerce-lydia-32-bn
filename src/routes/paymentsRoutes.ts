@@ -51,7 +51,6 @@ paymentRouter.post(
   '/payment/pay/:orderId',
   isPasswordNotExpired,
   userAuthJWT,
-  isBuyer,
   PaymentController.makePaymentSession,
 );
 

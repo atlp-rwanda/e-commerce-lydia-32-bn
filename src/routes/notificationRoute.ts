@@ -152,3 +152,54 @@ notificationRouter.get('/notifications', isLoggedIn, NotificationController.view
  */
 
 notificationRouter.get('/notifications/:id', isLoggedIn, NotificationController.getNotificationById);
+
+ /**
+ * @swagger
+ * /api/notifications/markasread:
+ *   put:
+ *     summary: Mark all notifications as read
+ *     tags: [Notifications]
+ *     responses:
+ *       '200':
+ *         description: Successfully marked all notifications as read.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: All notifications marked as read.
+ *       '400':
+ *         description: Invalid User ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid User ID
+ *       '404':
+ *         description: Notifications not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Notifications not found
+ *       '500':
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Failed to mark notifications as read.
+ */
+
+notificationRouter.put('/notifications/markasread', isLoggedIn, NotificationController.markAllAsRead);

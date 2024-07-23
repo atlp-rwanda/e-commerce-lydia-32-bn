@@ -27,11 +27,12 @@ export const buyerCheckout = async (req: AuthenticatedRequest, res: Response, ne
     }
 
     const userRole = user.Role?.dataValues;
+    
     console.log('User:', user.dataValues);
     console.log('User Role:', userRole);
 
-    if (!userRole || userRole.name !== 'buyer') {
-      return res.status(403).json({ message: 'Forbidden. Only buyers can proceed with checkout.' });
+    if (!userRole) {
+      return res.status(403).json({ message: 'Forbidden. Please request a buyer or seller role to access this feature.' });
     }
 
     req.user = user.dataValues;

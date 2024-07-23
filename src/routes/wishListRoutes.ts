@@ -37,7 +37,7 @@ export const wishListRouter = express.Router();
  *       '500':
  *         description: Internal server error
  */
-wishListRouter.post('/wishlist/addItem/:productId', userAuthJWT, isBuyer, wishListController.addItemToWishList);
+wishListRouter.post('/wishlist/addItem/:productId', userAuthJWT, wishListController.addItemToWishList);
 
 /**
  * @swagger
@@ -73,7 +73,6 @@ wishListRouter.delete(
   '/wishlist/removeItem/:itemId',
   isPasswordNotExpired,
   userAuthJWT,
-  isBuyer,
   wishListController.removeItemFromWishList,
 );
 
@@ -104,7 +103,6 @@ wishListRouter.get(
   '/wishlist/getUserWishlists',
   isPasswordNotExpired,
   userAuthJWT,
-  isBuyer,
   wishListController.getWishListItemsByUser,
 );
 
