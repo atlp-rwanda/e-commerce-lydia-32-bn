@@ -7,6 +7,7 @@ import OrderAttributes from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { CartItemAttributes } from 'models/cartItemModel.js';
 import { productService } from '../services/product.service.js';
+import { addDays } from 'date-fns';
 
 // Event listener for product added
 notificationEmitter.on('productAdded', async (product: ProductAttributes) => {
@@ -236,7 +237,6 @@ notificationEmitter.on('productDeleted', async (product: ProductAttributes) => {
   }
 });
 
-// Event listener for order created
 
 notificationEmitter.on('orderCreated', async (order: OrderAttributes) => {
   console.log(`Order created event received for order ID: ${order.dataValues.id}`);
@@ -350,7 +350,6 @@ notificationEmitter.on('orderCreated', async (order: OrderAttributes) => {
   }
 });
 
-// Event listener for order cancelled
 notificationEmitter.on('orderCancelled', async (order: OrderAttributes) => {
   console.log(`Order canceled event received for order ID: ${order.dataValues.id}`);
   const products = order?.dataValues?.items ?? [];
@@ -491,78 +490,168 @@ notificationEmitter.on('cartitemAdded', async (cartItem: CartItemAttributes) => 
   }
 });
 
+
 //PAYMENT
 
-//Define event handlers
-// notificationEmitter.on('paymentSuccess', async (uuser, order: OrderAttributes, payment) => {
-//   console.log(`PAYMENT SUCCESS FOR PAYMENT FOR ORDER ${order?.dataValues?.id} STARTED`);
+// Define event handlers
+notificationEmitter.on('paymentSuccess', async (user, order, payment) => {
+  console.log(`PAYMENT SUCCESS FOR PAYMENT FOR ORDER ${order.id} STARTED`);
 
-//   try {
-//     const buyerId = order?.dataValues?.userId;
+  try {
+    const buyerId = order.userId;
 
-//     const buyer = await User.findByPk(buyerId);
-//     if (!buyer) {
-//       throw new Error('User Not found');
-//     }
+    const buyer = await User.findByPk(buyerId);
+    if (!buyer) {
+      throw new Error('User Not found');
+    }
 
-//     const products = order.items ?? [];
-//     const buyerMessage = `Your payment of ${order.totalAmount} was succesfull`;
-//     products.map(async (product: { productId: number; quantity: number }) => {
-//       const productDetail = await productService.getProductById(product.productId);
-//       if (productDetail) {
-//         const user = await User.findByPk(productDetail.dataValues.userId);
-//         if (user && buyer) {
-//           const buyerEmailMessage = `
-//           <!DOCTYPE html>
-//           <html lang="en">
-//           <head>
-//             <meta charset="UTF-8">
-//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//             <title>Product Ordered</title>
-//             <style>
-//               body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-//               h1 { color: #d63384; }
-//               ul { margin: 0; padding: 0 0 0 20px; }
-//               li { margin: 10px 0; }
-//             </style>
-//           </head>
-//           <body>
-//             <h1>Dear ${buyer.dataValues.firstname},</h1>
-//             <p>We are excited to inform you that your product, <strong>${productDetail.dataValues.productName}</strong>, has been successfully ordered!</p>
-//             <h2>Order Details:</h2>
-//             <ul>
-//               <li><strong>Product Name:</strong> ${productDetail.dataValues.productName}</li>
-//               <li><strong>Order Quantity:</strong> ${productDetail.dataValues.quantity}</li>
-//               <li><strong>Order ID:</strong> ${order?.dataValues?.id}</li>
-//               <li><strong>Total Amount:</strong> ${order?.dataValues?.totalAmount}</li>
-//             </ul>
-//             <h2>Buyer's Information:</h2>
-//             <ul>
-//               <li><strong>Name:</strong> ${buyer?.dataValues?.firstname}</li>
-//               <li><strong>Email:</strong> ${buyer?.dataValues?.email}</li>
-//               <li><strong>Shipping Address:</strong> ${buyer?.dataValues?.country}, ${buyer?.dataValues?.city}</li>
-//             </ul>
-//             <h2>Next Steps:</h2>
-//             <p>Please prepare the product for shipment as soon as possible. Make sure to package it securely to ensure it reaches the buyer in perfect condition. Once the product is shipped, update the order status and provide the tracking information.</p>
-//             <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>.</p>
-//             <p>Thank you for your dedication and for being a valued part of our marketplace.</p>
-//             <p>Best Regards,<br>
-//             Andela Cohort 32 Team Lydia<br>
-//             Sales Manager<br>
-//             Andela</p>
-//           </body>
-//           </html>
-//           `;
-//         }
+     interface OrderItem {
+      productId: number;
+      quantity: number;
+    }
 
-//         await Notification.create({ userId: buyer?.dataValues?.id, message: buyerMessage, readstatus: false });
-//         sendEmailMessage(buyer?.dataValues?.email, 'Your Order Has Been Placed Successfully!', buyer);
-//       }
-//     });
-//   } catch (error: any) {
-//     throw new Error(error.message);
-//   }
-// });
+    const products = order.items ?? [];
+    const productDetails = await Promise.all(products.map(async (item:OrderItem) => {
+      const product = await Product.findByPk(item.productId);
+      return {
+        productName: product?.productName,
+        price: product?.price,
+        quantity: item.quantity,
+      };
+    }));
+    if (buyer && order) {
+      const toDate = new Date();
+      const shippingDate = addDays(toDate, 15);
+      const buyerMessage = `Your Order ${order.id} Has Been Paid Successfully!`;
+      const buyerEmailMessage = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your Payment on order ${order.id} was Successful!</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          h1 { color: #d63384; }
+          ul, ol { margin: 0; padding: 0 0 0 20px; }
+          li { margin: 10px 0; }
+        </style>
+      </head>
+      <body>
+        <h1>Dear ${buyer.dataValues.firstname},</h1>
+        <p>Thank you for your recent purchase from Our Company! We are excited to inform you that your order has been successfully paid.</p>
+        <h2>Order Summary:</h2>
+        <ul>
+          <li><strong>Order ID:</strong> ${order.id}</li>
+          <li><strong>Order Date:</strong> ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Date not available'}</li>
+          <li><strong>Total Amount:</strong> ${order.totalAmount} Rwf</li>
+        </ul>
+        <h2>Items Purchased:</h2>
+        <ul>
+          ${productDetails
+            .map(item => `
+          <li>
+            <strong>Product Name:</strong> ${item.productName}<br>
+            <strong>Quantity:</strong> ${item.quantity}<br>
+            <strong>Price:</strong> ${item.price} RWf
+          </li>`
+            ).join('')}
+        </ul>
+        <h2>Shipping Information:</h2>
+        <ul>
+          <li><strong>Shipping Address:</strong> ${buyer.dataValues.country}, ${buyer.dataValues.city}</li>
+          <li><strong>Estimated Delivery Date:</strong> ${shippingDate}</li>
+        </ul>
+        <h2>What Happens Next:</h2>
+        <ol>
+          <li><strong>Order Processing:</strong> Our team is preparing your order for shipment.</li>
+          <li><strong>Shipping Confirmation:</strong> Once your order is on its way, you will receive a shipping confirmation email with tracking details.</li>
+        </ol>
+        <h2>Customer Support:</h2>
+        <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>. We are here to help you!</p>
+        <p>Thank you again for choosing us. We appreciate your business and look forward to serving you again.</p>
+        <p>Best Regards,<br>
+        Andela Cohort 32 Team Lydia<br>
+        Sales Manager<br>
+        Andela</p>
+        <p>P.S. We love seeing our products in their new homes!</p>
+      </body>
+      </html>
+      `;
+
+      await Notification.create({ userId: buyer.dataValues.id, message: buyerMessage, readstatus: false });
+      sendEmailMessage(buyer.dataValues.email, 'Your payment have been Successful!', buyerEmailMessage);
+      console.log(
+        `EMAIL SENT TO USER SUCCESS AFTER PAYMENT WITH EMAIL FOR ORDER ${buyer.dataValues.email} SUCCESSFULLY`,
+      );
+    }
+
+    const sellerMessage = `Order ${order.id} Including your products has Been Paid`;
+    products.map(async (product: { productId: number; quantity: number }) => {
+      const productDetail = await productService.getProductById(product.productId);
+      if (productDetail) {
+        const seller = await User.findByPk(productDetail.dataValues.userId);
+        if (seller) {
+          const sellerEmailMessage = `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Product Paid</title>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              h1 { color: #d63384; }
+              ul { margin: 0; padding: 0 0 0 20px; }
+              li { margin: 10px 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Dear ${seller.dataValues.firstname},</h1>
+            <p>We are excited to inform you that your product, <strong>${productDetail.dataValues.productName}</strong>, has been paid/purchase successfully</p>
+            <h2>Order Details:</h2>
+            <ul>
+              <li><strong>Product Name:</strong> ${productDetail.dataValues.productName}</li>
+              <li><strong>Order Quantity:</strong> ${productDetail.dataValues.quantity}</li>
+              <li><strong>Order ID:</strong> ${order.id}</li>
+              <li><strong>Total Amount:</strong>Rwf ${order.totalAmount}</li>
+            </ul>
+            <h2>Buyer's Information:</h2>
+            <ul>
+              <li><strong>Name:</strong> ${buyer.dataValues.firstname}</li>
+              <li><strong>Email:</strong> ${buyer.dataValues.email}</li>
+              <li><strong>Shipping Address:</strong> ${buyer.dataValues.country}, ${buyer.dataValues.city}</li>
+            </ul>
+            <h2>Next Steps:</h2>
+            <p>Please prepare the product for shipment as soon as possible. Make sure to package it securely to ensure it reaches the buyer in perfect condition. Once the product is shipped, update the order status and provide the tracking information.</p>
+            <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>.</p>
+            <p>Thank you for your dedication and for being a valued part of our marketplace.</p>
+            <p>Best Regards,<br>
+            Andela Cohort 32 Team Lydia<br>
+            Sales Manager<br>
+            Andela</p>
+          </body>
+          </html>
+          `;
+
+          await Notification.create({ userId: seller.dataValues.id, message: sellerMessage, readstatus: false });
+          console.log(
+            `NOTIFICATION CREATED FOR SELLER WITH ID ${seller.dataValues.id} EMAIL: ${seller.dataValues.email}`,
+          );
+
+          sendEmailMessage(
+            seller.dataValues.email,
+            'Order Including your products has Been Paid successfully',
+            sellerEmailMessage,
+          );
+          console.log(`EMAIL SENT TO SELLER WITH EMAIL ${seller.dataValues.email} succesfully`);
+        }
+      }
+    });
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+});
 
 notificationEmitter.on('paymentCanceled', async (user, order, payment) => {
   console.log(`PAYMENT CANCELLATION FOR PAYMENT FOR ORDER ${order.id} STARTED`);
@@ -574,6 +663,8 @@ notificationEmitter.on('paymentCanceled', async (user, order, payment) => {
     if (!buyer) {
       throw new Error('User Not found');
     }
+    console.log(`\n USER =>>>>>>>>>>>>>>>>>>>> ${buyer}  ${buyer.dataValues.id} <============= \n`);
+
     const buyerMessage = `Payment process of ${order.totalAmount} was cancelled`;
     const emailContent = `
         <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
@@ -583,7 +674,7 @@ notificationEmitter.on('paymentCanceled', async (user, order, payment) => {
     </div>
     <div style="padding: 20px;">
       <p>Dear ${buyer.dataValues.firstname},</p>
-      <p>Payment with ID <strong>${payment.id}</strong> of <strong>${order.totalAmount} ${payment.currency}</strong> has been cancelled.</p>
+      <p>Payment  of <strong>${order.totalAmount} rwf</strong> has been cancelled.</p>
       <p><strong>Payment Details:</strong></p>
       <ul>
         <li><strong>Order ID:</strong> ${order.id}</li>
@@ -600,8 +691,51 @@ notificationEmitter.on('paymentCanceled', async (user, order, payment) => {
       <p>If you did not request this action or have further concerns, please contact us immediately at <a href="mailto:<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">mailto:atlp32@gmail.com
       
     `;
+
     await Notification.create({ userId: buyer.dataValues.id, message: buyerMessage, readstatus: false });
     sendEmailMessage(buyer.dataValues.email, 'Payment Canceled', emailContent);
+
+    console.log(`EMAIL SENT TO USER WITH ID ${buyer.dataValues.id} EMAIL: ${buyer.dataValues.email}`);
+
+    // Notify sellers
+    const products = order.items ?? [];
+    await Promise.all(
+      products.map(async (product: { productId: number; quantity: number }) => {
+        const productDetail = await productService.getProductById(product.productId);
+        if (productDetail) {
+          const seller = await User.findByPk(productDetail.dataValues.userId);
+          if (seller) {
+            const sellerMessage = `Payment for order ${order.id} including your product ${productDetail.dataValues.productName} was cancelled`;
+            const sellerEmailContent = `
+                <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <div style="text-align: center; padding: 20px; background-color: #D44B48; color: #ffffff; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                      <h1>Payment Cancellation</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                      <p>Dear ${seller.dataValues.firstname},</p>
+                      <p>We regret to inform you that the payment for an order including your product has been cancelled.</p>
+                      <p><strong>Order Details:</strong></p>
+                      <ul>
+                        <li><strong>Order ID:</strong> ${order.id}</li>
+                        <li><strong>Product:</strong> ${productDetail.dataValues.productName}</li>
+                        <li><strong>Quantity:</strong> ${product.quantity}</li>
+                      </ul>
+                      <p>If you have any questions, please contact our support team.</p>
+                      <p>Thank you for your understanding.</p>
+                      <p>Sincerely,<br>The E-commerce Team</p>
+                    </div>
+                  </div>
+                </div>`;
+
+            await Notification.create({ userId: seller.dataValues.id, message: sellerMessage, readstatus: false });
+            sendEmailMessage(seller.dataValues.email, 'Order Payment Canceled', sellerEmailContent);
+
+            console.log(`EMAIL SENT TO SELLER WITH ID ${seller.dataValues.id} EMAIL: ${seller.dataValues.email}`);
+          }
+        }
+      }),
+    );
   } catch (error: any) {
     throw new Error(error);
   }

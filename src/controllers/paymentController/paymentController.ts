@@ -16,7 +16,6 @@ import notificationEmitter from '../../utilis/eventEmitter.js';
 dotenv.config();
 
 class PaymentController {
-
   async makePaymentSession(req: Request, res: Response) {
     const { currency } = req.body;
     const { userId } = req;
@@ -30,7 +29,7 @@ class PaymentController {
     }
 
     const baseUrl = process.env.FRONTEND_URL || '';
-   // const success_url = `${baseUrl}/orderConfirmation?sessionId=${user.dataValues.id}&orderId=${orderId}`;
+    // const success_url = `${baseUrl}/orderConfirmation?sessionId=${user.dataValues.id}&orderId=${orderId}`;
     //const cancel_url = `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`;
 
     try {
@@ -85,7 +84,7 @@ class PaymentController {
         lineItems,
         metadata,
         `${baseUrl}/orderConfirmation/{CHECKOUT_SESSION_ID}/${orderId}`,
-        `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`
+        `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`,
       );
 
       await PaymentService.createPayment(
@@ -129,126 +128,9 @@ class PaymentController {
         }
         const products = orderData?.dataValues?.items ?? [];
         const buyer = await User.findByPk(orderData?.dataValues?.userId);
-        if (buyer && orderData) {
-          const toDate = new Date();
-          const shippingDate = addDays(toDate, 15);
-          const emailContent = `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Your Order Has Been Placed Successfully!</title>
-            <style>
-              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-              h1 { color: #d63384; }
-              ul, ol { margin: 0; padding: 0 0 0 20px; }
-              li { margin: 10px 0; }
-            </style>
-          </head>
-          <body>
-            <h1>Dear ${buyer.dataValues.firstname},</h1>
-            <p>Thank you for your recent purchase from Our Company! We are excited to inform you that your order has been successfully placed.</p>
-            <h2>Order Summary:</h2>
-            <ul>
-              <li><strong>Order ID:</strong> ${orderData.dataValues.id}</li>
-              <li><strong>Order Date:</strong> ${orderData?.dataValues?.createdAt ? new Date(orderData.dataValues.createdAt).toLocaleDateString() : 'Date not available'}</li>
-              <li><strong>Total Amount:</strong> ${orderData.dataValues.totalAmount} USD</li>
-            </ul>
-            <h2>Items Purchased:</h2>
-            <ul>
-              ${orderData?.dataValues?.items
-                .map(
-                  (item) => `
-              <li>
-                <strong>Product Name:</strong> ${item.productName}<br>
-                <strong>Quantity:</strong> ${item.quantity}<br>
-                <strong>Price:</strong> ${item.price} USD
-              </li>`,
-                )
-                .join('')}
-            </ul>
-            <h2>Shipping Information:</h2>
-            <ul>
-              <li><strong>Shipping Address:</strong> ${buyer.dataValues.country}, ${buyer.dataValues.city}</li>
-              <li><strong>Estimated Delivery Date:</strong> ${shippingDate}</li>
-            </ul>
-            <h2>What Happens Next:</h2>
-            <ol>
-              <li><strong>Order Processing:</strong> Our team is preparing your order for shipment.</li>
-              <li><strong>Shipping Confirmation:</strong> Once your order is on its way, you will receive a shipping confirmation email with tracking details.</li>
-            </ol>
-            <h2>Customer Support:</h2>
-            <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>. We are here to help you!</p>
-            <p>Thank you again for choosing us. We appreciate your business and look forward to serving you again.</p>
-            <p>Best Regards,<br>
-            Andela Cohort 32 Team Lydia<br>
-            Sales Manager<br>
-            Andela</p>
-            <p>P.S. We love seeing our products in their new homes!</p>
-          </body>
-          </html>
-          `;
-          await sendEmailMessage(buyer.dataValues.email, 'Your Order Has Been Placed Successfully!', emailContent);
-        }
-
         // Notify product owners
         await Promise.all(
           products.map(async (product: { productId: number; quantity: number }) => {
-            const productDetail = await productService.getProductById(product.productId);
-            if (productDetail) {
-              const user = await User.findByPk(productDetail.dataValues.userId);
-              if (user && buyer) {
-                const userEmail = user.dataValues.email;
-                const content = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                  <meta charset="UTF-8">
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <title>Product Ordered</title>
-                  <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                    h1 { color: #d63384; }
-                    ul { margin: 0; padding: 0 0 0 20px; }
-                    li { margin: 10px 0; }
-                  </style>
-                </head>
-                <body>
-                  <h1>Dear ${user.dataValues.firstname},</h1>
-                  <p>We are excited to inform you that your product, <strong>${productDetail.dataValues.productName}</strong>, has been successfully ordered!</p>
-                  <h2>Order Details:</h2>
-                  <ul>
-                    <li><strong>Product Name:</strong> ${productDetail.dataValues.productName}</li>
-                    <li><strong>Order Quantity:</strong> ${productDetail.dataValues.quantity}</li>
-                    <li><strong>Order ID:</strong> ${orderData?.dataValues?.id}</li>
-                    <li><strong>Total Amount:</strong> ${productDetail.dataValues.price}</li>
-                  </ul>
-                  <h2>Buyer's Information:</h2>
-                  <ul>
-                    <li><strong>Name:</strong> ${buyer.dataValues.firstname}</li>
-                    <li><strong>Email:</strong> ${buyer.dataValues.email}</li>
-                    <li><strong>Shipping Address:</strong> ${buyer.dataValues.country}, ${buyer.dataValues.city}</li>
-                  </ul>
-                  <h2>Next Steps:</h2>
-                  <p>Please prepare the product for shipment as soon as possible. Make sure to package it securely to ensure it reaches the buyer in perfect condition. Once the product is shipped, update the order status and provide the tracking information.</p>
-                  <p>If you have any questions or need assistance, please don't hesitate to contact our support team at <strong>atlp32tl@gmail.com</strong>.</p>
-                  <p>Thank you for your dedication and for being a valued part of our marketplace.</p>
-                  <p>Best Regards,<br>
-                  Andela Cohort 32 Team Lydia<br>
-                  Sales Manager<br>
-                  Andela</p>
-                </body>
-                </html>
-                `;
-                await sendEmailMessage(
-                  userEmail,
-                  `Product ${productDetail.dataValues.productName} was ordered`,
-                  content,
-                );
-              }
-            }
-
             if (buyer && orderData) {
               notificationEmitter.emit('paymentSuccess', buyer, orderData.dataValues, payment.dataValues);
             }
