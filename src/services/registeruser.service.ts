@@ -23,6 +23,7 @@ export class userService {
         ...userDetails,
         lastPasswordChange: new Date(),
         passwordExpiresAt,
+        roleId: 3,
       });
       return user.toJSON() as UserAttributes;
     } catch (error: any) {
