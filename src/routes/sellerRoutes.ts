@@ -3,7 +3,8 @@ import { sellerControllerInstance } from '../controllers/seller controller/selle
 import { validateSellerProductRequest } from '../middleware/validateSearch.js';
 import { authSellerRole } from '../middleware/checkSellerRole.js';
 import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
-
+// @ts-ignore
+import { sellerStats } from '../controllers/seller controller/sellerPaidProducts.js';
 export const sellerRouter = express.Router();
 
 /**
@@ -291,3 +292,4 @@ sellerRouter.get(
   authSellerRole,
   sellerControllerInstance.getSellerProduct,
 );
+sellerRouter.get('/seller/stats', authSellerRole, sellerStats)
