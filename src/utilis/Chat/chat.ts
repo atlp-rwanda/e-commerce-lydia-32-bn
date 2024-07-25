@@ -5,39 +5,49 @@ import Message from '../../models/postModel.js';
 
 const botName = 'E-commerce Bot';
 
-const chatApp = () => {
+const chatApp = async() => {
+  
   io.on('connection', (socket) => {
-    socket.on('joinRoom', async () => {
-      const user = userJoin(socket.id, 'chat');
+    socket.on('joinRoom', async (username) => {
+      let user;
+  
+      user = userJoin(socket.id, username, 'chat');
       socket.join(user.room);
 
-      socket.emit('message', formatMessage(botName, 'Welcome to Chat!'));
+      socket.emit('message', formatMessage(botName, `${username ? username: 'traveller'} Welcome to Chat!`));
 
-      socket.broadcast.to(user.room).emit('message', formatMessage(botName, 'Someone has joined the chat'));
+      socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${username ? username: 'traveller'} has joined the chat`));
 
+      // Send users and room info
+      io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getRoomUsers(user.room)
+      });
+
+      // Send previous messages
       const messages: any = await Message.findAll({ where: { room: user.room } });
-
       messages.forEach((message: any) => {
-        socket.emit('message', formatMessage('', message.dataValues.content));
+        socket.emit('message', formatMessage(message.dataValues.name, message.dataValues.content));
       });
     });
 
     socket.on('chatMessage', async (message) => {
       const user: any = getCurrentUser(socket.id);
-
-      await Message.create({
-        room: user.room,
-        content: message,
-      });
-      // @ts-ignore
-      io.to(user.room).emit('message', formatMessage('', message));
+      if (user) {
+        await Message.create({
+          name: user.username,
+          room: user.room,
+          content: message,
+        });
+        io.to(user.room).emit('message', formatMessage(user.username, message));
+      }
     });
 
     socket.on('disconnect', () => {
       const user = userLeave(socket.id);
 
       if (user) {
-        io.to(user.room).emit('message', formatMessage(botName, 'Someone has left the chat'));
+        io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
 
         io.to(user.room).emit('roomUsers', {
           room: user.room,
@@ -47,4 +57,5 @@ const chatApp = () => {
     });
   });
 };
+
 export default chatApp;

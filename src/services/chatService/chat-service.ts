@@ -1,9 +1,10 @@
 import Message from '../../models/postModel.js';
 
-export const newChatMessages = async (message: any) => {
+export const newChatMessages = async (message: any, name: any) => {
   try {
     // @ts-ignore
     const chat = {
+      name,
       room: 'chat',
       content: message,
     };

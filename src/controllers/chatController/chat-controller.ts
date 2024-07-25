@@ -5,9 +5,9 @@ import { io } from '../../server.js';
 
 export const sendMessages = async (req: Request, res: Response) => {
   try {
-    const { content }: any = req.body;
+    const { content, name }: any = req.body;
 
-    const sentMessage: any = await newChatMessages(content);
+    const sentMessage: any = await newChatMessages(content, name);
     if (sentMessage) {
       io.emit('chat message', sentMessage);
     }

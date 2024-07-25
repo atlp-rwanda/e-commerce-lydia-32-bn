@@ -6,6 +6,7 @@ interface PostAttributes {
   id: number;
   room: string;
   content: string;
+  name: string;
 }
 
 interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
@@ -16,6 +17,8 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
   public room!: string;
 
   public content!: string;
+
+  public name!: string
 }
 
 Post.init(
@@ -33,6 +36,10 @@ Post.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    }
   },
   {
     sequelize,
