@@ -66,7 +66,7 @@ app.use(
 const server = http.createServer(app);
 export const io = new SocketIOServer(server, {
   cors: {
-    origin: ['*', 'http://localhost:5173'],
+    origin: ['*', 'http://localhost:5173', 'https://e-commerce-lydia-32-fn-staging.onrender.com'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
   },
