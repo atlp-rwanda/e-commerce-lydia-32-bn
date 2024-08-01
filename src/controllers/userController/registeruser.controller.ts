@@ -5,6 +5,9 @@ import { UserService } from '../../services/registeruser.service.js';
 import sendEmailMessage from '../../helpers/sendEmail.js';
 import { generateToken, verifyToken } from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 class userController {
   createUser = async (req: Request, res: Response): Promise<Response> => {
