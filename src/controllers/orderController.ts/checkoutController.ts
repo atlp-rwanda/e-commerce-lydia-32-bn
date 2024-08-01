@@ -2,6 +2,36 @@ import { Request, Response } from 'express';
 import * as orderService from '../../services/orderService/orderService.js';
 import { AuthenticatedRequest } from '../../middleware/authMiddleware.js';
 import { orderSchema } from '../../validations/orderValidation.js';
+import {Op} from 'sequelize'
+import Product from '../../models/productModel.js';
+import cron from 'node-cron'
+
+const updateSoldOutProducts = async()=>{
+  try{ 
+    
+    const soldoutProducts = await Product.findAll({
+     where: {
+       quantity: 0,
+       isAvailable: true,
+     }
+   }) 
+ 
+   if(soldoutProducts && soldoutProducts.length > 0){
+     await Promise.all(soldoutProducts.map((product)=>{
+       product.update({isAvailable: false});
+ 
+       console.log(`Updated ${soldoutProducts.length} to unavailable`);
+       
+     }))
+   } else{
+     console.log("No sold out products found ");
+   }
+ 
+ } catch(error){
+   console.error("Error updating sold out products:", error);
+ }
+ 
+ }
 
 export const checkout = async (req: AuthenticatedRequest, res: Response) => {
   const { payment, address } = req.body;
@@ -15,12 +45,21 @@ export const checkout = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     const newOrder = await orderService.addToOrder(currentUser, payment, address);
+   
+    cron.schedule('* * * * *', async()=>{
+      await updateSoldOutProducts();
+    }, {
+      scheduled: true,
+    }).start();
 
     return res.status(201).json({ message: 'Order processed successfully', order: newOrder });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
+
 export const getOrderById = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;

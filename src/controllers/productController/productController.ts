@@ -126,7 +126,7 @@ async searchProduct(req: Request, res: Response): Promise<void> {
   try {
     const searchCriteria: any = {};
     const pageNumber = Number(page) || 1;
-    const itemsPerPage = Number(limit) || 4;
+    const itemsPerPage = Number(limit) || 6;
 
     if (!name && !minPrice && !maxPrice && !category) {
       res.status(400).json({ error: 'Please provide a search parameter' });

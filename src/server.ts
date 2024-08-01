@@ -22,6 +22,7 @@ import { startCronJob } from '../src/Jobs/passwordExpirationJob.js';
 import chatApp from './utilis/Chat/chat.js';
 import './handles/notifications.service.js';
 
+
 dotenv.config();
 
 db.authenticate()
@@ -62,6 +63,8 @@ app.use(
   paymentRouter,
   chatRouter,
 );
+
+
 
 const server = http.createServer(app);
 export const io = new SocketIOServer(server, {
