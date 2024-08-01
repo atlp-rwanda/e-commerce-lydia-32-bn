@@ -96,7 +96,6 @@ paymentRouter.get(
   '/payment/success/:sessionId/:orderId',
   isPasswordNotExpired,
   userAuthJWT,
-  isBuyer,
   PaymentController.paymentSuccess,
 );
 
@@ -142,7 +141,6 @@ paymentRouter.get(
   '/payment/cancel/:sessionId/:orderId',
   isPasswordNotExpired,
   userAuthJWT,
-  isBuyer,
   PaymentController.paymentCancel,
 );
 
