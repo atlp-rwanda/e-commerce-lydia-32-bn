@@ -207,7 +207,7 @@ class userController {
         expiresIn: process.env.EXPIRATION_TIME,
       });
 
-      const resetPasswordUrl = `${process.env.RESET_PASSWORD_URL}?token=${token}`;
+      const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
       const subject = 'Request for password reset';
 
