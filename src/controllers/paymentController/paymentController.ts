@@ -12,18 +12,20 @@ import { OrderStatusControllerInstance } from '../orderController.ts/orderStatus
 import sendEmailMessage from '../../helpers/sendEmail.js';
 import { OrderStatus } from '../../utilis/orderStatusConstants.js';
 import notificationEmitter from '../../utilis/eventEmitter.js';
+import { AuthenticatedRequest } from 'middleware/checkSellerRole.js';
 
 dotenv.config();
 
 class PaymentController {
-  async makePaymentSession(req: Request, res: Response) {
+  async makePaymentSession(req: AuthenticatedRequest, res: Response) {
     const { currency } = req.body;
-    const { userId } = req;
+    const loggedUser = req.user;
     const orderId = Number(req.params.orderId);
-    if (!userId || isNaN(orderId)) {
+    console.log('Logged in user: ', loggedUser);
+    if (!loggedUser.id || isNaN(orderId)) {
       return res.status(400).json({ message: 'Invalid userId or orderId' });
     }
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(loggedUser.id);
     if (!user) {
       return res.status(403).json({ message: 'Unauthorized! Please Login First' });
     }
@@ -33,7 +35,7 @@ class PaymentController {
     //const cancel_url = `${baseUrl}/api/payment/cancel?userId=${user.dataValues.id}&orderId=${orderId}`;
 
     try {
-      const orderData = await getOrderByIdAndBuyerId(String(orderId), Number(userId));
+      const orderData = await getOrderByIdAndBuyerId(String(orderId), Number(loggedUser.id));
       if (!orderData) {
         return res.status(404).json({ message: 'Order not found' });
       }
@@ -103,24 +105,29 @@ class PaymentController {
     }
   }
 
-  async paymentSuccess(req: Request, res: Response) {
+  async paymentSuccess(req: AuthenticatedRequest, res: Response) {
     const orderId = req.params.orderId as string;
     const sessionId = req.params.sessionId as string;
-    const { userId } = req;
-
-    if (!userId || !orderId || !sessionId) {
+    const loggedUser = req.user;
+    console.log('Logged in user: ', loggedUser);
+    if (!loggedUser.id || !orderId || !sessionId) {
       return res.status(400).json({ message: 'Missing required parameters' });
     }
 
     try {
-      const payment = await PaymentService.findPendingPayment(Number(userId), Number(orderId));
+      const payment = await PaymentService.findPendingPayment(Number(loggedUser.id), Number(orderId));
       if (!payment) {
         return res.status(404).json({ message: 'Payment not found' });
       }
 
       const session = await StripeConfig.checkPaymentStatus(sessionId);
       if (session.payment_status === 'paid') {
-        await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), sessionId, PaymentStatus.Completed);
+        await PaymentService.updatePaymentStatus(
+          Number(loggedUser.id),
+          Number(orderId),
+          sessionId,
+          PaymentStatus.Completed,
+        );
 
         const orderData = await Order.findByPk(Number(orderId));
         if (!orderData) {
@@ -150,25 +157,30 @@ class PaymentController {
     }
   }
 
-  async paymentCancel(req: Request, res: Response) {
+  async paymentCancel(req: AuthenticatedRequest, res: Response) {
     const orderId = req.params.orderId as string;
     const sessionId = req.query.sessionId as string;
-    const { userId } = req;
-
-    if (!userId || !orderId || !sessionId) {
+    const loggedUser = req.user;
+    console.log('Logged in user: ', loggedUser);
+    if (!loggedUser || !orderId || !sessionId) {
       return res.status(400).json({ message: 'Missing required parameters' });
     }
 
     try {
-      const payment = await PaymentService.findPendingPayment(Number(userId), Number(orderId));
+      const payment = await PaymentService.findPendingPayment(Number(loggedUser.id), Number(orderId));
 
       if (!payment) {
         return res.status(404).json({ message: 'Payment not found' });
       }
 
-      await PaymentService.updatePaymentStatus(Number(userId), Number(orderId), sessionId, PaymentStatus.Canceled);
+      await PaymentService.updatePaymentStatus(
+        Number(loggedUser.id),
+        Number(orderId),
+        sessionId,
+        PaymentStatus.Canceled,
+      );
 
-      const user = await User.findByPk(Number(userId));
+      const user = await User.findByPk(Number(loggedUser.id));
       const orderData = await Order.findByPk(Number(orderId));
       if (user && orderData) {
         notificationEmitter.emit('paymentCanceled', user, orderData.dataValues);
