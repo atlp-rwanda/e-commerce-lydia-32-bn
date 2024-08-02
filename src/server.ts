@@ -21,6 +21,7 @@ import './cronjobs/expiredProductsCron.js';
 import { startCronJob } from '../src/Jobs/passwordExpirationJob.js';
 import chatApp from './utilis/Chat/chat.js';
 import './handles/notifications.service.js';
+import { setupAssociations } from './associations/model.associations.js';
 
 
 dotenv.config();
@@ -28,6 +29,8 @@ dotenv.config();
 db.authenticate()
   .then((res) => console.log('connected to database successfully'))
   .catch((error) => console.log(error));
+
+setupAssociations();
 
 const app = express();
 

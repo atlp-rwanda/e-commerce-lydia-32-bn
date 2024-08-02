@@ -1,4 +1,6 @@
+import Review from '../models/review.js';
 import Product from '../models/productModel.js';
+import User from '../models/userModel.js';
 
 export class SellerService {
   // method to retrieve all the products associated with a specific seller
@@ -86,11 +88,28 @@ export class SellerService {
   // get only available products in the store
   async getAvailableProducts(): Promise<Product[]> {
     try {
-      const products = await Product.findAll({ where: { isAvailable: true } });
+      const products = await Product.findAll({
+        where: { isAvailable: true },
+        include: [
+          {
+            model: Review,
+            as: 'reviews',
+            attributes: ['id', 'userId', 'RatingValue', 'review', 'createdAt', 'updatedAt'],
+            include: [
+              {
+                model: User,
+                as: 'user',
+                attributes: ['id', 'firstname', 'othername', 'email'],
+              },
+            ],
+          },
+        ],
+      });
 
       return products;
-    } catch (error) {
-      throw new Error('Failed to fetch available products');
+    } catch (error: any) {
+      console.error('Error in getAvailableProducts:', error);
+      throw new Error(`Failed to fetch available products: ${error.message}`);
     }
   }
 }

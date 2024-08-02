@@ -3,6 +3,7 @@ import { reviewControllers } from '../controllers/reviewController/review.contro
 import { isLoggedIn } from '../middleware/authMiddleware.js';
 import { BuyerMiddleware } from '../middleware/buyerMiddleware.js';
 import { isPasswordNotExpired } from '../middleware/isPasswordExpired.js';
+import { userAuthJWT } from '../middleware/verfication.middleware.js';
 
 export const reviewRouter = express.Router();
 /**
@@ -64,4 +65,4 @@ export const reviewRouter = express.Router();
  *
  */
 
-reviewRouter.post('/review/create', isLoggedIn, isPasswordNotExpired, BuyerMiddleware, reviewControllers.addReview);
+reviewRouter.post('/review/create', isLoggedIn, isPasswordNotExpired, userAuthJWT, reviewControllers.addReview);

@@ -237,7 +237,6 @@ notificationEmitter.on('productDeleted', async (product: ProductAttributes) => {
   }
 });
 
-
 notificationEmitter.on('orderCreated', async (order: OrderAttributes) => {
   console.log(`Order created event received for order ID: ${order.dataValues.id}`);
   const products = order?.dataValues?.items ?? [];
@@ -490,7 +489,6 @@ notificationEmitter.on('cartitemAdded', async (cartItem: CartItemAttributes) => 
   }
 });
 
-
 //PAYMENT
 
 // Define event handlers
@@ -505,20 +503,22 @@ notificationEmitter.on('paymentSuccess', async (user, order, payment) => {
       throw new Error('User Not found');
     }
 
-     interface OrderItem {
+    interface OrderItem {
       productId: number;
       quantity: number;
     }
 
     const products = order.items ?? [];
-    const productDetails = await Promise.all(products.map(async (item:OrderItem) => {
-      const product = await Product.findByPk(item.productId);
-      return {
-        productName: product?.productName,
-        price: product?.price,
-        quantity: item.quantity,
-      };
-    }));
+    const productDetails = await Promise.all(
+      products.map(async (item: OrderItem) => {
+        const product = await Product.findByPk(item.productId);
+        return {
+          productName: product?.productName,
+          price: product?.price,
+          quantity: item.quantity,
+        };
+      }),
+    );
     if (buyer && order) {
       const toDate = new Date();
       const shippingDate = addDays(toDate, 15);
@@ -549,13 +549,15 @@ notificationEmitter.on('paymentSuccess', async (user, order, payment) => {
         <h2>Items Purchased:</h2>
         <ul>
           ${productDetails
-            .map(item => `
+            .map(
+              (item) => `
           <li>
             <strong>Product Name:</strong> ${item.productName}<br>
             <strong>Quantity:</strong> ${item.quantity}<br>
             <strong>Price:</strong> ${item.price} RWf
-          </li>`
-            ).join('')}
+          </li>`,
+            )
+            .join('')}
         </ul>
         <h2>Shipping Information:</h2>
         <ul>
