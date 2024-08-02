@@ -5,6 +5,9 @@ import { UserService } from '../../services/registeruser.service.js';
 import sendEmailMessage from '../../helpers/sendEmail.js';
 import { generateToken, verifyToken } from '../../utilis/generateToken.js';
 import { validateUserCreation } from '../../validations/registeruser.validation.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 class userController {
   createUser = async (req: Request, res: Response): Promise<Response> => {
@@ -207,7 +210,7 @@ class userController {
         expiresIn: process.env.EXPIRATION_TIME,
       });
 
-      const resetPasswordUrl = `${process.env.RESET_PASSWORD_URL}?token=${token}`;
+      const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
       const subject = 'Request for password reset';
 
