@@ -11,6 +11,7 @@ import { authenticateAndAuthorizeUserController } from '../middleware/authentica
 import { BuyerRequestInstance } from '../controllers/userController/user.getItem.js';
 import { validateBuyerProductRequest } from '../middleware/validateSearch.js';
 import { getUserCredentials } from '../controllers/userController/getCredentials.controller.js';
+import { ProductControllerInstance } from '../controllers/productController/productController.js';
 
 export const usersRouter = express.Router();
 
@@ -269,7 +270,7 @@ usersRouter.patch('/users/changepassword', userAuthJWT, UserController.changePas
 usersRouter.patch('/users/update', userAuthJWT, UserController.updateUser);
 usersRouter.delete('/users/delete/:id', UserController.deleteUser);
 usersRouter.post('/login', loginByGoogle);
-usersRouter.post('/register/google', registerByGoogle)
+usersRouter.post('/register/google', registerByGoogle);
 usersRouter.post('/forgot', UserController.forgotPassword);
 usersRouter.post('/reset', UserController.resetPassword);
 usersRouter.get('/users', isRoleAdmin, UserController.getAllUsers);
@@ -456,6 +457,7 @@ usersRouter.post('/users/factor', verifyTwoFactor);
  */
 
 usersRouter.get('/product/:productId', BuyerRequestInstance.getBuyerProduct);
+usersRouter.get('/product/reviews/:productId', ProductControllerInstance.getProductWithReviews);
 usersRouter.get('/user', userAuthJWT, getUserCredentials);
 
 /**

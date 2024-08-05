@@ -3,6 +3,7 @@ import sequelize from '../config/db.js';
 import User from '../models/userModel.js';
 import notificationEmitter from '../utilis/eventEmitter.js';
 import WishList from './wishListModels.js';
+import Review from './review.js';
 
 interface ProductAttributes {
   productId: number;
@@ -60,6 +61,10 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
     Product.hasMany(WishList, {
       foreignKey: 'productId',
       as: 'wishlistItems',
+    });
+    Product.hasMany(models.Review, {
+      foreignKey: 'productId',
+      as: 'reviews',
     });
   }
 
