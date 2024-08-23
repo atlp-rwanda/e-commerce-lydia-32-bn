@@ -41,7 +41,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const port = 3001;
 
 app.get('/', (req, res) => {
   res.send('welcome to our project');
